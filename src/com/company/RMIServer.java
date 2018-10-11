@@ -11,8 +11,17 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
     }
 
 
-    public double add(double a, double b) {
-        return a + b;
+    public int login(String username, String password) {
+        if(username.equals("ola") && password.equals("adeus")) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+
+    public int register(String username, String password) {
+        return 1;
     }
 
 
