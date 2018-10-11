@@ -8,5 +8,7 @@ import java.rmi.RemoteException;
  * Interface for RMI Server
  */
 public interface Interface extends Remote {
-    public double add(double a, double b) throws RemoteException;
+    public void login(String a, double b) throws RemoteException;
+    public void register(String username,String password) throws RemoteException;
+
 }
