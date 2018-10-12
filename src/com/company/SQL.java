@@ -61,7 +61,7 @@ public class SQL {
         try {
             statement = c.createStatement();
             //tbf
-            String sql = "INSERT INTO "+ table.toUpperCase()+ " (+" +values[0].toUpperCase()+", "+values[1].toUpperCase() +") "
+            String sql = "INSERT INTO "+ table.toUpperCase()+ " (" + values[0].toUpperCase()+", "+values[1].toUpperCase() +") "
                     + "VALUES ('user1', 'pass1');";
             statement.executeUpdate(sql);
         } catch (SQLException e) {
