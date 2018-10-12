@@ -5,6 +5,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Iterator;
 
 public class SQL {
     private String serverUrl = "jdbc:postgresql://localhost:5432/";
@@ -37,14 +39,19 @@ public class SQL {
         return c;
     }
 
-    public void createTable(Connection c, String name, String[] values) {
+    public void createTable(Connection c, String name, HashMap<String, String> values) {
         Statement statement = null;
         try {
             statement = c.createStatement();
             //optimize values iterations may be needed hashmap to set primary keys and if its text or number
-            String sql = "CREATE TABLE "+ name.toUpperCase() +
-                    "(" + values[0].toUpperCase() +" TEXT PRIMARY KEY NOT NULL, " +
-                    values[1].toUpperCase() + " TEXT NOT NULL)";
+            String sql = "CREATE TABLE "+ name.toUpperCase() + " (";
+            Iterator it = values.entrySet().iterator();
+            while(it.hasNext()) {
+                HashMap.Entry pair = (HashMap.Entry) it.next();
+                sql += pair.getKey().toString().toUpperCase() + " " + pair.getValue().toString().toUpperCase() +" NOT NULL, ";
+            }
+            sql = sql.substring(0, sql.length() - 2);
+            sql += ")";
             try {
                 statement.executeUpdate(sql);
             }
@@ -56,19 +63,22 @@ public class SQL {
         }
     }
 
-    public void addValuesToTable(Connection c, String table, String[] values) {
+    public void addValuesToTable(Connection c, String table, String[] keysValues) {
         Statement statement = null;
         try {
             statement = c.createStatement();
             //tbf
-            String sql = "INSERT INTO "+ table.toUpperCase()+ " (" + values[0].toUpperCase()+", "+values[1].toUpperCase() +") "
-                    + "VALUES ('user1', 'pass1');";
+            String sql = "INSERT INTO "+ table.toUpperCase()+ " (" + keysValues[0].toUpperCase()+") "
+                    + "VALUES (" + keysValues[1] + ");";
+            System.out.println(sql);
             statement.executeUpdate(sql);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 }
+
+
 
 /*Connection c = null;
         try {

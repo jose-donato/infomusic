@@ -4,10 +4,8 @@ import java.net.MulticastSocket;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.HashMap;
 
 public class MulticastServer extends Thread {
     private String MULTICAST_ADDRESS = "224.0.224.0";
@@ -27,9 +25,20 @@ public class MulticastServer extends Thread {
     public void run() {
         try {
             Connection c = new SQL().enterDatabase("infomusic");
-            String[] myStringArray = {"user1","user2"};
+            /*HashMap<String, String> arr = new HashMap<String, String>();
+            arr.put("user1", "TEXT PRIMARY KEY");
+            arr.put("pass1", "TEXT");
 
-            new SQL().createTable(c, "users", myStringArray);
+            new SQL().createTable(c, "users", arr);*/
+
+            //String[] a = {"user1,pass1", "'josedonato','chupemmaostomates'"};
+            //new SQL().addValuesToTable(c, "users", a);
+            Statement s = c.createStatement();
+            ResultSet rs = s.executeQuery("SELECT * FROM USERS WHERE user1='hugobrink'");
+            while (rs.next()) {
+                String lastName = rs.getString("user1");
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
