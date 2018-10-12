@@ -1,0 +1,54 @@
+Notas da aula 11/10/2018
+
+
+2 servidores rmi são 2 processos distintos. Ambos vão ter um objeto remoto..
+
+Ou coloca-se um registry em cada 1 dos servidores, e a primeira coisa que um servidor faz é o bind() com o registry. -> Solução Clássica
+
+o cliente tenta ligar-se a 1 servidor até dar um remote exception e depois tenta ligar-se ao outro rmi server
+
+
+--------------------------
+
+Ter um registry partilhado pelos dois.
+
+
+
+
+-------------------------------
+
+TCP -> upload de um ficheiro 
+
+O cliente tem de pedir ao rmi o endereço ip e o porto do local onde o multicast server está a escuta de ligações TCP 
+apenas para uploads de ficheiros. O cliente faz uma ligação ao multicast server por TCP
+
+--------------------------------------------------------
+POR ONDE COMEÇAR:
+
+1) Protocolo. Especificar o protocolo entre multicast server e rmi server (sentamonos os 2 )
+
+
+
+
+------------------------------------------------
+ASSUNTO SOBRE RMI
+
+Existem 2 grandes formas de passar argumentos. Referência ou Valor.
+
+
+
+*java* e *rmi*
+existe uma funcão [ int function(double d) ] passa-se o d por valor. - parametro local de um tipo primitivo (ex. INT)
+
+objeto remoto. (dá para fazer chamadas locais) passa-se por referência.
+
+Objetos não remotos ( ex. Strings, Integer, ArrayList,...)
+
+[int function(ArraList <Strings>) ]
+
+
+
+
+
+
+
