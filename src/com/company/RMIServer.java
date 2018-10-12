@@ -18,8 +18,6 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
 
 
     public int login(String username, String password) {
-
-
         String MULTICAST_ADDRESS = "224.0.224.0";
         int PORT = 4321;
         MulticastSocket socket = null;
