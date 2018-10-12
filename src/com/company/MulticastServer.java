@@ -25,11 +25,14 @@ public class MulticastServer extends Thread {
     }
 
     public void run() {
-        /*try {
+        try {
             Connection c = new SQL().enterDatabase("infomusic");
+            String[] myStringArray = {"user1","user2"};
+
+            new SQL().createTable(c, "users", myStringArray);
         } catch (SQLException e) {
             e.printStackTrace();
-        }*/
+        }
         MulticastSocket socket = null;
         try {
             socket = new MulticastSocket(PORT);  // create socket and bind it
