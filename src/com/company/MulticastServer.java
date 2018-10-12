@@ -25,46 +25,11 @@ public class MulticastServer extends Thread {
     }
 
     public void run() {
-        Connection c = null;
         try {
-            c = DriverManager.getConnection("jdbc:postgresql://localhost:5432/", "postgres", "postgres");
+            Connection c = new SQL().enterDatabase("infomusic");
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        Statement statement = null;
-        try {
-            statement = c.createStatement();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        try {
-            statement.executeUpdate("CREATE DATABASE infomusic");
-        } catch (SQLException e) {
-            if (e.getErrorCode() == 0) {
-                // Database already exists error
-                try {
-                    c = DriverManager.getConnection("jdbc:postgresql://localhost:5432/infomusic", "postgres", "postgres");
-                    statement = c.createStatement();
-                    String sql = "CREATE TABLE USERS " +
-                            "(USERNAME TEXT PRIMARY KEY     NOT NULL," +
-                            " PASSWORD           TEXT    NOT NULL)";
-                    try {
-                        statement.executeUpdate(sql);
-                    }
-                    catch(SQLException e2) {
-                        sql = "INSERT INTO USERS (USERNAME, PASSWORD) "
-                                + "VALUES ('user1', 'pass1');";
-                        statement.executeUpdate(sql);
-                    }
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
-                }
-            } else {
-                // Some other problems, e.g. Server down, no permission, etc
-                e.printStackTrace();
-            }
-        }
-
         MulticastSocket socket = null;
         try {
             socket = new MulticastSocket(PORT);  // create socket and bind it
