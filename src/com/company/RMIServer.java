@@ -21,9 +21,13 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
         String MULTICAST_ADDRESS = "224.0.224.0";
         int PORT = 4321;
         MulticastSocket socket = null;
+
+        //Vai enviar a informação do cliente ao multicast para saber se este é
         try {
+
             socket = new MulticastSocket();  // create socket without binding it (only for sending)
             byte[] buffer = auxLogin(username, password).toString().getBytes();
+
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, PORT);
             socket.send(packet);
@@ -32,6 +36,26 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
         } finally {
             socket.close();
         }
+    // Vai receber informação do Multicast para saber se existe um Username
+            try {
+            socket = new MulticastSocket(PORT);  // create socket and bind it
+            InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
+            socket.joinGroup(group);
+            while (true) {
+                byte[] buffer = new byte[256];
+                DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+                socket.receive(packet);
+
+                System.out.println("Received packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message:");
+                String message = new String(packet.getData(), 0, packet.getLength());
+                System.out.println(message);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            socket.close();
+        }
+
 
 
         if(username.equals("ola") && password.equals("adeus")) {
