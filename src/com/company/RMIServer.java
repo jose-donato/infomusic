@@ -34,7 +34,7 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            socket.close();
+            //socket.close();
         }
     // Vai receber informação do Multicast para saber se existe um Username
             try {

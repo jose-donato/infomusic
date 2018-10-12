@@ -23,7 +23,7 @@ public class MulticastServer extends Thread {
     }
 
     public void run() {
-        try {
+        /*try {
             Connection c = new SQL().enterDatabase("infomusic");
             /*HashMap<String, String> arr = new HashMap<String, String>();
             arr.put("user1", "TEXT PRIMARY KEY");
@@ -33,7 +33,7 @@ public class MulticastServer extends Thread {
 
             //String[] a = {"user1,pass1", "'josedonato','chupemmaostomates'"};
             //new SQL().addValuesToTable(c, "users", a);
-            Statement s = c.createStatement();
+        /*  Statement s = c.createStatement();
             ResultSet rs = s.executeQuery("SELECT * FROM USERS WHERE user1='hugobrink'");
             while (rs.next()) {
                 String lastName = rs.getString("user1");
@@ -41,7 +41,7 @@ public class MulticastServer extends Thread {
 
         } catch (SQLException e) {
             e.printStackTrace();
-        }
+        }*/
         MulticastSocket socket = null;
         try {
             socket = new MulticastSocket(PORT);  // create socket and bind it
@@ -55,11 +55,61 @@ public class MulticastServer extends Thread {
                 System.out.println("Received packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message:");
                 String message = new String(packet.getData(), 0, packet.getLength());
                 System.out.println(message);
+                message = message.substring(1, message.length()-1);           //remove curly brackets
+                String[] keyValuePairs = message.split(",");              //split the string to creat key-value pairs
+                HashMap<String,String> map = new HashMap<String,String>();
+
+                for(String pair : keyValuePairs)                        //iterate over the pairs
+                {
+                    String[] entry = pair.split("=");                   //split the pairs to get key and value
+                    map.put(entry[0].trim(), entry[1].trim());          //add them to the hashmap and trim whitespaces
+                }
+
+                String username = map.get("username");
+                System.out.println(username);
+                Connection c = new SQL().enterDatabase("infomusic");
+                Statement s = c.createStatement();
+                ResultSet rs = s.executeQuery("SELECT * FROM USERS WHERE user1='"+username+"'");
+                System.out.println(rs);
+                String lastName = null;
+                while (rs.next()) {
+                    lastName = rs.getString("user1");
+                }
+                System.out.println(lastName);
+                try {
+
+                    socket = new MulticastSocket();  // create socket without binding it (only for sending)
+                    buffer = aux(lastName, "true").toString().getBytes();
+
+                    group = InetAddress.getByName(MULTICAST_ADDRESS);
+                    packet = new DatagramPacket(buffer, buffer.length, group, PORT);
+                    socket.send(packet);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    socket.close();
+                }
+
             }
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
+        }
+        //vem da linha a seguir ao sout username, (Connection c = new SQL().enterDatabase("infomusic");)
+        catch (SQLException e) {
+            e.printStackTrace();
+        } //acaba aqui
+        finally {
             socket.close();
         }
+    }
+
+
+    //aux para converter em hashmap a resposta do multicast se existe o utilziador ou nao
+    public HashMap<String, String> aux(String username, String exists) {
+        HashMap<String, String> hmap = new HashMap<String, String>();
+        hmap.put("type", "checkIfExists");
+        hmap.put("username", username);
+        hmap.put("condition", exists);
+        return hmap;
     }
 }
