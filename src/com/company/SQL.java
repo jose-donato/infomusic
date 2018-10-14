@@ -1,16 +1,22 @@
 package com.company;
 
 import javax.swing.plaf.nimbus.State;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Iterator;
 
+/**
+ *
+ */
 public class SQL {
     private String serverUrl = "jdbc:postgresql://localhost:5432/";
 
+    /**
+     * enter in postgressql database or create if it doesn't exist
+     * @param name of the database
+     * @return the connection to the database in success, null otherwise
+     * @throws SQLException
+     */
     public Connection enterDatabase(String name) throws SQLException {
         Connection c = null;
         try {
@@ -39,6 +45,12 @@ public class SQL {
         return c;
     }
 
+    /**
+     * Create table in one database
+     * @param c connection to the database
+     * @param name of the table
+     * @param values /atributes of the table (ex: 'USER TEXT PRIMARY KEY')
+     */
     public void createTable(Connection c, String name, HashMap<String, String> values) {
         Statement statement = null;
         try {
@@ -63,6 +75,12 @@ public class SQL {
         }
     }
 
+    /**
+     * add one value to one table
+     * @param c connection to the table
+     * @param table name of the table
+     * @param keysValues
+     */
     public void addValuesToTable(Connection c, String table, String[] keysValues) {
         Statement statement = null;
         try {
@@ -75,6 +93,25 @@ public class SQL {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * select one user from the table
+     * @param c
+     * @param table
+     * @param username
+     * @return
+     * @throws SQLException
+     */
+    public String selectUser(Connection c, String table, String username) throws SQLException {
+        Statement s = c.createStatement();
+        ResultSet rs = s.executeQuery("SELECT * FROM USERS WHERE user1='"+username+"'");
+        System.out.println(rs);
+        String lastName = null;
+        while (rs.next()) {
+            lastName = rs.getString("user1");
+        }
+        return lastName;
     }
 }
 

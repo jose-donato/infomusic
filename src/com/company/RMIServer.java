@@ -9,6 +9,9 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Scanner;
 
+/**
+ *
+ */
 public class RMIServer extends UnicastRemoteObject implements Interface {
     private static final long serialVersionUID = 1L;
 
@@ -16,56 +19,44 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
         super();
     }
 
-
+    /**
+     * logins a user in the program
+     * @param username of the user
+     * @param password of the user
+     * @return 1 in case of success, 0 otherwise
+     */
     public int login(String username, String password) {
         String MULTICAST_ADDRESS = "224.0.224.0";
         int PORT = 4321;
         MulticastSocket socket = null;
 
         //Vai enviar a informação do cliente ao multicast para saber se este é
-        try {
-
-            socket = new MulticastSocket();  // create socket without binding it (only for sending)
-            byte[] buffer = auxLogin(username, password).toString().getBytes();
-
-            InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, PORT);
-            socket.send(packet);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            //socket.close();
-        }
-    // Vai receber informação do Multicast para saber se existe um Username
-            try {
-            socket = new MulticastSocket(PORT);  // create socket and bind it
-            InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
-            socket.joinGroup(group);
-            while (true) {
-                byte[] buffer = new byte[256];
-                DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-                socket.receive(packet);
-
-                System.out.println("Received packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message:");
-                String message = new String(packet.getData(), 0, packet.getLength());
-                System.out.println(message);
+        int verify = new ConnectionFunctions().sendUdpPacket(auxLogin(username, password));
+        //send the message to multicast server without problems
+        if(verify == 1) {
+            // Vai receber informação do Multicast para saber se existe um Username
+            String message = new ConnectionFunctions().receiveUdpPacket();
+            if(username.equals("ola") && password.equals("adeus")) {
+                return 1;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            socket.close();
+            else {
+                return 0;
+            }
         }
-
-
-
-        if(username.equals("ola") && password.equals("adeus")) {
-            return 1;
-        }
+        //problems when sending the messaeg
         else {
-            return 0;
+            System.out.println("d: problems when sending message to multicast server");
         }
+        return 0;
+
     }
 
+    /**
+     * aux to create the login hashmap to convert to string to send to multicast server
+     * @param username
+     * @param password
+     * @return the hashmap
+     */
     public HashMap<String, String> auxLogin(String username, String password) {
         HashMap<String, String> hmap = new HashMap<String, String>();
         hmap.put("type", "login");
@@ -74,6 +65,12 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
         return hmap;
     }
 
+    /**
+     * regist a user in the program
+     * @param username of the user
+     * @param password of the user
+     * @return 1 in success, 0 otherwise
+     */
     public int register(String username, String password) {
         return 1;
     }

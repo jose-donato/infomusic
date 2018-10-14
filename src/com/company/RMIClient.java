@@ -9,6 +9,9 @@ import java.rmi.RemoteException;
 
 import java.util.Scanner;
 
+/**
+ *
+ */
 public class RMIClient {
     public static void main(String[] args) throws MalformedURLException, RemoteException, NotBoundException {
         Interface i = (Interface) Naming.lookup("infoMusicRegistry");
