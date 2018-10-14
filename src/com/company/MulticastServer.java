@@ -57,57 +57,12 @@ public class MulticastServer extends Thread {
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
             socket.joinGroup(group);
             while (true) {
-                /*byte[] buffer = new byte[256];
-                DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-                socket.receive(packet);
-
-                System.out.println("Received packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message:");
-                String message = new String(packet.getData(), 0, packet.getLength());
-                System.out.println(message);
-                */
                 String message = new ConnectionFunctions().receiveUdpPacket();
-                /*
-                message = message.substring(1, message.length()-1);           //remove curly brackets
-                String[] keyValuePairs = message.split(",");              //split the string to creat key-value pairs
-                HashMap<String,String> map = new HashMap<String,String>();
-                for(String pair : keyValuePairs)                        //iterate over the pairs
-                {
-                    String[] entry = pair.split("=");                   //split the pairs to get key and value
-                    map.put(entry[0].trim(), entry[1].trim());          //add them to the hashmap and trim whitespaces
-                }
-
-                */
-
                 HashMap<String, String> map = string2HashMap(message);
                 String username = map.get("username");
                 System.out.println(username);
                 Connection c = new SQL().enterDatabase("infomusic");
-
-                /*Statement s = c.createStatement();
-                ResultSet rs = s.executeQuery("SELECT * FROM USERS WHERE user1='"+username+"'");
-                System.out.println(rs);
-                String lastName = null;
-                while (rs.next()) {
-                    lastName = rs.getString("user1");
-                }
-                System.out.println(lastName);*/
-
                 String lastName = new SQL().selectUser(c, "USERS", "hugobrink");
-
-                //tbc
-                /*try {
-                    socket = new MulticastSocket();  // create socket without binding it (only for sending)
-                    buffer = aux(lastName, "true").toString().getBytes();
-
-                    group = InetAddress.getByName(MULTICAST_ADDRESS);
-                    packet = new DatagramPacket(buffer, buffer.length, group, PORT);
-                    socket.send(packet);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    socket.close();
-                }
-                */
                 new ConnectionFunctions().sendUdpPacket(aux(lastName, "true"));
 
             }
