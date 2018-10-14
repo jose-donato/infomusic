@@ -36,7 +36,8 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
         if(verify == 1) {
             // Vai receber informação do Multicast para saber se existe um Username
             String message = new ConnectionFunctions().receiveUdpPacket();
-            if(username.equals("ola") && password.equals("adeus")) {
+            HashMap<String, String> map = new ConnectionFunctions().string2HashMap(message);
+            if(map.get("condition").equals("true")) {
                 return 1;
             }
             else {

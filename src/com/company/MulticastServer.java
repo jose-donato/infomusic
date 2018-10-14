@@ -58,12 +58,17 @@ public class MulticastServer extends Thread {
             socket.joinGroup(group);
             while (true) {
                 String message = new ConnectionFunctions().receiveUdpPacket();
-                HashMap<String, String> map = string2HashMap(message);
+                HashMap<String, String> map = new ConnectionFunctions().string2HashMap(message);
                 String username = map.get("username");
-                System.out.println(username);
                 Connection c = new SQL().enterDatabase("infomusic");
-                String lastName = new SQL().selectUser(c, "USERS", "hugobrink");
-                new ConnectionFunctions().sendUdpPacket(aux(lastName, "true"));
+                String user = new SQL().selectUser(c, "USERS", username);
+                if(!user.equals(null)) {
+                    new ConnectionFunctions().sendUdpPacket(aux(user, "true"));
+                }
+                else {
+                    new ConnectionFunctions().sendUdpPacket(aux(user, "false"));
+                }
+
 
             }
         } catch (IOException e) {
@@ -94,21 +99,5 @@ public class MulticastServer extends Thread {
         return hmap;
     }
 
-    /**
-     * Convert string (received by udp datagrampacket) to hashmap
-     * @param string to convert to hashmap
-     * @return the hashmap converted
-     */
-    public HashMap<String, String> string2HashMap(String string) {
-        string = string.substring(1, string.length()-1);           //remove curly brackets
-        String[] keyValuePairs = string.split(",");              //split the string to creat key-value pairs
-        HashMap<String,String> map = new HashMap<String,String>();
 
-        for(String pair : keyValuePairs)                        //iterate over the pairs
-        {
-            String[] entry = pair.split("=");                   //split the pairs to get key and value
-            map.put(entry[0].trim(), entry[1].trim());          //add them to the hashmap and trim whitespaces
-        }
-        return map;
-    }
 }

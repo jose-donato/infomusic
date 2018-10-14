@@ -88,7 +88,7 @@ public class SQL {
             //tbf
             String sql = "INSERT INTO "+ table.toUpperCase()+ " (" + keysValues[0].toUpperCase()+") "
                     + "VALUES (" + keysValues[1] + ");";
-            System.out.println(sql);
+            System.out.println("d: query in adding values to table: "+sql);
             statement.executeUpdate(sql);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -106,7 +106,6 @@ public class SQL {
     public String selectUser(Connection c, String table, String username) throws SQLException {
         Statement s = c.createStatement();
         ResultSet rs = s.executeQuery("SELECT * FROM USERS WHERE user1='"+username+"'");
-        System.out.println(rs);
         String lastName = null;
         while (rs.next()) {
             lastName = rs.getString("user1");

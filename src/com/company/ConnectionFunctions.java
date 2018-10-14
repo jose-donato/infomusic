@@ -59,5 +59,23 @@ public class ConnectionFunctions {
         }
         return message;
     }
+
+    /**
+     * Convert string (received by udp datagrampacket) to hashmap
+     * @param string to convert to hashmap
+     * @return the hashmap converted
+     */
+    public HashMap<String, String> string2HashMap(String string) {
+        string = string.substring(1, string.length()-1);           //remove curly brackets
+        String[] keyValuePairs = string.split(",");              //split the string to creat key-value pairs
+        HashMap<String,String> map = new HashMap<String,String>();
+
+        for(String pair : keyValuePairs)                        //iterate over the pairs
+        {
+            String[] entry = pair.split("=");                   //split the pairs to get key and value
+            map.put(entry[0].trim(), entry[1].trim());          //add them to the hashmap and trim whitespaces
+        }
+        return map;
+    }
 }
 
