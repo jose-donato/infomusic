@@ -106,11 +106,35 @@ public class SQL {
     public String selectUser(Connection c, String table, String username) throws SQLException {
         Statement s = c.createStatement();
         ResultSet rs = s.executeQuery("SELECT * FROM USERS WHERE user1='"+username+"'");
-        String lastName = null;
+        String name = null;
         while (rs.next()) {
-            lastName = rs.getString("user1");
+            name = rs.getString("user1");
         }
-        return lastName;
+        return name;
+    }
+
+
+    //think better about this function and how relates to selectUser()
+    /**
+     * get user and password from table
+     * @param c database connection
+     * @param table name in database
+     * @param username username desired
+     * @return array with username and password
+     * @throws SQLException
+     */
+    public String[] selectUserAndGetPassword(Connection c, String table, String username) throws SQLException {
+        Statement s = c.createStatement();
+        ResultSet rs = s.executeQuery("SELECT * FROM USERS WHERE user1='"+username+"'");
+        String name = null;
+        String password = null;
+        while (rs.next()) {
+            name = rs.getString("user1");
+            password = rs.getString("pass1");
+
+        }
+        String[] array = {name, password};
+        return array;
     }
 }
 
