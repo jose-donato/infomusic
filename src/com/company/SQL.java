@@ -12,6 +12,27 @@ public class SQL {
     private String serverUrl = "jdbc:postgresql://localhost:5432/";
 
     /**
+     * test to create initial values for user
+     * @return
+     */
+    public Connection initialConfig() {
+        try {
+            Connection c = enterDatabase("infomusic");
+            HashMap<String, String> arr = new HashMap<String, String>();
+            arr.put("user1", "TEXT PRIMARY KEY");
+            arr.put("pass1", "TEXT");
+
+            new SQL().createTable(c, "users", arr);
+
+            String[] a = {"user1,pass1", "'josedonato','123123'"};
+            new SQL().addValuesToTable(c, "users", a);
+            return c;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    /**
      * enter in postgressql database or create if it doesn't exist
      * @param name of the database
      * @return the connection to the database in success, null otherwise

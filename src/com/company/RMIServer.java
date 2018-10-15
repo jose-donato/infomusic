@@ -44,30 +44,6 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
 
     }
 
-
-
-    /**
-     * regist a user in the program
-     * @param username of the user
-     * @param password of the user
-     * @return 1 in success (if user doesn't exist), 0 otherwise
-     */
-    /*public int register(String username, String password) {
-        int verify = new ConnectionFunctions().sendUdpPacket(aux("register", username, password));
-        if(verify == 1) {
-            String message = new ConnectionFunctions().receiveUdpPacket();
-            HashMap<String, String> map = new ConnectionFunctions().string2HashMap(message);
-            if(map.get("condition").equals("true")) {
-                return 1;
-            }
-            else{
-                return 0;
-            }
-        }
-        return 0;
-    }*/
-
-
     /**
      * @param args
      * @throws RemoteException

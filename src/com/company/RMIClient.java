@@ -41,7 +41,7 @@ public class RMIClient {
                         loginSucess = true;
                     } else {
                         //tbc
-                        System.out.println("wrong credentials, make sure to regist first!");
+                        System.out.println("wrong credentials, make sure to register first!");
                     }
                     break;
                 case 2:
