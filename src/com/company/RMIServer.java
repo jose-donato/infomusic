@@ -23,15 +23,11 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
      * logins a user in the program
      * @param username of the user
      * @param password of the user
-     * @return 1 in case of success, 0 otherwise
+     * @return 1 in case of success (in case of register returns 1 if user doesn't exist and does the regist), 0 otherwise
      */
-    public int login(String username, String password) {
-        String MULTICAST_ADDRESS = "224.0.224.0";
-        int PORT = 4321;
-        MulticastSocket socket = null;
-
+    public int loginOrRegister(String username, String password) {
         //Vai enviar a informação do cliente ao multicast para saber se este é
-        int verify = new ConnectionFunctions().sendUdpPacket(auxLogin(username, password));
+        int verify = new ConnectionFunctions().sendUdpPacket(aux("login", username, password));
         //send the message to multicast server without problems
         if(verify == 1) {
             // Vai receber informação do Multicast para saber se existe um Username
@@ -40,41 +36,36 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
             if(map.get("condition").equals("true")) {
                 return 1;
             }
-            else {
-                return 0;
-            }
+            return 0;
         }
-        //problems when sending the messaeg
-        else {
-            System.out.println("d: problems when sending message to multicast server");
-        }
+        //problems when sending the message
+        System.out.println("d: problems when sending message to multicast server");
         return 0;
 
     }
 
-    /**
-     * aux to create the login hashmap to convert to string to send to multicast server
-     * @param username
-     * @param password
-     * @return the hashmap
-     */
-    public HashMap<String, String> auxLogin(String username, String password) {
-        HashMap<String, String> hmap = new HashMap<String, String>();
-        hmap.put("type", "login");
-        hmap.put("username", username);
-        hmap.put("password", password);
-        return hmap;
-    }
+
 
     /**
      * regist a user in the program
      * @param username of the user
      * @param password of the user
-     * @return 1 in success, 0 otherwise
+     * @return 1 in success (if user doesn't exist), 0 otherwise
      */
-    public int register(String username, String password) {
-        return 1;
-    }
+    /*public int register(String username, String password) {
+        int verify = new ConnectionFunctions().sendUdpPacket(aux("register", username, password));
+        if(verify == 1) {
+            String message = new ConnectionFunctions().receiveUdpPacket();
+            HashMap<String, String> map = new ConnectionFunctions().string2HashMap(message);
+            if(map.get("condition").equals("true")) {
+                return 1;
+            }
+            else{
+                return 0;
+            }
+        }
+        return 0;
+    }*/
 
 
     /**
@@ -87,5 +78,19 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
         System.out.println("Server ready...");
     }
 
+    /**
+     * aux to create the login hashmap to convert to string to send to multicast server
+     * @param type can be login, register, etc
+     * @param username
+     * @param password
+     * @return the hashmap
+     */
+    public HashMap<String, String> aux(String type, String username, String password) {
+        HashMap<String, String> hmap = new HashMap<String, String>();
+        hmap.put("type", type);
+        hmap.put("username", username);
+        hmap.put("password", password);
+        return hmap;
+    }
 }
 

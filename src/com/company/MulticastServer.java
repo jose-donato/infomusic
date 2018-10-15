@@ -57,7 +57,8 @@ public class MulticastServer extends Thread {
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
             socket.joinGroup(group);
             while (true) {
-
+                /*
+                //begining of treatment for login
                 //Recebe mensagens
                 String message = new ConnectionFunctions().receiveUdpPacket();
                 HashMap<String, String> map = new ConnectionFunctions().string2HashMap(message);
@@ -71,14 +72,30 @@ public class MulticastServer extends Thread {
                 String [] user = new SQL().selectUserAndGetPassword(c, "USERS", username);
                 String return_username = user[0];
                 String return_pass = user[1];
-                if(return_username!=null && return_pass.equals(password)) {
-                    new ConnectionFunctions().sendUdpPacket(AuxForArray(return_username, return_pass, "true"));
+                if(return_username != null && return_pass.equals(password)) {
+                    new ConnectionFunctions().sendUdpPacket(auxForArray(return_username, return_pass, "true"));
 
                 }
                 else {
-                    new ConnectionFunctions().sendUdpPacket(AuxForArray(return_username,return_pass, "false"));
+                    new ConnectionFunctions().sendUdpPacket(auxForArray(return_username,return_pass, "false"));
                 }
-
+                //end of treatment for login
+                */
+                //begining of treatment for register
+                String message = new ConnectionFunctions().receiveUdpPacket();
+                HashMap<String, String> map = new ConnectionFunctions().string2HashMap(message);
+                String username = map.get("username");
+                Connection c = new SQL().enterDatabase("infomusic");
+                String user = new SQL().selectUser(c, "USERS", username);
+                if(user != null) {
+                    new ConnectionFunctions().sendUdpPacket(aux(username, "true"));
+                    String[] arr = {"user1,pass1", username+','+map.get("password")};
+                    new SQL().addValuesToTable(c, "USERS", arr);
+                }
+                else {
+                    new ConnectionFunctions().sendUdpPacket(aux(username, "false"));
+                }
+                //end of treatment for register
 
             }
         } catch (IOException e) {
@@ -110,7 +127,7 @@ public class MulticastServer extends Thread {
     }
 
     //aux para converter em hashmap a resposta do multicast se existe o utilziador ou nao
-    public HashMap<String, String> AuxForArray(String username,String password, String exists) {
+    public HashMap<String, String> auxForArray(String username, String password, String exists) {
         HashMap<String, String> hmap = new HashMap<String, String>();
         hmap.put("type", "checkIfExists");
         hmap.put("username", username);
@@ -118,6 +135,5 @@ public class MulticastServer extends Thread {
         hmap.put("condition", exists);
         return hmap;
     }
-
 
 }

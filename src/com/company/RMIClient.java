@@ -15,8 +15,8 @@ import java.util.Scanner;
 public class RMIClient {
     public static void main(String[] args) throws MalformedURLException, RemoteException, NotBoundException {
         Interface i = (Interface) Naming.lookup("infoMusicRegistry");
-        boolean login_sucess = false;
-        while(!login_sucess) {
+        boolean loginSucess = false;
+        while(!loginSucess) {
             System.out.println("menu: (type one of the options)");
             System.out.println("1. login");
             System.out.println("2. register");
@@ -35,10 +35,10 @@ public class RMIClient {
                     String password = keyboard.nextLine();
 
                     //if login succeeds
-                    if (i.login(username, password) == 1) {
+                    if (i.loginOrRegister(username, password) == 1) {
                         //tbc
                         System.out.println("login successful");
-                        login_sucess = true;
+                        loginSucess = true;
                     } else {
                         //tbc
                         System.out.println("wrong credentials, make sure to regist first!");
@@ -53,9 +53,13 @@ public class RMIClient {
                     keyboard = new Scanner(System.in);
                     password = keyboard.nextLine();
                     //check if password is certain by asking two times
-                    i.register(username, password);
+                    if(i.loginOrRegister(username, password) == 1) {
+                        System.out.println(username+ " registed.");
+                    }
+                    else {
+                        System.out.println("someone already has that username!");
+                    }
                     break;
-
                 case 3:
                     System.out.println("exiting...");
                     System.exit(0);
@@ -63,6 +67,6 @@ public class RMIClient {
             }
         }
 
-       System.out.println("Welcome username! What you want to do?");
+       System.out.println("welcome username! what you want to do?");
     }
 }
