@@ -155,6 +155,7 @@ public class SQL {
 
         }
         String[] array = {name, password};
+        System.out.println();
         return array;
     }
 }

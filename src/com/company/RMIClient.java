@@ -35,7 +35,7 @@ public class RMIClient {
                     String password = keyboard.nextLine();
 
                     //if login succeeds
-                    if (i.loginOrRegister(username, password, "register") == 1) {
+                    if (i.loginOrRegister(username, password, "login") == 1) {
                         //tbc
                         System.out.println("login successful");
                         loginSucess = true;

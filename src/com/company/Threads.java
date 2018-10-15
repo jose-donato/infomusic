@@ -12,6 +12,7 @@ public class Threads extends Thread {
     }
 
     public void run() {
+
         switch(this.map.get("type")) {
             case "login":
                 try {
