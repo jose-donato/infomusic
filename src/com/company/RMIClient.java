@@ -35,7 +35,7 @@ public class RMIClient {
                     String password = keyboard.nextLine();
 
                     //if login succeeds
-                    if (i.loginOrRegister(username, password) == 1) {
+                    if (i.loginOrRegister(username, password, "register") == 1) {
                         //tbc
                         System.out.println("login successful");
                         loginSucess = true;
@@ -53,7 +53,7 @@ public class RMIClient {
                     keyboard = new Scanner(System.in);
                     password = keyboard.nextLine();
                     //check if password is certain by asking two times
-                    if(i.loginOrRegister(username, password) == 1) {
+                    if(i.loginOrRegister(username, password, "register") == 1) {
                         System.out.println(username+ " registed.");
                     }
                     else {

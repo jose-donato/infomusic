@@ -25,15 +25,15 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
      * @param password of the user
      * @return 1 in case of success (in case of register returns 1 if user doesn't exist and does the regist), 0 otherwise
      */
-    public int loginOrRegister(String username, String password) {
+    public int loginOrRegister(String username, String password, String type) {
         //Vai enviar a informação do cliente ao multicast para saber se este é
-        int verify = new ConnectionFunctions().sendUdpPacket(aux("login", username, password));
+        int verify = new ConnectionFunctions().sendUdpPacket(aux(username, password, type));
         //send the message to multicast server without problems
         if(verify == 1) {
             // Vai receber informação do Multicast para saber se existe um Username
             String message = new ConnectionFunctions().receiveUdpPacket();
             HashMap<String, String> map = new ConnectionFunctions().string2HashMap(message);
-            if(map.get("condition").equals("false")) {
+            if(map.get("condition").equals("true")) {
                 return 1;
             }
             return 0;
@@ -56,12 +56,12 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
 
     /**
      * aux to create the login hashmap to convert to string to send to multicast server
-     * @param type can be login, register, etc
      * @param username
      * @param password
+     * @param type can be login, register, etc
      * @return the hashmap
      */
-    public HashMap<String, String> aux(String type, String username, String password) {
+    public HashMap<String, String> aux(String username, String password, String type) {
         HashMap<String, String> hmap = new HashMap<String, String>();
         hmap.put("type", type);
         hmap.put("username", username);

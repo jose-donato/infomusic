@@ -49,13 +49,15 @@ public class Threads extends Thread {
         String username = map.get("username");
         Connection c = new SQL().enterDatabase("infomusic");
         String user = new SQL().selectUser(c, "USERS", username);
+        System.out.println("\n\n\n"+user+"\n\n\n");
         if(user == null) {
-            new ConnectionFunctions().sendUdpPacket(aux(username, "false"));
+            new ConnectionFunctions().sendUdpPacket(aux(username, "true"));
             String[] arr = {"user1,pass1", "'"+username+"','"+map.get("password")+"'"};
             new SQL().addValuesToTable(c, "USERS", arr);
         }
         else {
-            new ConnectionFunctions().sendUdpPacket(aux(username, "true"));
+            //corrigir
+            new ConnectionFunctions().sendUdpPacket(aux(username, "false"));
         }
     }
     /**

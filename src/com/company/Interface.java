@@ -9,7 +9,7 @@ import java.rmi.RemoteException;
  * has all the functions that can be called in RMI Server
  */
 public interface Interface extends Remote {
-    public int loginOrRegister(String username, String password) throws RemoteException;
+    public int loginOrRegister(String username, String password, String register) throws RemoteException;
     //public int register(String username,String password) throws RemoteException;
 
 }
