@@ -34,14 +34,14 @@ public class MulticastServer extends Thread {
     public void run() {
         /*try {
             Connection c = new SQL().enterDatabase("infomusic");
-            /*HashMap<String, String> arr = new HashMap<String, String>();
+            HashMap<String, String> arr = new HashMap<String, String>();
             arr.put("user1", "TEXT PRIMARY KEY");
             arr.put("pass1", "TEXT");
 
-            new SQL().createTable(c, "users", arr);*/
+            new SQL().createTable(c, "users", arr);
 
-            //String[] a = {"user1,pass1", "'josedonato','chupemmaostomates'"};
-            //new SQL().addValuesToTable(c, "users", a);
+            String[] a = {"user1,pass1", "'josedonato','chupemmaostomates'"};
+            new SQL().addValuesToTable(c, "users", a);
         /*  Statement s = c.createStatement();
             ResultSet rs = s.executeQuery("SELECT * FROM USERS WHERE user1='hugobrink'");
             while (rs.next()) {
@@ -87,13 +87,13 @@ public class MulticastServer extends Thread {
                 String username = map.get("username");
                 Connection c = new SQL().enterDatabase("infomusic");
                 String user = new SQL().selectUser(c, "USERS", username);
-                if(user != null) {
-                    new ConnectionFunctions().sendUdpPacket(aux(username, "true"));
-                    String[] arr = {"user1,pass1", username+','+map.get("password")};
+                if(user == null) {
+                    new ConnectionFunctions().sendUdpPacket(aux(username, "false"));
+                    String[] arr = {"user1,pass1", "'"+username+"','"+map.get("password")+"'"};
                     new SQL().addValuesToTable(c, "USERS", arr);
                 }
                 else {
-                    new ConnectionFunctions().sendUdpPacket(aux(username, "false"));
+                    new ConnectionFunctions().sendUdpPacket(aux(username, "true"));
                 }
                 //end of treatment for register
 
