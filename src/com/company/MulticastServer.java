@@ -57,16 +57,26 @@ public class MulticastServer extends Thread {
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
             socket.joinGroup(group);
             while (true) {
+
+                //Recebe mensagens
                 String message = new ConnectionFunctions().receiveUdpPacket();
                 HashMap<String, String> map = new ConnectionFunctions().string2HashMap(message);
+
                 String username = map.get("username");
+                String password = map.get("password");
                 Connection c = new SQL().enterDatabase("infomusic");
-                String user = new SQL().selectUser(c, "USERS", username);
-                if(!user.equals(null)) {
-                    new ConnectionFunctions().sendUdpPacket(aux(user, "true"));
+
+                //String user = new SQL().selectUser(c, "USERS", username);
+                //Usar para a password
+                String [] user = new SQL().selectUserAndGetPassword(c, "USERS", username);
+                String return_username = user[0];
+                String return_pass = user[1];
+                if(return_username!=null && return_pass.equals(password)) {
+                    new ConnectionFunctions().sendUdpPacket(AuxForArray(return_username, return_pass, "true"));
+
                 }
                 else {
-                    new ConnectionFunctions().sendUdpPacket(aux(user, "false"));
+                    new ConnectionFunctions().sendUdpPacket(AuxForArray(return_username,return_pass, "false"));
                 }
 
 
@@ -95,6 +105,16 @@ public class MulticastServer extends Thread {
         HashMap<String, String> hmap = new HashMap<String, String>();
         hmap.put("type", "checkIfExists");
         hmap.put("username", username);
+        hmap.put("condition", exists);
+        return hmap;
+    }
+
+    //aux para converter em hashmap a resposta do multicast se existe o utilziador ou nao
+    public HashMap<String, String> AuxForArray(String username,String password, String exists) {
+        HashMap<String, String> hmap = new HashMap<String, String>();
+        hmap.put("type", "checkIfExists");
+        hmap.put("username", username);
+        hmap.put("password", password);
         hmap.put("condition", exists);
         return hmap;
     }

@@ -77,5 +77,23 @@ public class ConnectionFunctions {
         }
         return map;
     }
+
+    /**
+     *
+     * @param username
+     * @param password
+     * @param exists
+     * @return
+     */
+    //aux para converter em hashmap com o Username e a Password
+    public HashMap<String, String> AuxForArray(String username,String password, String exists) {
+        HashMap<String, String> hmap = new HashMap<String, String>();
+        hmap.put("type", "checkIfExists");
+        hmap.put("username", username);
+        hmap.put("password", password);
+        hmap.put("condition", exists);
+        return hmap;
+    }
+
 }
 
