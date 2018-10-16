@@ -9,17 +9,17 @@ import java.util.HashMap;
 /**
  *
  */
-public class ConnectionFunctions {
-    private String MULTICAST_ADDRESS = "224.0.224.0";
-    private int PORT = 4321;
-    private MulticastSocket socket = null;
+public final class ConnectionFunctions {
+    private static String MULTICAST_ADDRESS = "224.0.224.0";
+    private static int PORT = 4321;
+    private static MulticastSocket socket = null;
 
     /**
      * send udp datagrampacket
      * @param map hashmap that we want to send, will be converted in string to be possible to go to the packet
      * @return 1 in case of success, 0 otherwise
      */
-    public int sendUdpPacket(HashMap<String, String> map) {
+    public static int sendUdpPacket(HashMap<String, String> map) {
         try {
             socket = new MulticastSocket();  // create socket without binding it (only for sending)
             byte[] buffer = map.toString().getBytes();
@@ -40,7 +40,7 @@ public class ConnectionFunctions {
      * receive udp datagrampacket
      * @return the message received (string) in success, null otherwise
      */
-    public String receiveUdpPacket() {
+    public static String receiveUdpPacket() {
         String message = null;
         try {
             socket = new MulticastSocket(PORT);  // create socket and bind it
@@ -65,7 +65,7 @@ public class ConnectionFunctions {
      * @param string to convert to hashmap
      * @return the hashmap converted
      */
-    public HashMap<String, String> string2HashMap(String string) {
+    public static HashMap<String, String> string2HashMap(String string) {
         string = string.substring(1, string.length()-1);           //remove curly brackets
         String[] keyValuePairs = string.split(",");              //split the string to creat key-value pairs
         HashMap<String,String> map = new HashMap<String,String>();

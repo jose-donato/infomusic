@@ -40,8 +40,8 @@ public class MulticastServer extends Thread {
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
             socket.joinGroup(group);
             while (true) {
-                String message = new ConnectionFunctions().receiveUdpPacket();
-                HashMap<String, String> map = new ConnectionFunctions().string2HashMap(message);
+                String message = ConnectionFunctions.receiveUdpPacket();
+                HashMap<String, String> map = ConnectionFunctions.string2HashMap(message);
 
                 //treat the message type and create one thread per message received
                 new Threads(map);

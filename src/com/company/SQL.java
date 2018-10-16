@@ -48,6 +48,7 @@ public class SQL {
             //e.printStackTrace();
             System.out.println("d: database doesn't exist.. creating");
             c = DriverManager.getConnection(serverUrl, "postgres", "postgres");
+            //c.setAutoCommit(false);
             Statement statement = null;
             try {
                 statement = c.createStatement();

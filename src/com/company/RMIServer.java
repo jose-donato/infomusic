@@ -25,22 +25,29 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
      * @param password of the user
      * @return 1 in case of success (in case of register returns 1 if user doesn't exist and does the regist), 0 otherwise
      */
-    public int loginOrRegister(String username, String password, String type) {
+    public boolean loginOrRegister(String username, String password, boolean isRegister) {
+        new ConnectionFunctions();
         //Vai enviar a informação do cliente ao multicast para saber se este é
-        int verify = new ConnectionFunctions().sendUdpPacket(aux(username, password, type));
+        int verify;
+        if(isRegister) {
+            verify = ConnectionFunctions.sendUdpPacket(aux(username, password, "register"));
+        }
+        else {
+            verify = ConnectionFunctions.sendUdpPacket(aux(username, password, "login"));
+        }
         //send the message to multicast server without problems
         if(verify == 1) {
             // Vai receber informação do Multicast para saber se existe um Username
-            String message = new ConnectionFunctions().receiveUdpPacket();
-            HashMap<String, String> map = new ConnectionFunctions().string2HashMap(message);
+            String message = ConnectionFunctions.receiveUdpPacket();
+            HashMap<String, String> map = ConnectionFunctions.string2HashMap(message);
             if(map.get("condition").equals("true")) {
-                return 1;
+                return true;
             }
-            return 0;
+            return false;
         }
         //problems when sending the message
         System.out.println("d: problems when sending message to multicast server");
-        return 0;
+        return false;
 
     }
 
@@ -67,6 +74,37 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
         hmap.put("username", username);
         hmap.put("password", password);
         return hmap;
+    }
+
+
+    @Override
+    public int searchSong() throws RemoteException {
+        return 0;
+    }
+
+    @Override
+    public int searchDetailAboutArtist() throws RemoteException {
+        return 0;
+    }
+
+    @Override
+    public int searchDetailAboutAlbum() throws RemoteException {
+        return 0;
+    }
+
+    @Override
+    public int writeAlbumReview() throws RemoteException {
+        return 0;
+    }
+
+    @Override
+    public int uploadSong() throws RemoteException {
+        return 0;
+    }
+
+    @Override
+    public int downloadSong() throws RemoteException {
+        return 0;
     }
 }
 
