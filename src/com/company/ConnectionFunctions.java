@@ -1,9 +1,7 @@
 package com.company;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
+import java.io.*;
+import java.net.*;
 import java.util.HashMap;
 
 /**
@@ -49,6 +47,7 @@ public final class ConnectionFunctions {
             byte[] buffer = new byte[256];
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
             socket.receive(packet);
+            RMIServer.TCPAddress = packet.getAddress().getHostAddress();
             System.out.println("d: received packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message:");
             message = new String(packet.getData(), 0, packet.getLength());
             System.out.println(message);
@@ -58,6 +57,102 @@ public final class ConnectionFunctions {
             socket.close();
         }
         return message;
+    }
+
+    public static boolean uploadMusicTCP(String musicLocation) throws IOException {
+        int serverPort = 13267;  // you may change this
+        //String musicLocation = "c:/temp/source.pdf";  // you may change this
+        FileInputStream fis = null;
+        BufferedInputStream bis = null;
+        OutputStream os = null;
+        ServerSocket servsock = null;
+        Socket sock = null;
+        boolean musicUploaded = false;
+        try {
+            servsock = new ServerSocket(serverPort);
+            while (!musicUploaded) {
+                System.out.println("d: waiting...");
+                try {
+                    sock = servsock.accept();
+                    System.out.println("d: accepted connection : " + sock);
+                    // send file
+                    File myFile = new File (musicLocation);
+                    byte [] mybytearray  = new byte [(int)myFile.length()];
+                    fis = new FileInputStream(myFile);
+                    bis = new BufferedInputStream(fis);
+                    bis.read(mybytearray,0,mybytearray.length);
+                    os = sock.getOutputStream();
+                    System.out.println("d: sending " + musicLocation + "(" + mybytearray.length + " bytes)");
+                    os.write(mybytearray,0,mybytearray.length);
+                    os.flush();
+                    System.out.println("d: done.");
+                    musicUploaded = true;
+                }
+                finally {
+                    if (bis != null) bis.close();
+                    if (os != null) os.close();
+                    if (sock!=null) sock.close();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (servsock != null) servsock.close();
+        }
+
+        return false;
+    }
+    public static boolean downloadMusicTCP(String musicLocation) throws IOException, InterruptedException {
+        int serverPort = 13267;
+        int FILE_SIZE = 6000000;
+        boolean musicDownloaded = false;
+        int bytesRead;
+        int current = 0;
+        FileOutputStream fos = null;
+        BufferedOutputStream bos = null;
+        Socket s = null;
+        while(!musicDownloaded) {
+            if (RMIServer.TCPAddress != null) {
+                try {
+                    //sock = new Socket("127.0.0.1", serverSocket);
+                    s = new Socket(RMIServer.TCPAddress, serverPort);
+                    System.out.println("d: connecting...");
+
+                    // receive file
+                    byte[] mybytearray = new byte[FILE_SIZE];
+                    InputStream is = s.getInputStream();
+                    fos = new FileOutputStream(musicLocation);
+                    bos = new BufferedOutputStream(fos);
+                    bytesRead = is.read(mybytearray, 0, mybytearray.length);
+                    current = bytesRead;
+
+                    do {
+                        bytesRead =
+                                is.read(mybytearray, current, (mybytearray.length - current));
+                        if (bytesRead >= 0) current += bytesRead;
+                    } while (bytesRead > -1);
+
+                    bos.write(mybytearray, 0, current);
+                    bos.flush();
+                    System.out.println("d: file " + musicLocation
+                            + " downloaded (" + current + " bytes read)");
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (fos != null) fos.close();
+                    if (bos != null) bos.close();
+                    if (s != null) s.close();
+                    musicDownloaded = true;
+                }
+            }
+            else {
+                System.out.println("d: no rmiserver.tcpaddress yet");
+            }
+            Thread.sleep(1000);
+        }
+        return false;
     }
 
     /**

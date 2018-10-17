@@ -1,5 +1,6 @@
 package com.company;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -25,6 +26,24 @@ public class Threads extends Thread {
                 try {
                     treatRegister(this.map);
                 } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case "upload":
+                String musicLocation = "C:\\Users\\JoséMariaCamposDonat\\Desktop\\macmiller.mp3";
+                try {
+                    ConnectionFunctions.uploadMusicTCP(musicLocation);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case "download":
+                String musicLocation2 = "C:\\Users\\JoséMariaCamposDonat\\Desktop\\macmiller.mp3";
+                try {
+                    ConnectionFunctions.downloadMusicTCP(musicLocation2);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 break;

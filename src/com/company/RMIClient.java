@@ -1,19 +1,24 @@
 package com.company;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
 
-
-
+import java.util.HashMap;
 import java.util.Scanner;
 
 /**
  *
  */
 public class RMIClient {
-    public static void main(String[] args) throws MalformedURLException, RemoteException, NotBoundException {
+
+    public static void main(String[] args) throws IOException, NotBoundException {
         Interface i = (Interface) Naming.lookup("infoMusicRegistry");
         boolean loginSucess = false;
         while (!loginSucess) {
@@ -83,17 +88,19 @@ public class RMIClient {
             System.out.println("6. exit");
 
 
+
             Scanner keyboard = new Scanner(System.in);
             int choice = keyboard.nextInt();
 
             switch (choice) {
-                case 1:
-
+                case 4:
+                    HashMap<String, String> map = new HashMap<>();
+                    map.put("type", "upload");
+                    new Threads(map);
+                    break;
                 default:
                     System.out.println("please enter valid option");
-
             }
-
         }
     }
 }

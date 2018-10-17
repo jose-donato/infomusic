@@ -16,7 +16,7 @@ public class MulticastServer extends Thread {
     private long SLEEP_TIME = 5000;
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, InterruptedException {
         MulticastServer server = new MulticastServer();
         server.start();
     }

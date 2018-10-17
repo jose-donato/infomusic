@@ -15,6 +15,7 @@ import java.util.Scanner;
 public class RMIServer extends UnicastRemoteObject implements Interface {
     private static final long serialVersionUID = 1L;
 
+    public static  String TCPAddress = null;
     protected RMIServer() throws RemoteException {
         super();
     }
@@ -49,6 +50,11 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
         System.out.println("d: problems when sending message to multicast server");
         return false;
 
+    }
+
+    @Override
+    public String getTCPAddress() throws RemoteException {
+        return RMIServer.TCPAddress;
     }
 
     /**

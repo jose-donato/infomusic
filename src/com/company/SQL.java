@@ -19,8 +19,8 @@ public class SQL {
         try {
             Connection c = enterDatabase("infomusic");
             HashMap<String, String> arr = new HashMap<String, String>();
-            arr.put("user1", "TEXT PRIMARY KEY");
-            arr.put("pass1", "TEXT");
+            arr.put("user1", "VARCHAR(20) PRIMARY KEY");
+            arr.put("pass1", "VARCHAR(20)");
 
             new SQL().createTable(c, "users", arr);
 
