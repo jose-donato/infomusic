@@ -1,6 +1,9 @@
 package com.company;
 
 import javax.swing.plaf.nimbus.State;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,15 +20,16 @@ public class SQL {
      */
     public Connection initialConfig() {
         try {
-            Connection c = enterDatabase("infomusic");
+            Connection c = enterDatabase("infomusic"); //alterei aqui
             HashMap<String, String> arr = new HashMap<String, String>();
-            arr.put("user1", "VARCHAR(20) PRIMARY KEY");
-            arr.put("pass1", "VARCHAR(20)");
+            arr.put("user1", "VARCHAR(20) PRIMARY KEY"); // alterei aqui
+            arr.put("pass1", "VARCHAR(20)"); // alterei aqui
 
             new SQL().createTable(c, "users", arr);
 
             String[] a = {"user1,pass1", "'josedonato','123123'"};
             new SQL().addValuesToTable(c, "users", a);
+
             return c;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -40,6 +44,7 @@ public class SQL {
      */
     public Connection enterDatabase(String name) throws SQLException {
         Connection c = null;
+
         try {
             String url = serverUrl + name;
             c = DriverManager.getConnection(url, "postgres", "postgres");
@@ -58,6 +63,7 @@ public class SQL {
             try {
                 String sql = "CREATE DATABASE " + name;
                 statement.executeUpdate(sql);
+
                 System.out.println("d: database " + name + "created");
             } catch (SQLException e2) {
                 System.out.println("d: error creating database "+name);
@@ -159,6 +165,33 @@ public class SQL {
         System.out.println();
         return array;
     }
+
+
+    public void EnterFileInDatabase(Connection c, String table, String keysValues, File thefile) {
+        PreparedStatement prestatement = null;
+        try {
+
+            //tbf
+            String sql = "INSERT INTO "+ table + " (name_song, file) "
+                    + "VALUES ('" + keysValues + "',?);";
+
+            prestatement = c.prepareStatement(sql);
+
+            FileInputStream input = new FileInputStream(thefile);
+            prestatement.setBinaryStream(1,input);
+
+            System.out.println("d: query in adding values to table: "+sql);
+            prestatement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        } catch (FileNotFoundException e) { //           vem de FileInputStream input = new FileInputStream(thefile);
+            e.printStackTrace();
+        }
+    }
+
+
 }
 
 

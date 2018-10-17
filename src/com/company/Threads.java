@@ -1,5 +1,6 @@
 package com.company;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -47,6 +48,25 @@ public class Threads extends Thread {
                     e.printStackTrace();
                 }
                 break;
+            //PARA APAGAR TBM -> So para criar a Base de Dados de Musica
+            case "CreateDataBaseforsong":
+                try {
+                    createDataBaseForSongs();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            //PARA APAGAR TBM -> So para criar a Base de Dados de Musica
+            // PARA APAGAR ESTE TAMBEM -> So para testar inserir uma musica na Base de Dados
+            case "uploadbrink":
+                File thefile = new File("H:\\OneDrive 1Tera\\OneDrive - dei.uc.pt\\Universidade - onedrive\\1ºsemestre - OneDrive\\SD\\PROJETO\\musicas\\james-tw-when-you-love-someone-official-video.mp3");
+
+                try {
+                    insertASongInDatabase(thefile);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            //PARA APAGAR TBM -> So para criar a Base de Dados de Musica
+
         }
     }
 
@@ -80,6 +100,30 @@ public class Threads extends Thread {
             new ConnectionFunctions().sendUdpPacket(aux(username, "false"));
         }
     }
+
+    private void createDataBaseForSongs() throws SQLException {
+        // ISTO E SO PARA CRIAR A TABELA DE MUSICA NA BASE DE DADOS
+        Connection c = new SQL().enterDatabase("infomusic");
+        HashMap<String, String> arr = new HashMap<String, String>();
+        arr.put("name_song", "VARCHAR(20) PRIMARY KEY"); // alterei aqui
+        arr.put("file", "bytea"); // alterei aqui
+
+        new SQL().createTable(c, "musica", arr);
+        //ACABA AQUI !!!!!!!!!!!!!!!!!!!!!
+
+    }
+
+    private void insertASongInDatabase(File thefile) throws SQLException {
+        Connection c = new SQL().enterDatabase("infomusic");
+        new SQL().EnterFileInDatabase(c,"musica","When",thefile);
+        //String[] a = {"name_song,file", "'when you love Someone',"+thefile};
+        //new SQL().addValuesToTable(c, "users", a);
+
+
+    }
+
+
+
     /**
      * create the hashmap the response by multicast if the user exists or dont
      * @param username

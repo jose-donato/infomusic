@@ -86,6 +86,9 @@ public class RMIClient {
             System.out.println("4. upload/download a song");
             System.out.println("5. logout");
             System.out.println("6. exit");
+            System.out.println("7. Create a DataBase for Songs"); //para apagar, apenas para testar criar uma base de dados
+            System.out.println("8. Enter a song in the DataBase"); //para apagar, apenas para testar inserir uma musica base de dados
+
 
 
 
@@ -96,6 +99,16 @@ public class RMIClient {
                 case 4:
                     HashMap<String, String> map = new HashMap<>();
                     map.put("type", "upload");
+                    new Threads(map);
+                    break;
+                case 7:
+                    map = new HashMap<>();
+                    map.put("type", "CreateDataBaseforsong");
+                    new Threads(map);
+                    break;
+                case 8:
+                    map = new HashMap<>();
+                    map.put("type","uploadbrink");
                     new Threads(map);
                     break;
                 default:
