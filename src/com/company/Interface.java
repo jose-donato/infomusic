@@ -12,6 +12,7 @@ public interface Interface extends Remote {
     public boolean loginOrRegister(String username, String password, boolean isRegister) throws RemoteException;
     //public int register(String username,String password) throws RemoteException;
     public String getTCPAddress() throws RemoteException;
+    public boolean addSong(String name, String genre, Integer duration) throws RemoteException;
     public int searchSong() throws RemoteException;
     public int searchDetailAboutArtist() throws RemoteException;
     public int searchDetailAboutAlbum() throws RemoteException;

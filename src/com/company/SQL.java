@@ -8,24 +8,28 @@ import java.util.Iterator;
 /**
  *
  */
-public class SQL {
-    private String serverUrl = "jdbc:postgresql://localhost:5432/";
+public final class SQL {
+    private static String serverUrl = "jdbc:postgresql://localhost:5432/";
 
     /**
      * test to create initial values for user
      * @return
      */
-    public Connection initialConfig() {
+    public static Connection initialConfig() {
         try {
             Connection c = enterDatabase("infomusic");
             HashMap<String, String> arr = new HashMap<String, String>();
             arr.put("user1", "VARCHAR(20) PRIMARY KEY");
             arr.put("pass1", "VARCHAR(20)");
+            SQL.createTable(c, "users", arr);
 
-            new SQL().createTable(c, "users", arr);
+            arr = new HashMap<String, String>();
+            arr.put("name", "VARCHAR(20) PRIMARY KEY"); // alterei aqui
+            arr.put("file", "bytea"); // alterei aqui
+            SQL.createTable(c, "musicsFiles", arr);
 
             String[] a = {"user1,pass1", "'josedonato','123123'"};
-            new SQL().addValuesToTable(c, "users", a);
+            SQL.addValuesToTable(c, "users", a);
             return c;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -38,7 +42,7 @@ public class SQL {
      * @return the connection to the database in success, null otherwise
      * @throws SQLException
      */
-    public Connection enterDatabase(String name) throws SQLException {
+    public static Connection enterDatabase(String name) throws SQLException {
         Connection c = null;
         try {
             String url = serverUrl + name;
@@ -73,7 +77,7 @@ public class SQL {
      * @param name of the table
      * @param values /atributes of the table (ex: 'USER TEXT PRIMARY KEY')
      */
-    public void createTable(Connection c, String name, HashMap<String, String> values) {
+    public static void createTable(Connection c, String name, HashMap<String, String> values) {
         Statement statement = null;
         try {
             statement = c.createStatement();
@@ -103,7 +107,7 @@ public class SQL {
      * @param table name of the table
      * @param keysValues
      */
-    public void addValuesToTable(Connection c, String table, String[] keysValues) {
+    public static void addValuesToTable(Connection c, String table, String[] keysValues) {
         Statement statement = null;
         try {
             statement = c.createStatement();
@@ -125,7 +129,7 @@ public class SQL {
      * @return
      * @throws SQLException
      */
-    public String selectUser(Connection c, String table, String username) throws SQLException {
+    public static String selectUser(Connection c, String table, String username) throws SQLException {
         Statement s = c.createStatement();
         ResultSet rs = s.executeQuery("SELECT * FROM USERS WHERE user1='"+username+"'");
         String name = null;
@@ -145,7 +149,7 @@ public class SQL {
      * @return array with username and password
      * @throws SQLException
      */
-    public String[] selectUserAndGetPassword(Connection c, String table, String username) throws SQLException {
+    public static String[] selectUserAndGetPassword(Connection c, String table, String username) throws SQLException {
         Statement s = c.createStatement();
         ResultSet rs = s.executeQuery("SELECT * FROM USERS WHERE user1='"+username+"'");
         String name = null;

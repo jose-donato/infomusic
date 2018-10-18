@@ -6,7 +6,9 @@ import java.net.MulticastSocket;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -27,7 +29,6 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
      * @return 1 in case of success (in case of register returns 1 if user doesn't exist and does the regist), 0 otherwise
      */
     public boolean loginOrRegister(String username, String password, boolean isRegister) {
-        new ConnectionFunctions();
         //Vai enviar a informação do cliente ao multicast para saber se este é
         int verify;
         if(isRegister) {
@@ -57,6 +58,17 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
         return RMIServer.TCPAddress;
     }
 
+    @Override
+    public boolean addSong(String name, String genre, Integer duration) throws RemoteException {
+        HashMap<String, String> hmap = new HashMap<>();
+        hmap.put("type", "addSong");
+        hmap.put("name", name);
+        hmap.put("genre", genre);
+        hmap.put("duration", ""+duration);
+        ConnectionFunctions.sendUdpPacket(hmap);
+        return false;
+    }
+
     /**
      * @param args
      * @throws RemoteException
@@ -81,6 +93,7 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
         hmap.put("password", password);
         return hmap;
     }
+
 
 
     @Override
