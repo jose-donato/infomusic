@@ -180,13 +180,14 @@ public class SQL {
             FileInputStream input = new FileInputStream(thefile);
             prestatement.setBinaryStream(1,input);
 
+
             System.out.println("d: query in adding values to table: "+sql);
             prestatement.executeUpdate();
 
         } catch (SQLException e) {
             e.printStackTrace();
 
-        } catch (FileNotFoundException e) { //           vem de FileInputStream input = new FileInputStream(thefile);
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }

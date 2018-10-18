@@ -19,6 +19,24 @@ import java.util.Scanner;
 public class RMIClient {
 
     public static void main(String[] args) throws IOException, NotBoundException {
+
+        boolean enter = true;
+        while(enter){
+            if (enterTheProgram()){
+                enter = menu();
+            }
+            else{
+                System.out.println("thank you. we hope to see you again!");
+                return;
+            }
+        }
+        System.out.println("thank you. we hope to see you again!");
+
+
+    }
+
+
+    public static boolean enterTheProgram() throws RemoteException, MalformedURLException, NotBoundException {
         Interface i = (Interface) Naming.lookup("infoMusicRegistry");
         boolean loginSucess = false;
         while (!loginSucess) {
@@ -44,6 +62,7 @@ public class RMIClient {
                         //tbc
                         System.out.println("login successful");
                         loginSucess = true;
+                        return true;
                     } else {
                         //tbc
                         System.out.println("wrong credentials, make sure to register first!");
@@ -68,15 +87,19 @@ public class RMIClient {
                 case 3:
                     System.out.println("exiting...");
                     System.exit(0);
-                    break;
+                    return false;
                 default:
                     System.out.println("please enter valid option");
             }
         }
+    return false;
+    }
 
+
+    public static boolean menu(){
         System.out.println("welcome username! what you want to do?");
-        boolean running = true;
-        while (running) {
+
+        while (true) {
             System.out.println("menu: (type one of the options)");
             System.out.println("????. manage artist, album and songs"); //Só pode aparecer ao admin
             System.out.println("????. grant privileges to other user"); //Só para admin
@@ -90,17 +113,39 @@ public class RMIClient {
             System.out.println("8. Enter a song in the DataBase"); //para apagar, apenas para testar inserir uma musica base de dados
 
 
-
-
             Scanner keyboard = new Scanner(System.in);
             int choice = keyboard.nextInt();
 
             switch (choice) {
+                case 1:
+                    // Search for Songs;
+                    break;
+                case 2:
+                    //Search for some detail information about an artist
+                    // a specific album
+                    break;
+                case 3:
+                    //write a review to an album
+                    break;
                 case 4:
                     HashMap<String, String> map = new HashMap<>();
                     map.put("type", "upload");
+                    String s;
+                    Scanner sc = new Scanner(System.in);
+                    System.out.println("enter the path of the music you would like upload");
+                    s = sc.nextLine();
+                    // O user tem de meter da maneira correta (com \\)
+                    map.put("filePath", s);
                     new Threads(map);
                     break;
+                case 5:
+                    //logout
+
+                    return true;
+                case 6:
+                    //exit
+
+                    return false;
                 case 7:
                     map = new HashMap<>();
                     map.put("type", "CreateDataBaseforsong");
@@ -114,6 +159,9 @@ public class RMIClient {
                 default:
                     System.out.println("please enter valid option");
             }
+
+
         }
+
     }
 }

@@ -31,7 +31,7 @@ public class Threads extends Thread {
                 }
                 break;
             case "upload":
-                String musicLocation = "C:\\Users\\JoséMariaCamposDonat\\Desktop\\macmiller.mp3";
+                String musicLocation = map.get("filePath");
                 try {
                     ConnectionFunctions.uploadMusicTCP(musicLocation);
                 } catch (IOException e) {
@@ -48,15 +48,16 @@ public class Threads extends Thread {
                     e.printStackTrace();
                 }
                 break;
-            //PARA APAGAR TBM -> So para criar a Base de Dados de Musica
-            case "CreateDataBaseforsong":
+
+            //So para criar a tabela de Base de Dados
+            case "CreatetableDataBaseforsong":
                 try {
                     createDataBaseForSongs();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-            //PARA APAGAR TBM -> So para criar a Base de Dados de Musica
-            // PARA APAGAR ESTE TAMBEM -> So para testar inserir uma musica na Base de Dados
+            // So para criar a tabela de  Base de Dados
+            // So para testar inserir uma musica na Base de Dados
             case "uploadbrink":
                 File thefile = new File("H:\\OneDrive 1Tera\\OneDrive - dei.uc.pt\\Universidade - onedrive\\1ºsemestre - OneDrive\\SD\\PROJETO\\musicas\\james-tw-when-you-love-someone-official-video.mp3");
 
@@ -65,7 +66,7 @@ public class Threads extends Thread {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-            //PARA APAGAR TBM -> So para criar a Base de Dados de Musica
+            // So para criar a Base de Dados de Musica
 
         }
     }
@@ -78,10 +79,10 @@ public class Threads extends Thread {
         String return_username = user[0];
         String return_pass = user[1];
         if(return_username != null && return_pass.equals(password)) {
-            new ConnectionFunctions().sendUdpPacket(auxForArray(return_username, return_pass, "true"));
+            ConnectionFunctions.sendUdpPacket(auxForArray(return_username, return_pass, "true"));
         }
         else {
-            new ConnectionFunctions().sendUdpPacket(auxForArray(return_username,return_pass, "false"));
+            ConnectionFunctions.sendUdpPacket(auxForArray(return_username,return_pass, "false"));
         }
     }
 
@@ -109,7 +110,7 @@ public class Threads extends Thread {
         arr.put("file", "bytea"); // alterei aqui
 
         new SQL().createTable(c, "musica", arr);
-        //ACABA AQUI !!!!!!!!!!!!!!!!!!!!!
+        //ACABA AQUI
 
     }
 
@@ -118,8 +119,6 @@ public class Threads extends Thread {
         new SQL().EnterFileInDatabase(c,"musica","When",thefile);
         //String[] a = {"name_song,file", "'when you love Someone',"+thefile};
         //new SQL().addValuesToTable(c, "users", a);
-
-
     }
 
 

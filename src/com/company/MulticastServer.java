@@ -19,6 +19,7 @@ public class MulticastServer extends Thread {
     public static void main(String[] args) throws IOException, InterruptedException {
         MulticastServer server = new MulticastServer();
         server.start();
+        
     }
 
     /**
