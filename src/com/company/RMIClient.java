@@ -170,7 +170,12 @@ public class RMIClient {
                                 System.out.println("type the username you want to make admin: ");
                                 keyboard = new Scanner(System.in);
                                 username = keyboard.nextLine();
-
+                                if(i.grantAdminToUser(username)) {
+                                    System.out.println(username + " admin granted");
+                                }
+                                else {
+                                    System.out.println("already admin / username doesn't exist");
+                                }
                                 break;
                         }
                     }

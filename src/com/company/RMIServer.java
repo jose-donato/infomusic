@@ -71,7 +71,18 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
 
     @Override
     public boolean grantAdminToUser(String username) {
-        
+        int verify = ConnectionFunctions.sendUdpPacket(aux2(username,"grantAdmin"));
+        if(verify == 1) {
+            // Vai receber informação do Multicast para saber se o username é admin ou nao
+            String message = ConnectionFunctions.receiveUdpPacket();
+            HashMap<String, String> map = ConnectionFunctions.string2HashMap(message);
+            if(map.get("condition").equals("true")) {
+                return true;
+            }
+            return false;
+        }
+        //problems when sending the message
+        System.out.println("d: problems when sending message to multicast server");
         return false;
     }
 

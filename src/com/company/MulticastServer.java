@@ -21,7 +21,7 @@ public class MulticastServer extends Thread {
         //Connection c = SQL.enterDatabase("infomusic");
         //String[] a = {"username,password,isAdmin", "'josedonato','123123', true"};
         //SQL.addValuesToTable(c, "users", a);
-        //SQL.grantAdminToUser(c, "hugobrink");
+        //SQL.grantAdminToUser(c, "hugobrinkaaa");
         MulticastServer server = new MulticastServer();
         server.start();
     }

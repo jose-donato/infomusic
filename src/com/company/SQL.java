@@ -185,12 +185,18 @@ public final class SQL {
         return isAdmin;
     }
 
-    public static void grantAdminToUser(Connection c, String username) throws SQLException {
+    public static boolean grantAdminToUser(Connection c, String username) throws SQLException {
         String sql = "UPDATE USERS\n" +
                 "SET isAdmin = true\n" +
                 "WHERE username like '"+username+"';";
         Statement s = c.createStatement();
         s.executeUpdate(sql);
+        if(checkIfUserIsAdmin(c, username)) {
+            return true;
+        }
+        else {
+            return false;
+        }
         //notificar o utilizador
     }
 

@@ -35,6 +35,12 @@ public class Threads extends Thread {
                     e.printStackTrace();
                 }
                 break;
+            case "grantAdmin":
+                try {
+                    treatGrantAdmin(this.map);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             case "upload":
                 String musicLocation = "C:\\Users\\JoséMariaCamposDonat\\Desktop\\macmiller.mp3";
                 try {
@@ -53,6 +59,17 @@ public class Threads extends Thread {
                     e.printStackTrace();
                 }
                 break;
+        }
+    }
+
+    private void treatGrantAdmin(HashMap<String, String> map) throws SQLException {
+        String username = map.get("username");
+        Connection c = SQL.enterDatabase("infomusic");
+        if(SQL.grantAdminToUser(c, username)) {
+            ConnectionFunctions.sendUdpPacket(auxGrantAdmin(username, "true"));
+        }
+        else {
+            ConnectionFunctions.sendUdpPacket(auxGrantAdmin(username, "false"));
         }
     }
 
@@ -131,6 +148,13 @@ public class Threads extends Thread {
     private HashMap<String, String> auxIsAdmin(String username, String exists) {
         HashMap<String, String> hmap = new HashMap<String, String>();
         hmap.put("type", "checkIfAdminExists");
+        hmap.put("username", username);
+        hmap.put("condition", exists);
+        return hmap;
+    }
+    private HashMap<String, String> auxGrantAdmin(String username, String exists) {
+        HashMap<String, String> hmap = new HashMap<String, String>();
+        hmap.put("type", "checkGrantAdmin");
         hmap.put("username", username);
         hmap.put("condition", exists);
         return hmap;
