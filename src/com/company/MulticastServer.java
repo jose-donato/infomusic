@@ -16,7 +16,12 @@ public class MulticastServer extends Thread {
     private long SLEEP_TIME = 5000;
 
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException, InterruptedException, SQLException {
+        //SQL.initialConfig();
+        //Connection c = SQL.enterDatabase("infomusic");
+        //String[] a = {"username,password,isAdmin", "'josedonato','123123', true"};
+        //SQL.addValuesToTable(c, "users", a);
+        //SQL.grantAdminToUser(c, "hugobrink");
         MulticastServer server = new MulticastServer();
         server.start();
     }

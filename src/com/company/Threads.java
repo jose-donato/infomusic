@@ -29,6 +29,13 @@ public class Threads extends Thread {
                     e.printStackTrace();
                 }
                 break;
+            case "verifyAdmin":
+                try {
+                    treatVerifyAdmin(this.map);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                break;
             case "upload":
                 String musicLocation = "C:\\Users\\JoséMariaCamposDonat\\Desktop\\macmiller.mp3";
                 try {
@@ -53,31 +60,49 @@ public class Threads extends Thread {
     private void treatLogin(HashMap<String, String> map) throws SQLException {
         String username = map.get("username");
         String password = map.get("password");
-        Connection c = new SQL().enterDatabase("infomusic");
-        String [] user = new SQL().selectUserAndGetPassword(c, "USERS", username);
+        Connection c = SQL.enterDatabase("infomusic");
+        String [] user = SQL.selectUserAndGetPassword(c, username);
         String return_username = user[0];
         String return_pass = user[1];
         if(return_username != null && return_pass.equals(password)) {
-            new ConnectionFunctions().sendUdpPacket(auxForArray(return_username, return_pass, "true"));
+            ConnectionFunctions.sendUdpPacket(auxForArray(return_username, return_pass, "true"));
         }
         else {
-            new ConnectionFunctions().sendUdpPacket(auxForArray(return_username,return_pass, "false"));
+            ConnectionFunctions.sendUdpPacket(auxForArray(return_username,return_pass, "false"));
         }
     }
 
     private void treatRegister(HashMap<String, String> map) throws SQLException {
         String username = map.get("username");
-        Connection c = new SQL().enterDatabase("infomusic");
-        String user = new SQL().selectUser(c, "USERS", username);
+        Connection c = SQL.enterDatabase("infomusic");
+        String user = SQL.selectUser(c, "USERS", username);
         System.out.println("\n\n\n"+user+"\n\n\n");
         if(user == null) {
-            new ConnectionFunctions().sendUdpPacket(aux(username, "true"));
-            String[] arr = {"user1,pass1", "'"+username+"','"+map.get("password")+"'"};
-            new SQL().addValuesToTable(c, "USERS", arr);
+            ConnectionFunctions.sendUdpPacket(aux(username, "true"));
+            String[] arr;
+            if(SQL.checkIftableIsEmpty(c, "users")) {
+                arr = new String[]{"username,password,isAdmin", "'" + username + "','" + map.get("password") + "',true"};
+            }
+            else {
+                arr = new String[]{"username,password,isAdmin", "'" + username + "','" + map.get("password") + "',false"};
+            }
+
+            SQL.addValuesToTable(c, "USERS", arr);
         }
         else {
             //corrigir
-            new ConnectionFunctions().sendUdpPacket(aux(username, "false"));
+            ConnectionFunctions.sendUdpPacket(aux(username, "false"));
+        }
+    }
+
+    private void treatVerifyAdmin(HashMap<String, String> map) throws SQLException {
+        String username = map.get("username");
+        Connection c = SQL.enterDatabase("infomusic");
+        if(SQL.checkIfUserIsAdmin(c, username)) {
+            ConnectionFunctions.sendUdpPacket(auxIsAdmin(username, "true"));
+        }
+        else{
+            ConnectionFunctions.sendUdpPacket(auxIsAdmin(username, "false"));
         }
     }
     /**
@@ -102,6 +127,13 @@ public class Threads extends Thread {
         hmap.put("username", username);
         hmap.put("password", password);
         hmap.put("condition", exists);
+        return hmap;
+    }
+    private HashMap<String, String> auxIsAdmin(String username, String exists) {
+        HashMap<String, String> hmap = new HashMap<String, String>();
+        hmap.put("type", "verifyAdmin");
+        hmap.put("username", username);
+        hmap.put("isAdmin", exists);
         return hmap;
     }
 }

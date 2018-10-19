@@ -19,17 +19,19 @@ public final class SQL {
         try {
             Connection c = enterDatabase("infomusic");
             HashMap<String, String> arr = new HashMap<String, String>();
-            arr.put("user1", "VARCHAR(20) PRIMARY KEY");
-            arr.put("pass1", "VARCHAR(20)");
+            arr.put("username", "VARCHAR(20) PRIMARY KEY");
+            arr.put("password", "VARCHAR(20)");
+            arr.put("isAdmin", "Boolean");
+
             SQL.createTable(c, "users", arr);
 
-            arr = new HashMap<String, String>();
-            arr.put("name", "VARCHAR(20) PRIMARY KEY"); // alterei aqui
-            arr.put("file", "bytea"); // alterei aqui
+            /*arr = new HashMap<String, String>();
+            arr.put("name", "VARCHAR(20) PRIMARY KEY");
+            arr.put("file", "bytea");
             SQL.createTable(c, "musicsFiles", arr);
-
-            String[] a = {"user1,pass1", "'josedonato','123123'"};
-            SQL.addValuesToTable(c, "users", a);
+            */
+            //String[] a = {"user1,pass1", "'josedonato','123123'"};
+            //SQL.addValuesToTable(c, "users", a);
             return c;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -131,10 +133,10 @@ public final class SQL {
      */
     public static String selectUser(Connection c, String table, String username) throws SQLException {
         Statement s = c.createStatement();
-        ResultSet rs = s.executeQuery("SELECT * FROM USERS WHERE user1='"+username+"'");
+        ResultSet rs = s.executeQuery("SELECT * FROM USERS WHERE username='"+username+"'");
         String name = null;
         while (rs.next()) {
-            name = rs.getString("user1");
+            name = rs.getString("username");
         }
         return name;
     }
@@ -144,24 +146,58 @@ public final class SQL {
     /**
      * get user and password from table
      * @param c database connection
-     * @param table name in database
      * @param username username desired
      * @return array with username and password
      * @throws SQLException
      */
-    public static String[] selectUserAndGetPassword(Connection c, String table, String username) throws SQLException {
+    public static String[] selectUserAndGetPassword(Connection c, String username) throws SQLException {
         Statement s = c.createStatement();
-        ResultSet rs = s.executeQuery("SELECT * FROM USERS WHERE user1='"+username+"'");
+        ResultSet rs = s.executeQuery("SELECT * FROM USERS WHERE username='"+username+"'");
         String name = null;
         String password = null;
         while (rs.next()) {
-            name = rs.getString("user1");
-            password = rs.getString("pass1");
+            name = rs.getString("username");
+            password = rs.getString("password");
 
         }
         String[] array = {name, password};
         System.out.println();
         return array;
+    }
+
+    public static boolean checkIftableIsEmpty(Connection c, String table) throws  SQLException {
+        String sql = "select true from "+table+" limit 1;";
+        Statement s = c.createStatement();
+        ResultSet rs = s.executeQuery(sql);
+        while(rs.next()) {
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean checkIfUserIsAdmin(Connection c, String username) throws SQLException {
+        Statement s = c.createStatement();
+        ResultSet rs = s.executeQuery("SELECT * FROM USERS WHERE username='"+username+"'");
+        Boolean isAdmin = false;
+        while (rs.next()) {
+            isAdmin = rs.getBoolean("isAdmin");
+        }
+        return isAdmin;
+    }
+
+    public static void grantAdminToUser(Connection c, String username) throws SQLException {
+        String sql = "UPDATE USERS\n" +
+                "SET isAdmin = true\n" +
+                "WHERE username like '"+username+"';";
+        Statement s = c.createStatement();
+        s.executeUpdate(sql);
+        //notificar o utilizador
+    }
+
+    public static void reviewToAlbum(Connection c, String review, int rating) throws SQLException {
+        String sql = "UPDATE REVIEWS SET review = '"+review+"' AND RATING='"+rating+"' WHERE ..."; //terminar qd base de dados tiver feita
+        Statement s = c.createStatement();
+        s.executeUpdate(sql);
     }
 }
 
