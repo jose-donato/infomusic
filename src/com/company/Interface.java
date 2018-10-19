@@ -19,5 +19,6 @@ public interface Interface extends Remote {
     public int writeAlbumReview() throws RemoteException;
     public int uploadSong() throws RemoteException;
     public int downloadSong() throws RemoteException;
+    public boolean checkIfUserISAdmin(String username, String password);
 
 }
