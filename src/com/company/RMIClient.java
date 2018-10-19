@@ -22,8 +22,9 @@ public class RMIClient {
         Interface i = (Interface) Naming.lookup("infoMusicRegistry");
         boolean enter = true;
         while(enter){
-            if (enterTheProgram(i)){
-                enter = menu();
+            boolean aux = enterTheProgram(i)[1];
+            if (enterTheProgram(i)[0]){
+                enter = menu(aux);
             }
             else{
                 System.out.println("thank you. we hope to see you again!");
@@ -33,9 +34,9 @@ public class RMIClient {
         System.out.println("thank you. we hope to see you again!");
     }
 
-    public static boolean enterTheProgram(Interface i) throws RemoteException, MalformedURLException, NotBoundException {
-        boolean loginSucess = false;
-        while (!loginSucess) {
+    public static boolean[] enterTheProgram(Interface i) throws RemoteException, MalformedURLException, NotBoundException {
+        boolean [] returning = null;
+        while (true) {
             System.out.println("menu: (type one of the options)");
             System.out.println("1. login");
             System.out.println("2. register");
@@ -57,8 +58,10 @@ public class RMIClient {
                     if (i.loginOrRegister(username, password, false)) {
                         //tbc
                         System.out.println("login successful");
-                        loginSucess = true;
-                        return true;
+                        returning[0] = true; // TRUE PORQUE ESTA REGISTADO
+
+                        returning[1] = i.checkIfUserISAdmin(username,password);
+                        return returning;
                     } else {
                         //tbc
                         System.out.println("wrong credentials, make sure to register first!");
@@ -83,14 +86,13 @@ public class RMIClient {
                 case 3:
                     System.out.println("exiting...");
                     System.exit(0);
-                    return false;
                 default:
                     System.out.println("please enter valid option");
             }
         }
-        return false;
     }
-    public static boolean menu(){
+
+    public static boolean menu(boolean aux){
         System.out.println("welcome username! what you want to do?");
 
         while (true) {
@@ -101,7 +103,7 @@ public class RMIClient {
             System.out.println("2. search for some detail information about an artist or a specific album ");
             System.out.println("3. write a review to an album");
             System.out.println("4. upload/download a song");
-            System.out.println("5. manage artist, album and songs"); //Só pode aparecer ao admin
+            System.out.println("5. manage artist, album and songs (admins only)"); //Só pode aparecer ao admin
             System.out.println("6. logout");
             System.out.println("7. exit");
             //System.out.println("7. Create a DataBase for Songs"); //para apagar, apenas para testar criar uma base de dados
@@ -135,7 +137,7 @@ public class RMIClient {
                     break;
                 case 5:
                     //manage data
-                    if(true) {//check if user is admin
+                    if(aux) {//check if user is admin
                         System.out.println("what operation you want to do? (type one of the options)");
                         System.out.println("1. add song");
                         System.out.println("2. add album");
@@ -153,7 +155,7 @@ public class RMIClient {
                                 System.out.println("music's name: ");
                                 keyboard = new Scanner(System.in);
                                 String musicName = keyboard.nextLine();
-                                System.out.println("music's name: ");
+                                System.out.println("music's name: "); //repetido?
                                 keyboard = new Scanner(System.in);
                                 String genre = keyboard.nextLine();
                                 /*System.out.println("music's lyrics: ");
@@ -171,6 +173,9 @@ public class RMIClient {
 
                                 break;
                         }
+                    }
+                    else{
+                        System.out.println("you are not an admin");
                     }
                 case 6:
                     //logout

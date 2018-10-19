@@ -6,6 +6,7 @@ import java.net.MulticastSocket;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +52,22 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
         System.out.println("d: problems when sending message to multicast server");
         return false;
 
+    }
+    public boolean checkIfUserISAdmin(String username,String password){
+        int verify = ConnectionFunctions.sendUdpPacket(aux(username,password,"verifyAdmin"));
+
+        if(verify == 1) {
+            // Vai receber informação do Multicast para saber se o username é admin ou nao
+            String message = ConnectionFunctions.receiveUdpPacket();
+            HashMap<String, String> map = ConnectionFunctions.string2HashMap(message);
+            if(map.get("condition").equals("true")) {
+                return true;
+            }
+            return false;
+        }
+        //problems when sending the message
+        System.out.println("d: problems when sending message to multicast server");
+        return false;
     }
 
     @Override
