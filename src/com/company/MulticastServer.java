@@ -47,7 +47,6 @@ public class MulticastServer extends Thread {
             while (true) {
                 String message = ConnectionFunctions.receiveUdpPacket();
                 HashMap<String, String> map = ConnectionFunctions.string2HashMap(message);
-
                 //treat the message type and create one thread per message received
                 new Threads(map);
                 //treatLogin(map);

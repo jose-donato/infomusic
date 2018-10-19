@@ -10,6 +10,8 @@ import java.rmi.RemoteException;
  */
 public interface Interface extends Remote {
     public boolean loginOrRegister(String username, String password, boolean isRegister) throws RemoteException;
+    public boolean checkIfUserIsAdmin(String username) throws RemoteException;
+    public boolean grantAdminToUser(String username) throws RemoteException;
     //public int register(String username,String password) throws RemoteException;
     public String getTCPAddress() throws RemoteException;
     public boolean addSong(String name, String genre, Integer duration) throws RemoteException;
@@ -19,6 +21,5 @@ public interface Interface extends Remote {
     public int writeAlbumReview() throws RemoteException;
     public int uploadSong() throws RemoteException;
     public int downloadSong() throws RemoteException;
-    public boolean checkIfUserISAdmin(String username, String password);
 
 }

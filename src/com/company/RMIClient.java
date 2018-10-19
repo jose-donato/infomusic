@@ -22,9 +22,9 @@ public class RMIClient {
         Interface i = (Interface) Naming.lookup("infoMusicRegistry");
         boolean enter = true;
         while(enter){
-            boolean aux = enterTheProgram(i)[1];
-            if (enterTheProgram(i)[0]){
-                enter = menu(aux);
+            String user = enterTheProgram(i);
+            if (user != null){
+                enter = menu(i, user);
             }
             else{
                 System.out.println("thank you. we hope to see you again!");
@@ -34,8 +34,7 @@ public class RMIClient {
         System.out.println("thank you. we hope to see you again!");
     }
 
-    public static boolean[] enterTheProgram(Interface i) throws RemoteException, MalformedURLException, NotBoundException {
-        boolean [] returning = null;
+    public static String enterTheProgram(Interface i) throws RemoteException, MalformedURLException, NotBoundException {
         while (true) {
             System.out.println("menu: (type one of the options)");
             System.out.println("1. login");
@@ -58,10 +57,7 @@ public class RMIClient {
                     if (i.loginOrRegister(username, password, false)) {
                         //tbc
                         System.out.println("login successful");
-                        returning[0] = true; // TRUE PORQUE ESTA REGISTADO
-
-                        returning[1] = i.checkIfUserISAdmin(username,password);
-                        return returning;
+                        return username;
                     } else {
                         //tbc
                         System.out.println("wrong credentials, make sure to register first!");
@@ -92,23 +88,20 @@ public class RMIClient {
         }
     }
 
-    public static boolean menu(boolean aux){
+    public static boolean menu(Interface i, String username) throws RemoteException {
         System.out.println("welcome username! what you want to do?");
 
         while (true) {
             System.out.println("menu: (type one of the options)");
-
-            System.out.println("????. grant privileges to other user"); //Só para admin
             System.out.println("1. search for songs");
             System.out.println("2. search for some detail information about an artist or a specific album ");
             System.out.println("3. write a review to an album");
             System.out.println("4. upload/download a song");
-            System.out.println("5. manage artist, album and songs (admins only)"); //Só pode aparecer ao admin
+            System.out.println("5. manage operations (admins only)"); //Só pode aparecer ao admin
             System.out.println("6. logout");
             System.out.println("7. exit");
             //System.out.println("7. Create a DataBase for Songs"); //para apagar, apenas para testar criar uma base de dados
             //System.out.println("8. Enter a song in the DataBase"); //para apagar, apenas para testar inserir uma musica base de dados
-
 
             Scanner keyboard = new Scanner(System.in);
             int choice = keyboard.nextInt();
@@ -137,7 +130,7 @@ public class RMIClient {
                     break;
                 case 5:
                     //manage data
-                    if(aux) {//check if user is admin
+                    if(i.checkIfUserIsAdmin(username)) {//check if user is admin
                         System.out.println("what operation you want to do? (type one of the options)");
                         System.out.println("1. add song");
                         System.out.println("2. add album");
@@ -148,6 +141,7 @@ public class RMIClient {
                         System.out.println("7. remove song");
                         System.out.println("8. remove album");
                         System.out.println("9. remove artist");
+                        System.out.println("10. grant admin to user");
                         keyboard = new Scanner(System.in);
                         int choice2 = keyboard.nextInt();
                         switch(choice2) {
@@ -170,6 +164,12 @@ public class RMIClient {
 
                                 break;
                             case 3:
+
+                                break;
+                            case 10:
+                                System.out.println("type the username you want to make admin: ");
+                                keyboard = new Scanner(System.in);
+                                username = keyboard.nextLine();
 
                                 break;
                         }

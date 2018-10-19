@@ -51,11 +51,10 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
         //problems when sending the message
         System.out.println("d: problems when sending message to multicast server");
         return false;
-
     }
-    public boolean checkIfUserISAdmin(String username,String password){
-        int verify = ConnectionFunctions.sendUdpPacket(aux(username,password,"verifyAdmin"));
 
+    public boolean checkIfUserIsAdmin(String username){
+        int verify = ConnectionFunctions.sendUdpPacket(aux2(username,"verifyAdmin"));
         if(verify == 1) {
             // Vai receber informação do Multicast para saber se o username é admin ou nao
             String message = ConnectionFunctions.receiveUdpPacket();
@@ -67,6 +66,12 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
         }
         //problems when sending the message
         System.out.println("d: problems when sending message to multicast server");
+        return false;
+    }
+
+    @Override
+    public boolean grantAdminToUser(String username) {
+        
         return false;
     }
 
@@ -111,7 +116,12 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
         return hmap;
     }
 
-
+    public HashMap<String, String> aux2(String username, String type) {
+        HashMap<String, String> hmap = new HashMap<String, String>();
+        hmap.put("type", type);
+        hmap.put("username", username);
+        return hmap;
+    }
 
     @Override
     public int searchSong() throws RemoteException {

@@ -13,7 +13,6 @@ public class Threads extends Thread {
     }
 
     public void run() {
-
         switch(this.map.get("type")) {
             case "login":
                 try {
@@ -131,9 +130,9 @@ public class Threads extends Thread {
     }
     private HashMap<String, String> auxIsAdmin(String username, String exists) {
         HashMap<String, String> hmap = new HashMap<String, String>();
-        hmap.put("type", "verifyAdmin");
+        hmap.put("type", "checkIfAdminExists");
         hmap.put("username", username);
-        hmap.put("isAdmin", exists);
+        hmap.put("condition", exists);
         return hmap;
     }
 }
