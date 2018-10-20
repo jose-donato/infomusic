@@ -25,6 +25,35 @@ public final class SQL {
 
             SQL.createTable(c, "users", arr);
 
+            arr = new HashMap<>();
+            arr.put("artistID", "SERIAL PRIMARY KEY");
+            arr.put("name", "VARCHAR(30)");
+            arr.put("description", "VARCHAR(200)");
+            SQL.createTable(c, "artists", arr);
+
+            arr = new HashMap<>();
+            arr.put("albumID", "SERIAL PRIMARY KEY");
+            arr.put("artistID", "SERIAL");
+            arr.put("name", "VARCHAR(30)");
+            arr.put("releaseDate", "DATE");
+            arr.put("picture", "bytea");
+            SQL.createTable(c, "albums", arr);
+            SQL.addForeignKeyToTable(c, "artists", "albums", "artistID");
+
+            arr = new HashMap<>();
+            arr.put("musicID", "SERIAL PRIMARY KEY");
+            arr.put("albumID", "SERIAL");
+            arr.put("artistID", "SERIAL");
+            arr.put("name", "VARCHAR(30)");
+            arr.put("genre", "VARCHAR(30)");
+            arr.put("lyrics", "bytea");
+            SQL.createTable(c, "musics", arr);
+            SQL.addForeignKeyToTable(c, "albums", "musics", "albumID");
+            SQL.addForeignKeyToTable(c, "artists", "musics", "artistID");
+
+
+
+
             /*arr = new HashMap<String, String>();
             arr.put("name", "VARCHAR(20) PRIMARY KEY");
             arr.put("file", "bytea");
@@ -101,6 +130,13 @@ public final class SQL {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void addForeignKeyToTable(Connection c, String parentTable, String childTable, String column) throws SQLException {
+        String sql = "ALTER TABLE "+childTable+"\n" +
+                "ADD FOREIGN KEY ("+column+") REFERENCES "+parentTable+"("+column+"); ";
+        Statement s = c.createStatement();
+        s.executeUpdate(sql);
     }
 
     /**

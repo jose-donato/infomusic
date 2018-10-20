@@ -17,7 +17,7 @@ public class MulticastServer extends Thread {
 
 
     public static void main(String[] args) throws IOException, InterruptedException, SQLException {
-        //SQL.initialConfig();
+        SQL.initialConfig();
         //Connection c = SQL.enterDatabase("infomusic");
         //String[] a = {"username,password,isAdmin", "'josedonato','123123', true"};
         //SQL.addValuesToTable(c, "users", a);
