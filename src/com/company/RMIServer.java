@@ -1,16 +1,8 @@
 package com.company;
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
-import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
 
 /**
  *
@@ -162,8 +154,14 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
     }
 
     @Override
-    public int writeAlbumReview() throws RemoteException {
-        return 0;
+    public boolean writeAlbumReview(int albumToReviewID, int albumRating, String albumReview) throws RemoteException {
+        HashMap<String, String> hmap = new HashMap<>();
+        hmap.put("type", "reviewAlbum");
+        hmap.put("albumToReviewID", albumToReviewID+"");
+        hmap.put("albumRating", albumRating +"");
+        hmap.put("albumReview", albumReview);
+        ConnectionFunctions.sendUdpPacket(hmap);
+        return false;
     }
 
     @Override

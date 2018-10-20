@@ -26,7 +26,8 @@ public final class SQL {
     public static Connection initialConfig() {
         try {
             Connection c = enterDatabase("infomusic");
-            HashMap<String, String> arr = new HashMap<String, String>();
+
+            /*HashMap<String, String> arr = new HashMap<String, String>();
             arr.put("username", "VARCHAR(20) PRIMARY KEY NOT NULL");
             arr.put("password", "VARCHAR(20) NOT NULL");
             arr.put("isAdmin", "Boolean NOT NULL");
@@ -58,9 +59,16 @@ public final class SQL {
             SQL.createTable(c, "musics", arr);
             SQL.addForeignKeyToTable(c, "albums", "musics", "albumID");
             SQL.addForeignKeyToTable(c, "artists", "musics", "artistID");
+            */
 
 
-
+            HashMap<String, String> arr = new HashMap<>();
+            arr.put("reviewID", "SERIAL PRIMARY KEY NOT NULL");
+            arr.put("albumID", "SERIAL NOT NULL");
+            arr.put("rating", "INTEGER NOT NULL");
+            arr.put("review", "VARCHAR(300) NOT NULL");
+            SQL.createTable(c, "reviews", arr);
+            SQL.addForeignKeyToTable(c, "albums", "reviews", "albumID");
 
             /*arr = new HashMap<String, String>();
             arr.put("name", "VARCHAR(20) PRIMARY KEY");
@@ -244,8 +252,8 @@ public final class SQL {
         //notificar o utilizador
     }
 
-    public static void reviewToAlbum(Connection c, String review, int rating) throws SQLException {
-        String sql = "UPDATE REVIEWS SET review = '"+review+"' AND RATING='"+rating+"' WHERE ..."; //terminar qd base de dados tiver feita
+    public static void reviewToAlbum(Connection c, String review, int rating, int albumID) throws SQLException {
+        String sql = "INSERT INTO REVIEWS(albumid, rating, review) values("+albumID+", "+rating+", '"+review+"')";
         Statement s = c.createStatement();
         s.executeUpdate(sql);
     }
@@ -297,11 +305,15 @@ public final class SQL {
         return false;
     }
 
-    public static boolean changeName(Connection c, String table, String newName, Integer albumID) throws SQLException {
-        PreparedStatement ps = c.prepareStatement("UPDATE ? SET name = ? WHERE albumid = ?");
-        ps.setString(1, table);
-        ps.setString(2, newName);
-        ps.setInt(3, albumID);
+    public static boolean changeName(Connection c, String table, String newName, Integer ID, String column) throws SQLException {
+        System.out.println(table);
+        System.out.println(newName);
+        System.out.println(ID);
+        System.out.println(column);
+        String name = table.substring(0, table.length()-1);
+        String sql = "UPDATE "+table+" SET name = '"+newName+"' WHERE "+name+"id = "+ID;
+        System.out.println(sql);
+        PreparedStatement ps = c.prepareStatement(sql);
         ps.executeUpdate();
         ps.close();
         return false;

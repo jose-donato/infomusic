@@ -19,7 +19,7 @@ public interface Interface extends Remote {
     public int searchSong() throws RemoteException;
     public int searchDetailAboutArtist() throws RemoteException;
     public int searchDetailAboutAlbum() throws RemoteException;
-    public int writeAlbumReview() throws RemoteException;
+    public boolean writeAlbumReview(int albumToReviewID, int albumRating, String albumReview) throws RemoteException;
     public int uploadSong() throws RemoteException;
     public int downloadSong() throws RemoteException;
 

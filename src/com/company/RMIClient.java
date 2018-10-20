@@ -91,6 +91,7 @@ public class RMIClient {
     }
 
     public static boolean menu(Interface i, String username) throws RemoteException, SQLException {
+        Connection c = SQL.enterDatabase("infomusic");
         System.out.println("welcome username! what you want to do?");
 
         while (true) {
@@ -118,6 +119,22 @@ public class RMIClient {
                     break;
                 case 3:
                     //write a review to an album
+                    SQL.printAllTable(c, "albums");
+                    System.out.println("select the ID of the album you want to review");
+                    keyboard = new Scanner(System.in);
+                    int albumToReviewID = keyboard.nextInt();
+                    System.out.println("rating: (0 to 10)");
+                    keyboard = new Scanner(System.in);
+                    int albumRating = keyboard.nextInt();
+                    System.out.println("review: (max 300 char)");
+                    keyboard = new Scanner(System.in);
+                    String albumReview = keyboard.nextLine();
+                    if(albumRating < 11 && albumRating >= 0 && albumReview.length() < 301) {
+                        i.writeAlbumReview(albumToReviewID, albumRating, albumReview);
+                    }
+                    else {
+                        System.out.println("rating must be between 0 and 10 and review have 300 char limit");
+                    }
                     break;
                 case 4:
                     /*HashMap<String, String> map = new HashMap<>();
@@ -162,7 +179,6 @@ public class RMIClient {
                                 System.out.println("3. music");
                                 keyboard = new Scanner(System.in);
                                 int choice3 = keyboard.nextInt();
-                                Connection c = SQL.enterDatabase("infomusic");
                                 switch(choice3){
                                     case 1:
                                         SQL.printAllTable(c,"artists");
