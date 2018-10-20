@@ -306,13 +306,8 @@ public final class SQL {
     }
 
     public static boolean changeName(Connection c, String table, String newName, Integer ID, String column) throws SQLException {
-        System.out.println(table);
-        System.out.println(newName);
-        System.out.println(ID);
-        System.out.println(column);
         String name = table.substring(0, table.length()-1);
         String sql = "UPDATE "+table+" SET name = '"+newName+"' WHERE "+name+"id = "+ID;
-        System.out.println(sql);
         PreparedStatement ps = c.prepareStatement(sql);
         ps.executeUpdate();
         ps.close();
@@ -321,6 +316,55 @@ public final class SQL {
     public static void printAllTable(Connection c, String table) throws SQLException {
         DBTablePrinter.printTable(c, table);
         //return allRows;
+    }
+
+    public static void albumData(Connection c, String albumID) throws SQLException {
+        ArrayList<Integer> ratings = new ArrayList<>();
+        ArrayList<String> reviews = new ArrayList<>();
+        Statement s = c.createStatement();
+        ResultSet rs = s.executeQuery("SELECT * FROM REVIEWS WHERE albumID='"+Integer.parseInt(albumID)+"'");
+        Integer rating = null;
+        String review = null;
+        while (rs.next()) {
+            rating = rs.getInt("rating");
+            review = rs.getString("review");
+            ratings.add(rating);
+            reviews.add(review);
+        }
+        rs = s.executeQuery("SELECT * FROM ALBUMS WHERE albumID='"+Integer.parseInt(albumID)+"'");
+        String name = null;
+        Date date = null;
+        while (rs.next()) {
+            name = rs.getString("name");
+            date = rs.getDate("releasedate");
+        }
+        rs = s.executeQuery("SELECT * FROM MUSICS WHERE albumID='"+Integer.parseInt(albumID)+"'");
+        String musicName = null;
+        ArrayList<String> musics = new ArrayList<>();
+
+        while (rs.next()) {
+            musicName = rs.getString("name");
+            musics.add(musicName);
+        }
+
+        double sumRating = ratings.stream()
+                .mapToDouble(a -> a)
+                .sum();
+        double averageRating = sumRating / ratings.size();
+
+        System.out.println(name + " was released in " + date+ ". this album has the songs: ");
+        int i = 1;
+        for(String str : musics) {
+            System.out.println(i +". "+str);
+            i++;
+        }
+        System.out.println("the average rating is " + averageRating + " with "+ratings.size()+" reviews");
+        System.out.println("album reviews: ");
+        i = 1;
+        for(String str : reviews) {
+            System.out.println(i +". "+str);
+            i++;
+        }
     }
 
 }
