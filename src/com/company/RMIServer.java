@@ -87,6 +87,18 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
     }
 
     @Override
+    public boolean changeData(String tableName, String columnType, Integer tableID, String newName) throws RemoteException {
+        HashMap<String, String> hmap = new HashMap<>();
+        hmap.put("type", "changeData");
+        hmap.put("tableName", tableName);
+        hmap.put("columnType", columnType);
+        hmap.put("tableID", tableID+"");
+        hmap.put("newName", newName);
+        ConnectionFunctions.sendUdpPacket(hmap);
+        return false;
+    }
+
+    @Override
     public String getTCPAddress() throws RemoteException {
         return RMIServer.TCPAddress;
     }

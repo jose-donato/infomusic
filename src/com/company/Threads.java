@@ -41,6 +41,12 @@ public class Threads extends Thread {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+            case "changeData":
+                try {
+                    treatChangeData(this.map);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             case "upload":
                 String musicLocation = "C:\\Users\\JoséMariaCamposDonat\\Desktop\\macmiller.mp3";
                 try {
@@ -60,6 +66,16 @@ public class Threads extends Thread {
                 }
                 break;
         }
+    }
+
+    private void treatChangeData(HashMap<String, String> map) throws SQLException {
+        String tableName = map.get("tableName");
+        String columnType = map.get("columnType");
+        String newName = map.get("newName");
+        Integer tableID = Integer.parseInt(map.get("tableID"));
+
+        Connection c = SQL.enterDatabase("infomusic");
+        SQL.changeName(c, tableName, newName, tableID);
     }
 
     private void treatGrantAdmin(HashMap<String, String> map) throws SQLException {

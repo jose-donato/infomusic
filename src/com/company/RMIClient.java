@@ -10,6 +10,8 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -18,7 +20,7 @@ import java.util.Scanner;
  */
 public class RMIClient {
 
-    public static void main(String[] args) throws IOException, NotBoundException {
+    public static void main(String[] args) throws IOException, NotBoundException, SQLException {
         Interface i = (Interface) Naming.lookup("infoMusicRegistry");
         boolean enter = true;
         while(enter){
@@ -88,7 +90,7 @@ public class RMIClient {
         }
     }
 
-    public static boolean menu(Interface i, String username) throws RemoteException {
+    public static boolean menu(Interface i, String username) throws RemoteException, SQLException {
         System.out.println("welcome username! what you want to do?");
 
         while (true) {
@@ -133,14 +135,7 @@ public class RMIClient {
                     if(i.checkIfUserIsAdmin(username)) {//check if user is admin
                         System.out.println("what operation you want to do? (type one of the options)");
                         System.out.println("1. add song");
-                        System.out.println("2. add album");
-                        System.out.println("3. add artist");
-                        System.out.println("4. edit song");
-                        System.out.println("5. edit album");
-                        System.out.println("6. edit artist");
-                        System.out.println("7. remove song");
-                        System.out.println("8. remove album");
-                        System.out.println("9. remove artist");
+                        System.out.println("2. change artist, album or music name");
                         System.out.println("10. grant admin to user");
                         keyboard = new Scanner(System.in);
                         int choice2 = keyboard.nextInt();
@@ -161,7 +156,48 @@ public class RMIClient {
 
                                 break;
                             case 2:
+                                System.out.println("which you want to change the name?");
+                                System.out.println("1. artist");
+                                System.out.println("2. album");
+                                System.out.println("3. music");
+                                keyboard = new Scanner(System.in);
+                                int choice3 = keyboard.nextInt();
+                                Connection c = SQL.enterDatabase("infomusic");
+                                switch(choice3){
+                                    case 1:
+                                        SQL.printAllTable(c,"artists");
+                                        System.out.println("select the ID you want to change the name");
+                                        keyboard = new Scanner(System.in);
+                                        int artistID = keyboard.nextInt();
+                                        System.out.println("type the new name: ");
+                                        keyboard = new Scanner(System.in);
+                                        String artistNewName = keyboard.nextLine();
+                                        i.changeData("artists","name", artistID, artistNewName);
+                                        break;
+                                    case 2:
+                                        SQL.printAllTable(c,"albums");
+                                        System.out.println("select the ID you want to change the name");
+                                        keyboard = new Scanner(System.in);
+                                        int albumID = keyboard.nextInt();
+                                        System.out.println("type the new name: ");
+                                        keyboard = new Scanner(System.in);
+                                        String albumNewName = keyboard.nextLine();
+                                        i.changeData("albums","name", albumID, albumNewName);
+                                        break;
+                                    case 3:
+                                        SQL.printAllTable(c,"musics");
+                                        System.out.println("select the ID you want to change the name");
+                                        keyboard = new Scanner(System.in);
+                                        int musicID = keyboard.nextInt();
+                                        System.out.println("type the new name: ");
+                                        keyboard = new Scanner(System.in);
+                                        String musicNewName = keyboard.nextLine();
+                                        i.changeData("musics","name", musicID, musicNewName);
+                                        break;
+                                    default:
+                                        System.out.println("please enter valid option");
 
+                                }
                                 break;
                             case 3:
 

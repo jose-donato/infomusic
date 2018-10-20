@@ -1,9 +1,17 @@
 package com.company;
 
+import org.apache.commons.io.FileUtils;
+
 import javax.swing.plaf.nimbus.State;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  *
@@ -19,33 +27,33 @@ public final class SQL {
         try {
             Connection c = enterDatabase("infomusic");
             HashMap<String, String> arr = new HashMap<String, String>();
-            arr.put("username", "VARCHAR(20) PRIMARY KEY");
-            arr.put("password", "VARCHAR(20)");
-            arr.put("isAdmin", "Boolean");
+            arr.put("username", "VARCHAR(20) PRIMARY KEY NOT NULL");
+            arr.put("password", "VARCHAR(20) NOT NULL");
+            arr.put("isAdmin", "Boolean NOT NULL");
 
             SQL.createTable(c, "users", arr);
 
             arr = new HashMap<>();
-            arr.put("artistID", "SERIAL PRIMARY KEY");
-            arr.put("name", "VARCHAR(30)");
-            arr.put("description", "VARCHAR(200)");
+            arr.put("artistID", "SERIAL PRIMARY KEY NOT NULL");
+            arr.put("name", "VARCHAR(30) NOT NULL");
+            arr.put("description", "VARCHAR(200) NOT NULL");
             SQL.createTable(c, "artists", arr);
 
             arr = new HashMap<>();
-            arr.put("albumID", "SERIAL PRIMARY KEY");
-            arr.put("artistID", "SERIAL");
-            arr.put("name", "VARCHAR(30)");
-            arr.put("releaseDate", "DATE");
+            arr.put("albumID", "SERIAL PRIMARY KEY NOT NULL");
+            arr.put("artistID", "SERIAL NOT NULL");
+            arr.put("name", "VARCHAR(30) NOT NULL");
+            arr.put("releaseDate", "DATE NOT NULL");
             arr.put("picture", "bytea");
             SQL.createTable(c, "albums", arr);
             SQL.addForeignKeyToTable(c, "artists", "albums", "artistID");
 
             arr = new HashMap<>();
-            arr.put("musicID", "SERIAL PRIMARY KEY");
-            arr.put("albumID", "SERIAL");
-            arr.put("artistID", "SERIAL");
-            arr.put("name", "VARCHAR(30)");
-            arr.put("genre", "VARCHAR(30)");
+            arr.put("musicID", "SERIAL PRIMARY KEY NOT NULL");
+            arr.put("albumID", "SERIAL NOT NULL");
+            arr.put("artistID", "SERIAL NOT NULL");
+            arr.put("name", "VARCHAR(30) NOT NULL");
+            arr.put("genre", "VARCHAR(30) NOT NULL");
             arr.put("lyrics", "bytea");
             SQL.createTable(c, "musics", arr);
             SQL.addForeignKeyToTable(c, "albums", "musics", "albumID");
@@ -117,7 +125,7 @@ public final class SQL {
             Iterator it = values.entrySet().iterator();
             while(it.hasNext()) {
                 HashMap.Entry pair = (HashMap.Entry) it.next();
-                sql += pair.getKey().toString().toUpperCase() + " " + pair.getValue().toString().toUpperCase() +" NOT NULL, ";
+                sql += pair.getKey().toString().toUpperCase() + " " + pair.getValue().toString().toUpperCase() +" , ";
             }
             sql = sql.substring(0, sql.length() - 2);
             sql += ")";
@@ -241,6 +249,68 @@ public final class SQL {
         Statement s = c.createStatement();
         s.executeUpdate(sql);
     }
+
+    public static boolean enterFileInTable(Connection c, String table, String keysValues, String fileLocation) {
+        File file = new File(fileLocation);
+        PreparedStatement prestatement = null;
+        try {
+
+            //tbf
+            String sql = "UPDATE albums SET picture = ? WHERE albumid = 1";
+
+            FileInputStream fis = new FileInputStream(file);
+            PreparedStatement ps = c.prepareStatement(sql);
+            ps.setBinaryStream(1, fis, file.length());
+            ps.executeUpdate();
+            ps.close();
+            fis.close();
+            System.out.println("d: query in adding values to table: "+sql);
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        } catch (FileNotFoundException e) {
+            System.out.println("d: file not found");
+            e.printStackTrace();
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static boolean getFileFromTable(Connection c) throws SQLException, IOException {
+        PreparedStatement ps = c.prepareStatement("SELECT picture FROM albums WHERE albumid = 1");
+        //ps.setString(1, "myimage.gif");
+        ResultSet rs = ps.executeQuery();
+        byte[] imgBytes = null;
+        if (rs != null) {
+            while (rs.next()) {
+                imgBytes = rs.getBytes(1);
+                // use the data in some way here
+            }
+            rs.close();
+        }
+        ps.close();
+        FileUtils.writeByteArrayToFile(new File("C:\\Users\\zmcdo\\Desktop\\rhc.png"), imgBytes);
+        return false;
+    }
+
+    public static boolean changeName(Connection c, String table, String newName, Integer albumID) throws SQLException {
+        PreparedStatement ps = c.prepareStatement("UPDATE ? SET name = ? WHERE albumid = ?");
+        ps.setString(1, table);
+        ps.setString(2, newName);
+        ps.setInt(3, albumID);
+        ps.executeUpdate();
+        ps.close();
+        return false;
+    }
+    public static void printAllTable(Connection c, String table) throws SQLException {
+        DBTablePrinter.printTable(c, table);
+        //return allRows;
+    }
+
 }
 
 
