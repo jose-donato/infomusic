@@ -18,8 +18,10 @@ public class MulticastServer extends Thread {
 
     public static void main(String[] args) throws IOException, InterruptedException, SQLException {
         //SQL.initialConfig();
-        //Connection c = SQL.enterDatabase("infomusic");
-        //SQL.albumData(c, ""+1);
+        Connection c = SQL.enterDatabase("infomusic");
+        //System.out.println(SQL.albumData(c, 1));
+        //System.out.println(SQL.artistData(c, 1));
+
         //SQL.printAllTable(c, "albums");
         //SQL.enterFileInTable(c, "", "","C:\\Users\\zmcdo\\Downloads\\rhc.png");
         //SQL.getFileFromTable(c);

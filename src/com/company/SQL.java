@@ -270,13 +270,13 @@ public final class SQL {
         s.executeUpdate(sql);
     }
 
-    public static boolean enterFileInTable(Connection c, String table, String keysValues, String fileLocation) {
+    public static boolean enterFileInTable(Connection c, String table, String column, String fileLocation, int id) {
         File file = new File(fileLocation);
         PreparedStatement prestatement = null;
         try {
-
+            String tableID = table.substring(0, table.length()-1)+id;
             //tbf
-            String sql = "UPDATE albums SET picture = ? WHERE albumid = 1";
+            String sql = "UPDATE "+table+" SET "+column+" = ? WHERE "+tableID+" = "+id;
 
             FileInputStream fis = new FileInputStream(file);
             PreparedStatement ps = c.prepareStatement(sql);
@@ -332,17 +332,13 @@ public final class SQL {
 
     public static String albumData(Connection c, Integer albumID) throws SQLException {
         String result = "";
-        ArrayList<Integer> ratings = new ArrayList<>();
+        ArrayList<Double> ratings = new ArrayList<>();
         ArrayList<String> reviews = new ArrayList<>();
         Statement s = c.createStatement();
         ResultSet rs = s.executeQuery("SELECT * FROM REVIEWS WHERE albumID='"+albumID+"'");
-        Integer rating = null;
-        String review = null;
         while (rs.next()) {
-            rating = rs.getInt("rating");
-            review = rs.getString("review");
-            ratings.add(rating);
-            reviews.add(review);
+            ratings.add(Double.parseDouble(rs.getInt("rating")+""));
+            reviews.add(rs.getString("review"));
         }
         rs = s.executeQuery("SELECT * FROM ALBUMS WHERE albumID='"+albumID+"'");
         String name = null;
@@ -364,10 +360,7 @@ public final class SQL {
             musics.add(musicName);
         }
 
-        double sumRating = ratings.stream()
-                .mapToDouble(a -> a)
-                .sum();
-        double averageRating = sumRating / ratings.size();
+        double averageRating = average(ratings);
 
         result += name + " was released in " + date+ ". this album has the songs: \n";
         int i = 1;
@@ -390,6 +383,60 @@ public final class SQL {
         return result;
     }
 
+    public static String artistData(Connection c, int artistID) throws SQLException {
+        String result = "";
+        Statement s = c.createStatement();
+        ResultSet rs = s.executeQuery("SELECT * FROM ARTISTS WHERE artistID='"+artistID+"'");
+        String name = null;
+        String description = null;
+        while (rs.next()) {
+            name = rs.getString("name");
+            description = rs.getString("description");
+        }
+        rs = s.executeQuery("SELECT * FROM ALBUMS WHERE artistID='"+artistID+"'");
+        ArrayList<String> albumsNames = new ArrayList<>();
+        ArrayList<Double> albumsRating = new ArrayList<>();
+        ArrayList<Integer> albumsIDs = new ArrayList<>();
+        while (rs.next()) {
+            albumsNames.add(rs.getString("name"));
+            albumsIDs.add(rs.getInt("albumID"));
+        }
+
+        for(int i : albumsIDs) {
+            ArrayList<Double> ratings = new ArrayList<>();
+            rs = s.executeQuery("SELECT * FROM REVIEWS WHERE albumID='"+i+"'");
+            while (rs.next()) {
+                ratings.add(Double.parseDouble(rs.getInt("rating")+""));
+            }
+            if(ratings.size() != 0) {
+                albumsRating.add(average(ratings));
+            }
+        }
+
+        rs = s.executeQuery("SELECT * FROM MUSICS WHERE artistID='"+artistID+"'");
+        ArrayList<String> musicsNames = new ArrayList<>();
+        while (rs.next()) {
+            musicsNames.add(rs.getString("name"));
+        }
+        if(albumsRating.size() == 0) {
+            result += "the artist " + name + " has " + albumsNames.size() + " album/s with no reviews and " + musicsNames.size()+ " music/s.\n";
+        }
+        else {
+            result += "the artist " + name + " has " + albumsNames.size() + " album/s with an average of " + average(albumsRating) + " and " + musicsNames.size() + " musics.\n";
+        }
+        //exceeds the limit of the string that can goes in udp
+        //result += "description of the artist: " + description + "\n";
+        result += "\n";
+        return result;
+    }
+
+    private static Double average(ArrayList<Double> array) {
+        double sumRating = array.stream()
+                .mapToDouble(a -> a)
+                .sum();
+        return sumRating / array.size();
+
+    }
 }
 
 

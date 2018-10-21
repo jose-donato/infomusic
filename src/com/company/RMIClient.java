@@ -1,10 +1,6 @@
 package com.company;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.Socket;
-import java.net.UnknownHostException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -12,7 +8,6 @@ import java.rmi.RemoteException;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Scanner;
 
 /**
@@ -20,8 +15,21 @@ import java.util.Scanner;
  */
 public class RMIClient {
 
+    protected RMIClient() throws RemoteException {
+        super();
+    }
+
+    /*public void printOnClient(String s) throws RemoteException {
+        System.out.println("> " + s);
+    }
+    */
+
+
     public static void main(String[] args) throws IOException, NotBoundException, SQLException {
-        Interface i = (Interface) Naming.lookup("infoMusicRegistry");
+        InterfaceServer i = (InterfaceServer) Naming.lookup("infoMusicRegistry");
+       // RMIClient c = new RMIClient();
+        //i.subscribe("cliente1", (InterfaceClient) c);
+
         boolean enter = true;
         while(enter){
             String user = enterTheProgram(i);
@@ -36,7 +44,7 @@ public class RMIClient {
         System.out.println("thank you. we hope to see you again!");
     }
 
-    public static String enterTheProgram(Interface i) throws RemoteException, MalformedURLException, NotBoundException {
+    public static String enterTheProgram(InterfaceServer i) throws RemoteException, MalformedURLException, NotBoundException {
         while (true) {
             System.out.println("menu: (type one of the options)");
             System.out.println("1. login");
@@ -90,7 +98,7 @@ public class RMIClient {
         }
     }
 
-    public static boolean menu(Interface i, String username) throws RemoteException, SQLException {
+    public static boolean menu(InterfaceServer i, String username) throws RemoteException, SQLException {
         Connection c = SQL.enterDatabase("infomusic");
         System.out.println("welcome username! what you want to do?");
 
@@ -131,9 +139,16 @@ public class RMIClient {
                             if(albumDetail != null) {
                                 System.out.println(albumDetail);
                             }
-                            System.out.println();
                             break;
                         case 2:
+                            SQL.printAllTable(c, "artists");
+                            System.out.println("type the album id u want to know more about");
+                            keyboard = new Scanner(System.in);
+                            int artistToSearch = keyboard.nextInt();
+                            String artistDetail = i.searchDetailAboutArtist(artistToSearch);
+                            if(artistDetail != null) {
+                                System.out.println(artistDetail);
+                            }
                             break;
 
                         default:

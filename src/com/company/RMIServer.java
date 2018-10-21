@@ -1,20 +1,38 @@
 package com.company;
+import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
-import java.sql.Connection;
 import java.sql.Date;
 import java.util.HashMap;
 
 /**
  *
  */
-public class RMIServer extends UnicastRemoteObject implements Interface {
+public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
     private static final long serialVersionUID = 1L;
+    static InterfaceClient client;
 
     public static  String TCPAddress = null;
     protected RMIServer() throws RemoteException {
         super();
+    }
+
+    /*public void subscribe(String name, InterfaceClient c) throws RemoteException {
+        System.out.println("Subscribing " + name);
+        System.out.print("> ");
+        client = c;
+    }*/
+
+    /**
+     * @param args
+     * @throws RemoteException
+     */
+    public static void main(String[] args) throws RemoteException {
+        InterfaceServer i = new RMIServer();
+        LocateRegistry.createRegistry(1099).rebind("infoMusicRegistry", i);
+        //client.printOnClient("ola do servidor");
+        System.out.println("Server ready...");
     }
 
     /**
@@ -131,15 +149,18 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
         return false;
     }
 
-    /**
-     * @param args
-     * @throws RemoteException
-     */
-    public static void main(String[] args) throws RemoteException {
-        Interface i = new RMIServer();
-        LocateRegistry.createRegistry(1099).rebind("infoMusicRegistry", i);
-        System.out.println("Server ready...");
+    @Override
+    public boolean uploadFileToTable(String table, String column, String fileLocation, Integer id) throws RemoteException {
+        HashMap<String, String> hmap = new HashMap<>();
+        hmap.put("type", "uploadFileToTable");
+        hmap.put("table", table);
+        hmap.put("column", column);
+        hmap.put("fileLocation", fileLocation);
+        hmap.put("id", id+"");
+        ConnectionFunctions.sendUdpPacket(hmap);
+        return false;
     }
+
 
     /**
      * aux to create the login hashmap to convert to string to send to multicast server
@@ -163,14 +184,21 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
         return hmap;
     }
 
+
+
     @Override
-    public int searchSong() throws RemoteException {
-        return 0;
+    public boolean searchByGenre() throws RemoteException {
+        return false;
     }
 
     @Override
-    public int searchDetailAboutArtist() throws RemoteException {
-        return 0;
+    public boolean searcByAlbumName() throws RemoteException {
+        return false;
+    }
+
+    @Override
+    public boolean searchByArtistName() throws RemoteException {
+        return false;
     }
 
     @Override
@@ -187,6 +215,19 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
         return null;
     }
 
+    @Override
+    public String searchDetailAboutArtist(int artistToSearch) throws RemoteException {
+        HashMap<String, String> hmap = new HashMap<>();
+        hmap.put("type", "artistDetail");
+        hmap.put("artistToSearch", artistToSearch+"");
+        int verify = ConnectionFunctions.sendUdpPacket(hmap);
+        if(verify == 1) {
+            String message = ConnectionFunctions.receiveUdpPacket();
+            HashMap<String, String> map = ConnectionFunctions.string2HashMap(message);
+            return map.get("resultString");
+        }
+        return null;
+    }
 
 
     @Override

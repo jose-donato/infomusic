@@ -61,24 +61,42 @@ public class Threads extends Thread {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+                break;
+            case "artistDetail":
+                try {
+                    treatArtistDetail(this.map);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                break;
             case "addSong":
                 try {
                     treatAddMusic(this.map);
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+                break;
             case "addAlbum":
                 try {
                     treatAddAlbum(this.map);
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+                break;
             case "addArtist":
                 try {
                     treatAddArtist(this.map);
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+                break;
+            case "uploadFileToTable":
+                try {
+                    treatUploadFile(this.map);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                break;
             case "upload":
                 String musicLocation = "C:\\Users\\JoséMariaCamposDonat\\Desktop\\macmiller.mp3";
                 try {
@@ -98,6 +116,17 @@ public class Threads extends Thread {
                 }
                 break;
         }
+    }
+
+
+
+    private void treatUploadFile(HashMap<String, String> map) throws SQLException {
+        String table = map.get("table");
+        String column = map.get("column");
+        String fileLocation = map.get("fileLocation");
+        int id = Integer.parseInt(map.get("id"));
+        Connection c = SQL.enterDatabase("infomusic");
+        SQL.enterFileInTable(c, table, column, fileLocation, id);
     }
 
     private void treatAddArtist(HashMap<String, String> map) throws SQLException {
@@ -126,6 +155,16 @@ public class Threads extends Thread {
         Connection c = SQL.enterDatabase("infomusic");
         String a[] = {"name, description, duration, albumid, artistid", "'"+name+"', '"+description+"', "+duration+", "+albumID+", "+artistID};
         SQL.addValuesToTable(c, "musics", a);
+    }
+
+    private void treatArtistDetail(HashMap<String, String> map) throws SQLException {
+        int artistToSearch = Integer.parseInt(map.get("artistToSearch"));
+        Connection c = SQL.enterDatabase("infomusic");
+        String result = SQL.artistData(c, artistToSearch);
+        HashMap<String, String> mapResult = new HashMap<>();
+        mapResult.put("type", "artistDetailResponse");
+        mapResult.put("resultString", result);
+        ConnectionFunctions.sendUdpPacket(mapResult);
     }
 
     private void treatAlbumDetail(HashMap<String, String> map) throws SQLException {

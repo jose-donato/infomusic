@@ -6,10 +6,10 @@ import java.sql.Date;
 
 
 /**
- * Interface for RMI Server
+ * InterfaceServer for RMI Server
  * has all the functions that can be called in RMI Server
  */
-public interface Interface extends Remote {
+public interface InterfaceServer extends Remote {
     public boolean loginOrRegister(String username, String password, boolean isRegister) throws RemoteException;
     public boolean checkIfUserIsAdmin(String username) throws RemoteException;
     public boolean grantAdminToUser(String username) throws RemoteException;
@@ -20,11 +20,27 @@ public interface Interface extends Remote {
     public boolean addAlbum(String name, Date date, Integer artistID) throws RemoteException;
     public boolean addArtist(String name, String description) throws RemoteException;
 
-    public int searchSong() throws RemoteException;
-    public int searchDetailAboutArtist() throws RemoteException;
+    //for upload text file lyrics and picture to album
+    public boolean uploadFileToTable(String table, String column, String fileLocation, Integer id) throws RemoteException;
+
+
+
+    //search details about an album
     public String searchDetailAboutAlbum(int albumToSearch) throws RemoteException;
+    public String searchDetailAboutArtist(int artistToSearch) throws RemoteException;
+
     public boolean writeAlbumReview(int albumToReviewID, int albumRating, String albumReview) throws RemoteException;
     public int uploadSong() throws RemoteException;
     public int downloadSong() throws RemoteException;
+
+    //need to be implemented
+    public boolean searchByGenre() throws RemoteException;
+    public boolean searcByAlbumName() throws RemoteException;
+    public boolean searchByArtistName() throws RemoteException;
+
+
+
+
+    //public void subscribe(String name, InterfaceClient client) throws RemoteException;
 
 }
