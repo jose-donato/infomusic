@@ -2,6 +2,7 @@ package com.company;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.HashMap;
 
@@ -54,6 +55,30 @@ public class Threads extends Thread {
                     e.printStackTrace();
                 }
                 break;
+            case "albumDetail":
+                try {
+                    treatAlbumDetail(this.map);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            case "addSong":
+                try {
+                    treatAddMusic(this.map);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            case "addAlbum":
+                try {
+                    treatAddAlbum(this.map);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            case "addArtist":
+                try {
+                    treatAddArtist(this.map);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             case "upload":
                 String musicLocation = "C:\\Users\\JoséMariaCamposDonat\\Desktop\\macmiller.mp3";
                 try {
@@ -73,6 +98,44 @@ public class Threads extends Thread {
                 }
                 break;
         }
+    }
+
+    private void treatAddArtist(HashMap<String, String> map) throws SQLException {
+        String name = map.get("name");
+        String description = map.get("description");
+        Connection c = SQL.enterDatabase("infomusic");
+        String a[] = {"name, description", "'"+name+"', '"+description+"'"};
+        SQL.addValuesToTable(c, "musics", a);
+    }
+
+    private void treatAddAlbum(HashMap<String, String> map) throws SQLException {
+        String name = map.get("name");
+        Date date  = Date.valueOf(map.get("date"));
+        int artistID = Integer.parseInt(map.get("artistID"));
+        Connection c = SQL.enterDatabase("infomusic");
+        String a[] = {"name, date, artistid", "'"+name+"', "+date+", "+artistID};
+        SQL.addValuesToTable(c, "musics", a);
+    }
+
+    private void treatAddMusic(HashMap<String, String> map) throws SQLException {
+        String name = map.get("name");
+        String description = map.get("description");
+        int duration = Integer.parseInt(map.get("duration"));
+        int albumID = Integer.parseInt(map.get("albumID"));
+        int artistID = Integer.parseInt(map.get("artistID"));
+        Connection c = SQL.enterDatabase("infomusic");
+        String a[] = {"name, description, duration, albumid, artistid", "'"+name+"', '"+description+"', "+duration+", "+albumID+", "+artistID};
+        SQL.addValuesToTable(c, "musics", a);
+    }
+
+    private void treatAlbumDetail(HashMap<String, String> map) throws SQLException {
+        int albumToSearch = Integer.parseInt(map.get("albumToSearch"));
+        Connection c = SQL.enterDatabase("infomusic");
+        String result = SQL.albumData(c, albumToSearch);
+        HashMap<String, String> mapResult = new HashMap<>();
+        mapResult.put("type", "albumDetailResponse");
+        mapResult.put("resultString", result);
+        ConnectionFunctions.sendUdpPacket(mapResult);
     }
 
     private void treatWriteReview(HashMap<String, String> map) throws SQLException {

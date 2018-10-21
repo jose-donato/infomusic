@@ -115,6 +115,30 @@ public class RMIClient {
                     break;
                 case 2:
                     //Search for some detail information about an artist
+                    System.out.println("what operation you want to do? (type one of the options)");
+                    System.out.println("1. search about an album");
+                    System.out.println("2. search about an artist");
+                    keyboard = new Scanner(System.in);
+                    int choice4 = keyboard.nextInt();
+
+                    switch (choice4) {
+                        case 1:
+                            SQL.printAllTable(c, "albums");
+                            System.out.println("type the album id u want to know more about");
+                            keyboard = new Scanner(System.in);
+                            int albumToSearch = keyboard.nextInt();
+                            String albumDetail = i.searchDetailAboutAlbum(albumToSearch);
+                            if(albumDetail != null) {
+                                System.out.println(albumDetail);
+                            }
+                            System.out.println();
+                            break;
+                        case 2:
+                            break;
+
+                        default:
+                            System.out.println("please enter valid option");
+                    }
                     // a specific album
                     break;
                 case 3:
@@ -153,7 +177,9 @@ public class RMIClient {
                         System.out.println("what operation you want to do? (type one of the options)");
                         System.out.println("1. add song");
                         System.out.println("2. change artist, album or music name");
-                        System.out.println("10. grant admin to user");
+                        System.out.println("3. grant admin to user");
+                        System.out.println("4. add picture to an album");
+                        System.out.println("5. upload song lyrics");
                         keyboard = new Scanner(System.in);
                         int choice2 = keyboard.nextInt();
                         switch(choice2) {
@@ -216,9 +242,6 @@ public class RMIClient {
                                 }
                                 break;
                             case 3:
-
-                                break;
-                            case 10:
                                 System.out.println("type the username you want to make admin: ");
                                 keyboard = new Scanner(System.in);
                                 username = keyboard.nextLine();

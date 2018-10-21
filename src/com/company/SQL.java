@@ -27,7 +27,7 @@ public final class SQL {
         try {
             Connection c = enterDatabase("infomusic");
 
-            /*HashMap<String, String> arr = new HashMap<String, String>();
+            HashMap<String, String> arr = new HashMap<String, String>();
             arr.put("username", "VARCHAR(20) PRIMARY KEY NOT NULL");
             arr.put("password", "VARCHAR(20) NOT NULL");
             arr.put("isAdmin", "Boolean NOT NULL");
@@ -43,6 +43,7 @@ public final class SQL {
             arr = new HashMap<>();
             arr.put("albumID", "SERIAL PRIMARY KEY NOT NULL");
             arr.put("artistID", "SERIAL NOT NULL");
+            arr.put("genre", "VARCHAR(30) NOT NULL");
             arr.put("name", "VARCHAR(30) NOT NULL");
             arr.put("releaseDate", "DATE NOT NULL");
             arr.put("picture", "bytea");
@@ -54,15 +55,16 @@ public final class SQL {
             arr.put("albumID", "SERIAL NOT NULL");
             arr.put("artistID", "SERIAL NOT NULL");
             arr.put("name", "VARCHAR(30) NOT NULL");
-            arr.put("genre", "VARCHAR(30) NOT NULL");
+            arr.put("description", "VARCHAR(200)");
+            arr.put("duration", "INTEGER NOT NULL");
             arr.put("lyrics", "bytea");
             SQL.createTable(c, "musics", arr);
             SQL.addForeignKeyToTable(c, "albums", "musics", "albumID");
             SQL.addForeignKeyToTable(c, "artists", "musics", "artistID");
-            */
 
 
-            HashMap<String, String> arr = new HashMap<>();
+
+            arr = new HashMap<>();
             arr.put("reviewID", "SERIAL PRIMARY KEY NOT NULL");
             arr.put("albumID", "SERIAL NOT NULL");
             arr.put("rating", "INTEGER NOT NULL");
@@ -74,9 +76,19 @@ public final class SQL {
             arr.put("name", "VARCHAR(20) PRIMARY KEY");
             arr.put("file", "bytea");
             SQL.createTable(c, "musicsFiles", arr);
-            */
+
             //String[] a = {"user1,pass1", "'josedonato','123123'"};
             //SQL.addValuesToTable(c, "users", a);
+            */
+
+            //add values to table
+            String[] a = {"name, description", "'Red Hot Chili Peppers', 'Red Hot Chili Peppers é uma banda de rock dos Estados Unidos formada em Los Angeles, Califórnia, em 13 de fevereiro de 1983, considerada uma das maiores bandas da história do rock.'"};
+            SQL.addValuesToTable(c, "artists", a);
+            String[] b = {"releasedate, name, genre, artistid", "now(),'Californication','Alternative Rock', 1"};
+            SQL.addValuesToTable(c, "albums", b);
+            String[] d = {"name, description, duration, albumid, artistid","'Around The World', 'blabla', 300, 1, 1"};
+            SQL.addValuesToTable(c, "musics", d);
+
             return c;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -318,11 +330,12 @@ public final class SQL {
         //return allRows;
     }
 
-    public static void albumData(Connection c, String albumID) throws SQLException {
+    public static String albumData(Connection c, Integer albumID) throws SQLException {
+        String result = "";
         ArrayList<Integer> ratings = new ArrayList<>();
         ArrayList<String> reviews = new ArrayList<>();
         Statement s = c.createStatement();
-        ResultSet rs = s.executeQuery("SELECT * FROM REVIEWS WHERE albumID='"+Integer.parseInt(albumID)+"'");
+        ResultSet rs = s.executeQuery("SELECT * FROM REVIEWS WHERE albumID='"+albumID+"'");
         Integer rating = null;
         String review = null;
         while (rs.next()) {
@@ -331,16 +344,20 @@ public final class SQL {
             ratings.add(rating);
             reviews.add(review);
         }
-        rs = s.executeQuery("SELECT * FROM ALBUMS WHERE albumID='"+Integer.parseInt(albumID)+"'");
+        rs = s.executeQuery("SELECT * FROM ALBUMS WHERE albumID='"+albumID+"'");
         String name = null;
         Date date = null;
         while (rs.next()) {
             name = rs.getString("name");
             date = rs.getDate("releasedate");
         }
-        rs = s.executeQuery("SELECT * FROM MUSICS WHERE albumID='"+Integer.parseInt(albumID)+"'");
+
+
+        //show all music data
+        rs = s.executeQuery("SELECT * FROM MUSICS WHERE albumID='"+albumID+"'");
         String musicName = null;
         ArrayList<String> musics = new ArrayList<>();
+
 
         while (rs.next()) {
             musicName = rs.getString("name");
@@ -352,19 +369,25 @@ public final class SQL {
                 .sum();
         double averageRating = sumRating / ratings.size();
 
-        System.out.println(name + " was released in " + date+ ". this album has the songs: ");
+        result += name + " was released in " + date+ ". this album has the songs: \n";
         int i = 1;
         for(String str : musics) {
-            System.out.println(i +". "+str);
+            result += i +". "+str+"\n";
             i++;
         }
-        System.out.println("the average rating is " + averageRating + " with "+ratings.size()+" reviews");
-        System.out.println("album reviews: ");
-        i = 1;
-        for(String str : reviews) {
-            System.out.println(i +". "+str);
-            i++;
+
+        if(ratings.size() != 0) {
+            result += "the average rating is " + averageRating + " with " + ratings.size() + " reviews\n";
+            result += "album reviews: ";
+            i = 1;
+            for(String str : reviews) {
+                result += i +". "+str+"\n";
+                i++;
+            }
+        }else {
+            result += "the album has no reviews yet.";
         }
+        return result;
     }
 
 }

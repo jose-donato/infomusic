@@ -2,6 +2,8 @@ package com.company;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.Connection;
+import java.sql.Date;
 import java.util.HashMap;
 
 /**
@@ -96,12 +98,35 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
     }
 
     @Override
-    public boolean addSong(String name, String genre, Integer duration) throws RemoteException {
+    public boolean addMusic(String name, String description, Integer duration, Integer albumID, Integer artistID) throws RemoteException {
         HashMap<String, String> hmap = new HashMap<>();
-        hmap.put("type", "addSong");
+        hmap.put("type", "addMusic");
         hmap.put("name", name);
-        hmap.put("genre", genre);
-        hmap.put("duration", ""+duration);
+        hmap.put("description", description);
+        hmap.put("duration", duration+"");
+        hmap.put("albumID", albumID+"");
+        hmap.put("artistID", artistID+"");
+        ConnectionFunctions.sendUdpPacket(hmap);
+        return false;
+    }
+
+    @Override
+    public boolean addAlbum(String name, Date date, Integer artistID) throws RemoteException {
+        HashMap<String, String> hmap = new HashMap<>();
+        hmap.put("type", "addMusic");
+        hmap.put("name", name);
+        hmap.put("date", date.toString());
+        hmap.put("artistID", artistID+"");
+        ConnectionFunctions.sendUdpPacket(hmap);
+        return false;
+    }
+
+    @Override
+    public boolean addArtist(String name, String description) throws RemoteException {
+        HashMap<String, String> hmap = new HashMap<>();
+        hmap.put("type", "addArtist");
+        hmap.put("name", name);
+        hmap.put("description", description);
         ConnectionFunctions.sendUdpPacket(hmap);
         return false;
     }
@@ -149,9 +174,20 @@ public class RMIServer extends UnicastRemoteObject implements Interface {
     }
 
     @Override
-    public int searchDetailAboutAlbum() throws RemoteException {
-        return 0;
+    public String searchDetailAboutAlbum(int albumToSearch) throws RemoteException {
+        HashMap<String, String> hmap = new HashMap<>();
+        hmap.put("type", "albumDetail");
+        hmap.put("albumToSearch", albumToSearch+"");
+        int verify = ConnectionFunctions.sendUdpPacket(hmap);
+        if(verify == 1) {
+            String message = ConnectionFunctions.receiveUdpPacket();
+            HashMap<String, String> map = ConnectionFunctions.string2HashMap(message);
+            return map.get("resultString");
+        }
+        return null;
     }
+
+
 
     @Override
     public boolean writeAlbumReview(int albumToReviewID, int albumRating, String albumReview) throws RemoteException {

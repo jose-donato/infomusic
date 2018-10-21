@@ -2,6 +2,7 @@ package com.company;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.sql.Date;
 
 
 /**
@@ -15,10 +16,13 @@ public interface Interface extends Remote {
     public boolean changeData(String tableName, String columnType, Integer tableID, String newName) throws RemoteException;
     //public int register(String username,String password) throws RemoteException;
     public String getTCPAddress() throws RemoteException;
-    public boolean addSong(String name, String genre, Integer duration) throws RemoteException;
+    public boolean addMusic(String name, String description, Integer duration, Integer albumID, Integer artistID) throws RemoteException;
+    public boolean addAlbum(String name, Date date, Integer artistID) throws RemoteException;
+    public boolean addArtist(String name, String description) throws RemoteException;
+
     public int searchSong() throws RemoteException;
     public int searchDetailAboutArtist() throws RemoteException;
-    public int searchDetailAboutAlbum() throws RemoteException;
+    public String searchDetailAboutAlbum(int albumToSearch) throws RemoteException;
     public boolean writeAlbumReview(int albumToReviewID, int albumRating, String albumReview) throws RemoteException;
     public int uploadSong() throws RemoteException;
     public int downloadSong() throws RemoteException;
