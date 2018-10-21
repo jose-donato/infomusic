@@ -129,11 +129,11 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
     }
 
     @Override
-    public boolean addAlbum(String name, Date date, Integer artistID) throws RemoteException {
+    public boolean addAlbum(String name, String date, Integer artistID) throws RemoteException {
         HashMap<String, String> hmap = new HashMap<>();
-        hmap.put("type", "addMusic");
+        hmap.put("type", "addMusic"); //nao devia ser addAlbum?
         hmap.put("name", name);
-        hmap.put("date", date.toString());
+        hmap.put("date", date); // porqe estava Date date
         hmap.put("artistID", artistID+"");
         ConnectionFunctions.sendUdpPacket(hmap);
         return false;

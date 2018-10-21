@@ -199,19 +199,38 @@ public class RMIClient {
                         int choice2 = keyboard.nextInt();
                         switch(choice2) {
                             case 1:
-                                System.out.println("music's name: ");
+                                System.out.println("song's name: ");
                                 keyboard = new Scanner(System.in);
                                 String musicName = keyboard.nextLine();
-                                System.out.println("music's name: "); //repetido?
+                                System.out.println("description: ");
                                 keyboard = new Scanner(System.in);
-                                String genre = keyboard.nextLine();
-                                /*System.out.println("music's lyrics: ");
-                                keyboard = new Scanner(System.in);
-                                String lyrics = keyboard.nextLine();*/
-                                System.out.println("music's duration: (in seconds) ");
+                                String description = keyboard.nextLine();
+                                System.out.println("what is the duration: ");
                                 keyboard = new Scanner(System.in);
                                 int duration = keyboard.nextInt();
+                                System.out.println("album's ID: ");
+                                keyboard = new Scanner(System.in);
+                                int albumID = keyboard.nextInt();
+                                System.out.println("artist's ID: ");
+                                keyboard = new Scanner(System.in);
+                                int artistID = keyboard.nextInt();
+                                i.addMusic(musicName,description,duration,albumID,artistID);
 
+                                System.out.println("album name: ");
+                                keyboard = new Scanner(System.in);
+                                String albumName = keyboard.nextLine();
+                                System.out.println("date of the album: ");
+                                keyboard = new Scanner(System.in);
+                                String albumDate = keyboard.nextLine();
+                                i.addAlbum(albumName,albumDate,artistID);
+
+                                System.out.println("artist's name: ");
+                                keyboard = new Scanner(System.in);
+                                String artistName = keyboard.nextLine();
+                                System.out.println("description: ");
+                                keyboard = new Scanner(System.in);
+                                String descriptionArtist = keyboard.nextLine();
+                                i.addArtist(artistName,descriptionArtist);
                                 break;
                             case 2:
                                 System.out.println("which you want to change the name?");
@@ -225,7 +244,7 @@ public class RMIClient {
                                         SQL.printAllTable(c,"artists");
                                         System.out.println("select the ID you want to change the name");
                                         keyboard = new Scanner(System.in);
-                                        int artistID = keyboard.nextInt();
+                                        artistID = keyboard.nextInt();
                                         System.out.println("type the new name: ");
                                         keyboard = new Scanner(System.in);
                                         String artistNewName = keyboard.nextLine();
@@ -235,7 +254,7 @@ public class RMIClient {
                                         SQL.printAllTable(c,"albums");
                                         System.out.println("select the ID you want to change the name");
                                         keyboard = new Scanner(System.in);
-                                        int albumID = keyboard.nextInt();
+                                        albumID = keyboard.nextInt();
                                         System.out.println("type the new name: ");
                                         keyboard = new Scanner(System.in);
                                         String albumNewName = keyboard.nextLine();
