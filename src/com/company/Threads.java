@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
 public class Threads extends Thread {
@@ -69,7 +71,7 @@ public class Threads extends Thread {
                     e.printStackTrace();
                 }
                 break;
-            case "addSong":
+            case "addMusic":
                 try {
                     treatAddMusic(this.map);
                 } catch (SQLException e) {
@@ -80,6 +82,8 @@ public class Threads extends Thread {
                 try {
                     treatAddAlbum(this.map);
                 } catch (SQLException e) {
+                    e.printStackTrace();
+                } catch (ParseException e) {
                     e.printStackTrace();
                 }
                 break;
@@ -132,23 +136,33 @@ public class Threads extends Thread {
     private void treatAddArtist(HashMap<String, String> map) throws SQLException {
         String name = map.get("name");
         String description = map.get("description");
+        if(description == "no description") {
+            description = null;
+        }
         Connection c = SQL.enterDatabase("infomusic");
         String a[] = {"name, description", "'"+name+"', '"+description+"'"};
-        SQL.addValuesToTable(c, "musics", a);
+        SQL.addValuesToTable(c, "artists", a);
     }
 
-    private void treatAddAlbum(HashMap<String, String> map) throws SQLException {
+    private void treatAddAlbum(HashMap<String, String> map) throws SQLException, ParseException {
         String name = map.get("name");
-        Date date  = Date.valueOf(map.get("date"));
+        String genre = map.get("genre");
+        String dateString  = map.get("date");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd");
+        java.util.Date parsed = format.parse(dateString);
+        java.sql.Date sqlDate = new java.sql.Date(parsed.getTime());
         int artistID = Integer.parseInt(map.get("artistID"));
         Connection c = SQL.enterDatabase("infomusic");
-        String a[] = {"name, date, artistid", "'"+name+"', "+date+", "+artistID};
-        SQL.addValuesToTable(c, "musics", a);
+        String a[] = {"name, genre, releasedate, artistid", "'"+name+"', '"+genre+"','"+sqlDate+"', "+artistID};
+        SQL.addValuesToTable(c, "albums", a);
     }
 
     private void treatAddMusic(HashMap<String, String> map) throws SQLException {
         String name = map.get("name");
         String description = map.get("description");
+        if(description == "no description") {
+            description = null;
+        }
         int duration = Integer.parseInt(map.get("duration"));
         int albumID = Integer.parseInt(map.get("albumID"));
         int artistID = Integer.parseInt(map.get("artistID"));

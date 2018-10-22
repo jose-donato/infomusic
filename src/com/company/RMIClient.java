@@ -8,6 +8,9 @@ import java.rmi.RemoteException;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
 
 /**
@@ -190,7 +193,7 @@ public class RMIClient {
                     //manage data
                     if(i.checkIfUserIsAdmin(username)) {//check if user is admin
                         System.out.println("what operation you want to do? (type one of the options)");
-                        System.out.println("1. add song");
+                        System.out.println("1. add music/album/artist");
                         System.out.println("2. change artist, album or music name");
                         System.out.println("3. grant admin to user");
                         System.out.println("4. add picture to an album");
@@ -199,38 +202,69 @@ public class RMIClient {
                         int choice2 = keyboard.nextInt();
                         switch(choice2) {
                             case 1:
-                                System.out.println("song's name: ");
+                                System.out.println("which data you want to add? (type one of the options)");
+                                System.out.println("1. music");
+                                System.out.println("2. album");
+                                System.out.println("3. artist");
                                 keyboard = new Scanner(System.in);
-                                String musicName = keyboard.nextLine();
-                                System.out.println("description: ");
-                                keyboard = new Scanner(System.in);
-                                String description = keyboard.nextLine();
-                                System.out.println("what is the duration: ");
-                                keyboard = new Scanner(System.in);
-                                int duration = keyboard.nextInt();
-                                System.out.println("album's ID: ");
-                                keyboard = new Scanner(System.in);
-                                int albumID = keyboard.nextInt();
-                                System.out.println("artist's ID: ");
-                                keyboard = new Scanner(System.in);
-                                int artistID = keyboard.nextInt();
-                                i.addMusic(musicName,description,duration,albumID,artistID);
+                                int choice5 = keyboard.nextInt();
+                                switch(choice5) {
+                                    case 1:
+                                        System.out.println("music's name: ");
+                                        keyboard = new Scanner(System.in);
+                                        String musicName = keyboard.nextLine();
+                                        System.out.println("description: ");
+                                        keyboard = new Scanner(System.in);
+                                        String description = keyboard.nextLine();
+                                        if(description.length() == 0) {
+                                            description = "no description";
+                                        }
+                                        System.out.println("what is the duration: (in seconds)");
+                                        keyboard = new Scanner(System.in);
+                                        int duration = keyboard.nextInt();
+                                        SQL.printAllTable(c, "albums");
+                                        System.out.println("type the album's ID: ");
+                                        keyboard = new Scanner(System.in);
+                                        int albumID = keyboard.nextInt();
+                                        SQL.printAllTable(c, "artists");
+                                        System.out.println("type the artist's ID: ");
+                                        keyboard = new Scanner(System.in);
+                                        int artistID = keyboard.nextInt();
+                                        i.addMusic(musicName, description, duration, albumID, artistID);
+                                        break;
 
-                                System.out.println("album name: ");
-                                keyboard = new Scanner(System.in);
-                                String albumName = keyboard.nextLine();
-                                System.out.println("date of the album: ");
-                                keyboard = new Scanner(System.in);
-                                String albumDate = keyboard.nextLine();
-                                i.addAlbum(albumName,albumDate,artistID);
+                                    case 2:
+                                        System.out.println("album name: ");
+                                        keyboard = new Scanner(System.in);
+                                        String albumName = keyboard.nextLine();
+                                        System.out.println("album genre: ");
+                                        keyboard = new Scanner(System.in);
+                                        String albumGenre = keyboard.nextLine();
+                                        System.out.println("date of the album: (in 'yyyy-mm-dd')");
+                                        keyboard = new Scanner(System.in);
+                                        String albumDate = keyboard.nextLine();
+                                        SQL.printAllTable(c, "artists");
+                                        System.out.println("type the artist's ID: ");
+                                        keyboard = new Scanner(System.in);
+                                        int artistID2 = keyboard.nextInt();
+                                        i.addAlbum(albumName, albumGenre, albumDate, artistID2);
+                                        break;
 
-                                System.out.println("artist's name: ");
-                                keyboard = new Scanner(System.in);
-                                String artistName = keyboard.nextLine();
-                                System.out.println("description: ");
-                                keyboard = new Scanner(System.in);
-                                String descriptionArtist = keyboard.nextLine();
-                                i.addArtist(artistName,descriptionArtist);
+                                    case 3:
+                                        System.out.println("artist's name: ");
+                                        keyboard = new Scanner(System.in);
+                                        String artistName = keyboard.nextLine();
+                                        System.out.println("description: ");
+                                        keyboard = new Scanner(System.in);
+                                        String descriptionArtist = keyboard.nextLine();
+                                        if(descriptionArtist.length() == 0) {
+                                            descriptionArtist = "no description";
+                                        }
+                                        i.addArtist(artistName, descriptionArtist);
+                                        break;
+                                    default:
+                                        System.out.println("please enter valid option");
+                                }
                                 break;
                             case 2:
                                 System.out.println("which you want to change the name?");
@@ -244,7 +278,7 @@ public class RMIClient {
                                         SQL.printAllTable(c,"artists");
                                         System.out.println("select the ID you want to change the name");
                                         keyboard = new Scanner(System.in);
-                                        artistID = keyboard.nextInt();
+                                        int artistID = keyboard.nextInt();
                                         System.out.println("type the new name: ");
                                         keyboard = new Scanner(System.in);
                                         String artistNewName = keyboard.nextLine();
@@ -254,7 +288,7 @@ public class RMIClient {
                                         SQL.printAllTable(c,"albums");
                                         System.out.println("select the ID you want to change the name");
                                         keyboard = new Scanner(System.in);
-                                        albumID = keyboard.nextInt();
+                                        int albumID = keyboard.nextInt();
                                         System.out.println("type the new name: ");
                                         keyboard = new Scanner(System.in);
                                         String albumNewName = keyboard.nextLine();

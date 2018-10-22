@@ -17,7 +17,7 @@ public interface InterfaceServer extends Remote {
     //public int register(String username,String password) throws RemoteException;
     public String getTCPAddress() throws RemoteException;
     public boolean addMusic(String name, String description, Integer duration, Integer albumID, Integer artistID) throws RemoteException;
-    public boolean addAlbum(String name, String date, Integer artistID) throws RemoteException;
+    public boolean addAlbum(String name, String genre, String date, Integer artistID) throws RemoteException;
     public boolean addArtist(String name, String description) throws RemoteException;
 
     //for upload text file lyrics and picture to album

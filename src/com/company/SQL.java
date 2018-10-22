@@ -370,7 +370,7 @@ public final class SQL {
         }
 
         if(ratings.size() != 0) {
-            result += "the average rating is " + averageRating + " with " + ratings.size() + " reviews\n";
+            result += "the average rating is " + averageRating + " with " + ratings.size() + " review/s\n";
             result += "album reviews: ";
             i = 1;
             for(String str : reviews) {

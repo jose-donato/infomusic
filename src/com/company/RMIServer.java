@@ -3,7 +3,7 @@ import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
-import java.sql.Date;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -129,11 +129,12 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
     }
 
     @Override
-    public boolean addAlbum(String name, String date, Integer artistID) throws RemoteException {
+    public boolean addAlbum(String name, String genre, String date, Integer artistID) throws RemoteException {
         HashMap<String, String> hmap = new HashMap<>();
-        hmap.put("type", "addMusic"); //nao devia ser addAlbum?
+        hmap.put("type", "addAlbum");
         hmap.put("name", name);
-        hmap.put("date", date); // porqe estava Date date
+        hmap.put("genre", genre);
+        hmap.put("date", date);
         hmap.put("artistID", artistID+"");
         ConnectionFunctions.sendUdpPacket(hmap);
         return false;
