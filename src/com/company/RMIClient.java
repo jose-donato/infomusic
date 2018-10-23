@@ -6,6 +6,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
 
+import java.rmi.server.UnicastRemoteObject;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -17,27 +18,32 @@ import java.util.Scanner;
 /**
  *
  */
-public class RMIClient {
+public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
     protected RMIClient() throws RemoteException {
         super();
     }
-
-    /*public void printOnClient(String s) throws RemoteException {
-        System.out.println("> " + s);
+    @Override
+    public void notifyAdminGranted(String s) throws RemoteException {
+        System.out.println("you now have admin permissions!");
     }
-    */
+
+    @Override
+    public void notifyAlbumChanges(String s) throws RemoteException {
+        System.out.println("one album you edited was changed!");
+    }
+
 
 
     public static void main(String[] args) throws IOException, NotBoundException, SQLException {
         InterfaceServer i = (InterfaceServer) Naming.lookup("infoMusicRegistry");
-       // RMIClient c = new RMIClient();
+        RMIClient client = new RMIClient();
         //i.subscribe("cliente1", (InterfaceClient) c);
 
         boolean enter = true;
         while(enter){
             String user = enterTheProgram(i);
             if (user != null){
-                enter = menu(i, user);
+                enter = menu(i, user, client);
             }
             else{
                 System.out.println("thank you. we hope to see you again!");
@@ -101,9 +107,12 @@ public class RMIClient {
         }
     }
 
-    public static boolean menu(InterfaceServer i, String username) throws IOException, SQLException {
+    public static boolean menu(InterfaceServer i, String username, InterfaceClient iClient) throws IOException, SQLException {
         Connection c = SQL.enterDatabase("infomusic");
         System.out.println("welcome username! what you want to do?");
+
+        //interface
+        i.subscribe((InterfaceClient) iClient, username);
 
         while (true) {
             System.out.println("menu: (type one of the options)");
@@ -134,7 +143,9 @@ public class RMIClient {
 
                     switch (choice4) {
                         case 1:
-                            SQL.printAllTable(c, "albums");
+                            //alterar para enviar pelo protocolo
+                            System.out.println(i.getTable("albums"));
+
                             System.out.println("type the album id u want to know more about");
                             keyboard = new Scanner(System.in);
                             int albumToSearch = keyboard.nextInt();
@@ -144,7 +155,9 @@ public class RMIClient {
                             }
                             break;
                         case 2:
-                            SQL.printAllTable(c, "artists");
+                            //alterar para enviar pelo protocolo
+                            System.out.println(i.getTable("albums"));
+
                             System.out.println("type the album id u want to know more about");
                             keyboard = new Scanner(System.in);
                             int artistToSearch = keyboard.nextInt();
@@ -161,7 +174,10 @@ public class RMIClient {
                     break;
                 case 3:
                     //write a review to an album
-                    SQL.printAllTable(c, "albums");
+
+                    //alterar para enviar pelo protocolo
+                    System.out.println(i.getTable("albums"));
+
                     System.out.println("select the ID of the album you want to review");
                     keyboard = new Scanner(System.in);
                     int albumToReviewID = keyboard.nextInt();
@@ -186,12 +202,10 @@ public class RMIClient {
                     int choice5 = keyboard.nextInt();
                     switch(choice5){
                         case 1:
-                            SQL.printAllTable(c,"musics");
 
-
-
+                            //alterar para enviar pelo protocolo
+                            System.out.println(i.getTable("musics"));
                             //ConnectionFunctions.uploadMusicTCP("C:\\Users\\zmcdo\\Documents\\music.mp3", false, 1, "rita");
-
 
                             System.out.println("select the music's ID u want to upload");
                             keyboard = new Scanner(System.in);
@@ -201,7 +215,10 @@ public class RMIClient {
                             String location = keyboard.nextLine();
                             break;
                         case 2:
-                            SQL.printAllTable(c,"albums");
+
+                            //alterar para enviar pelo protocolo
+                            System.out.println(i.getTable("albums"));
+
                             System.out.println("select the ID you want to change the name");
                             keyboard = new Scanner(System.in);
                             int albumID = keyboard.nextInt();
@@ -212,7 +229,6 @@ public class RMIClient {
                             break;
                         default:
                             System.out.println("please enter valid option");
-
                     }
                     /*HashMap<String, String> map = new HashMap<>();
                     map.put("type", "upload");
@@ -257,11 +273,11 @@ public class RMIClient {
                                         System.out.println("what is the duration: (in seconds)");
                                         keyboard = new Scanner(System.in);
                                         int duration = keyboard.nextInt();
-                                        SQL.printAllTable(c, "albums");
+                                        System.out.println(i.getTable("albums"));
                                         System.out.println("type the album's ID: ");
                                         keyboard = new Scanner(System.in);
                                         int albumID = keyboard.nextInt();
-                                        SQL.printAllTable(c, "artists");
+                                        System.out.println(i.getTable("artists"));
                                         System.out.println("type the artist's ID: ");
                                         keyboard = new Scanner(System.in);
                                         int artistID = keyboard.nextInt();
@@ -278,7 +294,7 @@ public class RMIClient {
                                         System.out.println("date of the album: (in 'yyyy-mm-dd')");
                                         keyboard = new Scanner(System.in);
                                         String albumDate = keyboard.nextLine();
-                                        SQL.printAllTable(c, "artists");
+                                        System.out.println(i.getTable("albums"));
                                         System.out.println("type the artist's ID: ");
                                         keyboard = new Scanner(System.in);
                                         int artistID2 = keyboard.nextInt();
@@ -310,7 +326,7 @@ public class RMIClient {
                                 int choice3 = keyboard.nextInt();
                                 switch(choice3){
                                     case 1:
-                                        SQL.printAllTable(c,"artists");
+                                        System.out.println(i.getTable("artists"));
                                         System.out.println("select the ID you want to change the name");
                                         keyboard = new Scanner(System.in);
                                         int artistID = keyboard.nextInt();
@@ -320,7 +336,7 @@ public class RMIClient {
                                         i.changeData("artists","name", artistID, artistNewName);
                                         break;
                                     case 2:
-                                        SQL.printAllTable(c,"albums");
+                                        System.out.println(i.getTable("albums"));
                                         System.out.println("select the ID you want to change the name");
                                         keyboard = new Scanner(System.in);
                                         int albumID = keyboard.nextInt();
@@ -330,7 +346,7 @@ public class RMIClient {
                                         i.changeData("albums","name", albumID, albumNewName);
                                         break;
                                     case 3:
-                                        SQL.printAllTable(c,"musics");
+                                        System.out.println(i.getTable("musics"));
                                         System.out.println("select the ID you want to change the name");
                                         keyboard = new Scanner(System.in);
                                         int musicID = keyboard.nextInt();
@@ -384,4 +400,5 @@ public class RMIClient {
         }
 
     }
+
 }

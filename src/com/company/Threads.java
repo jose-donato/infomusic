@@ -101,6 +101,12 @@ public class Threads extends Thread {
                     e.printStackTrace();
                 }
                 break;
+            case "getTable":
+                try {
+                    treatGetTable(this.map);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             /*case "upload":
                 String musicLocation = "C:\\Users\\JoséMariaCamposDonat\\Desktop\\macmiller.mp3";
                 try {
@@ -122,6 +128,25 @@ public class Threads extends Thread {
         }
     }
 
+    private void treatGetTable(HashMap<String, String> map) throws SQLException {
+        Connection c = SQL.enterDatabase("infomusic");
+        String table = map.get("table");
+        String result = "";
+        if(table.toLowerCase().equals("artists")) {
+            result = SQL.getArtistsTable(c);
+        }
+        else if(table.toLowerCase().equals("musics")) {
+            result = SQL.getMusicsTable(c);
+        }
+        else if(table.toLowerCase().equals("albums")) {
+            result = SQL.getAlbumsTable(c);
+        }
+        HashMap<String, String> hmap = new HashMap<>();
+        hmap.put("type", "getTablesResponse");
+        hmap.put("table", table);
+        hmap.put("result", result);
+        ConnectionFunctions.sendUdpPacket(hmap);
+    }
 
 
     private void treatUploadFile(HashMap<String, String> map) throws SQLException {

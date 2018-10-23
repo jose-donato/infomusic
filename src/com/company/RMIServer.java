@@ -5,6 +5,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  *
@@ -12,6 +13,7 @@ import java.util.HashMap;
 public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
     private static final long serialVersionUID = 1L;
     static InterfaceClient client;
+    public static CopyOnWriteArrayList<User> onlineRmiClients = new CopyOnWriteArrayList<User>();
 
     public static  String MulticastTCPAddress = null;
     public static String RMIClientTCPAddress = null;
@@ -19,21 +21,19 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
         super();
     }
 
-    /*public void subscribe(String name, InterfaceClient c) throws RemoteException {
-        System.out.println("Subscribing " + name);
-        System.out.print("> ");
-        client = c;
-    }*/
-
     /**
      * @param args
      * @throws RemoteException
      */
-    public static void main(String[] args) throws RemoteException {
+    public static void main(String[] args) throws RemoteException, InterruptedException {
         InterfaceServer i = new RMIServer();
         LocateRegistry.createRegistry(1099).rebind("infoMusicRegistry", i);
         //client.printOnClient("ola do servidor");
         System.out.println("Server ready...");
+
+        /*for(Users u : onlineRmiClients) {
+            u.client.printOnClient("laodlawodlwaodla");
+        }*/
     }
 
     /**
@@ -159,6 +159,17 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
         return false;
     }
 
+    @Override
+    public String getTable(String table) throws RemoteException {
+        HashMap<String, String> hmap = new HashMap<>();
+        hmap.put("type", "getTable");
+        hmap.put("table", table);
+        ConnectionFunctions.sendUdpPacket(hmap);
+        String message = ConnectionFunctions.receiveUdpPacket();
+        HashMap<String, String> map = ConnectionFunctions.string2HashMap(message);
+        return map.get("result");
+    }
+
 
     /**
      * aux to create the login hashmap to convert to string to send to multicast server
@@ -190,7 +201,7 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
     }
 
     @Override
-    public boolean searcByAlbumName() throws RemoteException {
+    public boolean searchByAlbumName() throws RemoteException {
         return false;
     }
 
@@ -225,6 +236,12 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
             return map.get("resultString");
         }
         return null;
+    }
+
+    @Override
+    public void subscribe(InterfaceClient c, String username) throws RemoteException {
+        User u = new User(username, c);
+        onlineRmiClients.add(u);
     }
 
 

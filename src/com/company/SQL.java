@@ -45,6 +45,7 @@ public final class SQL {
             arr.put("artistID", "SERIAL NOT NULL");
             arr.put("genre", "VARCHAR(30) NOT NULL");
             arr.put("name", "VARCHAR(30) NOT NULL");
+            arr.put("description", "VARCHAR(30) NOT NULL");
             arr.put("releaseDate", "DATE NOT NULL");
             arr.put("picture", "bytea");
             SQL.createTable(c, "albums", arr);
@@ -356,9 +357,57 @@ public final class SQL {
         ps.close();
         return false;
     }
-    public static void printAllTable(Connection c, String table) throws SQLException {
+    /*public static void printAllTable(Connection c, String table) throws SQLException {
         DBTablePrinter.printTable(c, table);
         //return allRows;
+    }*/
+
+
+    public static String getArtistsTable(Connection c) throws SQLException {
+        ArrayList<Integer> artistIDs = new ArrayList<>();
+        ArrayList<String> artistNames = new ArrayList<>();
+        Statement s = c.createStatement();
+        ResultSet rs = s.executeQuery("SELECT * FROM ARTISTS");
+        while (rs.next()) {
+            artistIDs.add(rs.getInt("artistID"));
+            artistNames.add(rs.getString("name"));
+        }
+        String result = "example:\n <artistID>. <artistName>\n";
+        for(int i=0; i <  artistIDs.size(); i++) {
+            result += artistIDs.get(i) +": "+ artistNames.get(i);
+        }
+        return result;
+    }
+    public static String getAlbumsTable(Connection c) throws SQLException {
+        ArrayList<Integer> albumIDs = new ArrayList<>();
+        ArrayList<String> albumNames = new ArrayList<>();
+        Statement s = c.createStatement();
+        ResultSet rs = s.executeQuery("SELECT * FROM ALBUMS");
+        while (rs.next()) {
+            albumIDs.add(rs.getInt("albumID"));
+            albumNames.add(rs.getString("name"));
+        }
+        String result = "example:\n <albumID>. <albumName>\n";
+        for(int i=0; i <  albumIDs.size(); i++) {
+            result += albumIDs.get(i) +": "+ albumNames.get(i);
+        }
+        return result;
+    }
+
+    public static String getMusicsTable(Connection c) throws SQLException {
+        ArrayList<Integer> musicIDs = new ArrayList<>();
+        ArrayList<String> musicNames = new ArrayList<>();
+        Statement s = c.createStatement();
+        ResultSet rs = s.executeQuery("SELECT * FROM MUSICS");
+        while (rs.next()) {
+            musicIDs.add(rs.getInt("musicID"));
+            musicNames.add(rs.getString("name"));
+        }
+        String result = "example:\n <musicID>. <musicName>\n";
+        for(int i=0; i <  musicIDs.size(); i++) {
+            result += musicNames.get(i) +": "+ musicNames.get(i)+"\n";
+        }
+        return result;
     }
 
     public static String albumData(Connection c, Integer albumID) throws SQLException {

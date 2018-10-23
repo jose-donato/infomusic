@@ -23,11 +23,13 @@ public interface InterfaceServer extends Remote {
     //for upload text file lyrics and picture to album
     public boolean uploadFileToTable(String table, String column, String fileLocation, Integer id) throws RemoteException;
 
-
+    public String getTable(String table) throws RemoteException;
 
     //search details about an album
     public String searchDetailAboutAlbum(int albumToSearch) throws RemoteException;
     public String searchDetailAboutArtist(int artistToSearch) throws RemoteException;
+
+    public void subscribe(InterfaceClient c, String username) throws RemoteException;
 
     public boolean writeAlbumReview(int albumToReviewID, int albumRating, String albumReview) throws RemoteException;
     public int uploadSong() throws RemoteException;
@@ -35,7 +37,7 @@ public interface InterfaceServer extends Remote {
 
     //need to be implemented
     public boolean searchByGenre() throws RemoteException;
-    public boolean searcByAlbumName() throws RemoteException;
+    public boolean searchByAlbumName() throws RemoteException;
     public boolean searchByArtistName() throws RemoteException;
 
 
