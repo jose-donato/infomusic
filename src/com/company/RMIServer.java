@@ -53,7 +53,7 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
                 try {
                     InterfaceServer i = (InterfaceServer) Naming.lookup("infoMusicRegistry");
                     System.out.println("Connect!");
-                    TimeUnit.SECONDS.sleep(5);
+                    Thread.sleep(5000);
                     attempt = 0;
 
                 } catch (RemoteException e) {
