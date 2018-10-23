@@ -1,4 +1,7 @@
 package com.company;
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -25,12 +28,40 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
      * @param args
      * @throws RemoteException
      */
-    public static void main(String[] args) throws RemoteException, InterruptedException {
-        InterfaceServer i = new RMIServer();
+    public static void main(String[] args) throws RemoteException, InterruptedException, MalformedURLException, NotBoundException {
+          /* InterfaceServer i = new RMIServer();
         LocateRegistry.createRegistry(1099).rebind("infoMusicRegistry", i);
         //client.printOnClient("ola do servidor");
-        System.out.println("Server ready...");
+        System.out.println("Server ready...");*/
+        boolean ServerBackup = true;
+        try {
+            InterfaceServer i = (InterfaceServer) Naming.lookup("infoMusicRegistry");
+            ServerBackup = true;
 
+        } catch (RemoteException e) {
+            ServerBackup = false;
+        }
+
+        if(ServerBackup) {
+            int attempt = 0;
+            while (attempt < 5) {
+                System.out.println("Trying to connect...");
+                try {
+                    InterfaceServer i = (InterfaceServer) Naming.lookup("infoMusicRegistry");
+                    System.out.println("Connect!");
+                    Thread.sleep(5000);
+                    attempt = 0;
+
+                } catch (RemoteException e) {
+                    attempt += 1;
+                }
+            }
+        }
+        InterfaceServer i = new RMIServer();
+        LocateRegistry.createRegistry(1099).rebind("infoMusicRegistry", i);
+
+        //client.printOnClient("ola do servidor");
+        System.out.println("Server ready...");
         /*for(Users u : onlineRmiClients) {
             u.client.printOnClient("laodlawodlwaodla");
         }*/
