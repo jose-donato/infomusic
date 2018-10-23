@@ -72,6 +72,16 @@ public final class SQL {
             SQL.createTable(c, "reviews", arr);
             SQL.addForeignKeyToTable(c, "albums", "reviews", "albumID");
 
+
+            arr = new HashMap<>();
+            arr.put("cloudMusicsID", "SERIAL PRIMARY KEY NOT NULL");
+            arr.put("username", "VARCHAR(20) NOT NULL");
+            arr.put("musicID", "SERIAL NOT NULL");
+            arr.put("musicFile", "BYTEA NOT NULL");
+            SQL.createTable(c, "cloudMusics", arr);
+            SQL.addForeignKeyToTable(c, "musics", "cloudmusics", "musicID");
+            SQL.addForeignKeyToTable(c, "users", "cloudmusics", "username");
+
             /*arr = new HashMap<String, String>();
             arr.put("name", "VARCHAR(20) PRIMARY KEY");
             arr.put("file", "bytea");
@@ -272,7 +282,6 @@ public final class SQL {
 
     public static boolean enterFileInTable(Connection c, String table, String column, String fileLocation, int id) {
         File file = new File(fileLocation);
-        PreparedStatement prestatement = null;
         try {
             String tableID = table.substring(0, table.length()-1)+id;
             //tbf
@@ -298,6 +307,28 @@ public final class SQL {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public static void enterArrayInTable(Connection c, String table, byte[] array, int id, String username) throws SQLException {
+        String query = "INSERT INTO "+table+" (musicID, username, musicFile) VALUES ("+id+",'"+username+"',?)";
+        PreparedStatement pstmt = c.prepareStatement(query);
+        pstmt.setBytes(1, array);
+        pstmt.execute();
+    }
+
+    public static byte[] getArrayInTable(Connection c, String table, int id, String username) throws SQLException {
+        PreparedStatement ps = c.prepareStatement("SELECT musicFile FROM "+table+" WHERE musicID = "+id+" and username='"+username+"'");
+        ResultSet rs = ps.executeQuery();
+        byte[] array = null;
+        if (rs != null) {
+            while (rs.next()) {
+                array = rs.getBytes(1);
+                // use the data in some way here
+            }
+            rs.close();
+        }
+        ps.close();
+        return array;
     }
 
     public static boolean getFileFromTable(Connection c) throws SQLException, IOException {

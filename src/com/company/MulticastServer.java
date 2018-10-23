@@ -18,7 +18,8 @@ public class MulticastServer extends Thread {
 
     public static void main(String[] args) throws IOException, InterruptedException, SQLException {
         //SQL.initialConfig();
-        Connection c = SQL.enterDatabase("infomusic");
+        //Connection c = SQL.enterDatabase("infomusic");
+
         //System.out.println(SQL.albumData(c, 1));
         //System.out.println(SQL.artistData(c, 1));
 
@@ -30,6 +31,8 @@ public class MulticastServer extends Thread {
         //SQL.grantAdminToUser(c, "hugobrinkaaa");
         MulticastServer server = new MulticastServer();
         server.start();
+        //ConnectionFunctions.downloadMusicTCP("", 1, "rita", true);
+
     }
 
     /**

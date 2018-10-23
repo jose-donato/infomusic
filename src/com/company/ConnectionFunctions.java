@@ -2,6 +2,7 @@ package com.company;
 
 import java.io.*;
 import java.net.*;
+import java.sql.SQLException;
 import java.util.HashMap;
 
 /**
@@ -47,7 +48,7 @@ public final class ConnectionFunctions {
             byte[] buffer = new byte[256];
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
             socket.receive(packet);
-            RMIServer.TCPAddress = packet.getAddress().getHostAddress();
+            RMIServer.MulticastTCPAddress = packet.getAddress().getHostAddress();
             System.out.println("d: received packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message:");
             message = new String(packet.getData(), 0, packet.getLength());
             System.out.println(message);
@@ -59,9 +60,8 @@ public final class ConnectionFunctions {
         return message;
     }
 
-    public static boolean uploadMusicTCP(String musicLocation) throws IOException {
-        int serverPort = 13267;  // you may change this
-        //String musicLocation = "c:/temp/source.pdf";  // you may change this
+    public static boolean uploadMusicTCP(String musicLocation, boolean fromSQL, int musicID, String username) throws IOException {
+        int serverPort = 13267;
         FileInputStream fis = null;
         BufferedInputStream bis = null;
         OutputStream os = null;
@@ -76,6 +76,12 @@ public final class ConnectionFunctions {
                     sock = servsock.accept();
                     System.out.println("d: accepted connection : " + sock);
                     // send file
+                    if(fromSQL) {
+                        byte[] mybytearray = SQL.getArrayInTable(SQL.enterDatabase("infomusic"), "cloudmusics", musicID, username);
+                    }
+                    else {
+
+                    }
                     File myFile = new File (musicLocation);
                     byte [] mybytearray  = new byte [(int)myFile.length()];
                     fis = new FileInputStream(myFile);
@@ -87,8 +93,9 @@ public final class ConnectionFunctions {
                     os.flush();
                     System.out.println("d: done.");
                     musicUploaded = true;
-                }
-                finally {
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                } finally {
                     if (bis != null) bis.close();
                     if (os != null) os.close();
                     if (sock!=null) sock.close();
@@ -102,7 +109,7 @@ public final class ConnectionFunctions {
 
         return false;
     }
-    public static boolean downloadMusicTCP(String musicLocation) throws IOException, InterruptedException {
+    public static boolean downloadMusicTCP(String musicDestination, int musicID, String username, boolean toSQL) throws IOException, InterruptedException {
         int serverPort = 13267;
         int FILE_SIZE = 6000000;
         boolean musicDownloaded = false;
@@ -112,33 +119,45 @@ public final class ConnectionFunctions {
         BufferedOutputStream bos = null;
         Socket s = null;
         while(!musicDownloaded) {
-            if (RMIServer.TCPAddress != null) {
+            if (RMIServer.MulticastTCPAddress != null) {
                 try {
                     //sock = new Socket("127.0.0.1", serverSocket);
-                    s = new Socket(RMIServer.TCPAddress, serverPort);
+                    s = new Socket(RMIServer.MulticastTCPAddress, serverPort);
                     System.out.println("d: connecting...");
 
                     // receive file
                     byte[] mybytearray = new byte[FILE_SIZE];
                     InputStream is = s.getInputStream();
-                    fos = new FileOutputStream(musicLocation);
-                    bos = new BufferedOutputStream(fos);
-                    bytesRead = is.read(mybytearray, 0, mybytearray.length);
-                    current = bytesRead;
+                    if(toSQL) {
+                        bytesRead = is.read(mybytearray, 0, mybytearray.length);
+                        current = bytesRead;
+                        do {
+                            bytesRead = is.read(mybytearray, current, (mybytearray.length - current));
+                            if (bytesRead >= 0) current += bytesRead;
+                        } while (bytesRead > -1);
+                        SQL.enterArrayInTable(SQL.enterDatabase("infomusic"), "cloudmusics", mybytearray, musicID, username);
+                    }
+                    else {
+                        fos = new FileOutputStream(musicDestination);
+                        bos = new BufferedOutputStream(fos);
+                        bytesRead = is.read(mybytearray, 0, mybytearray.length);
+                        current = bytesRead;
 
-                    do {
-                        bytesRead =
-                                is.read(mybytearray, current, (mybytearray.length - current));
-                        if (bytesRead >= 0) current += bytesRead;
-                    } while (bytesRead > -1);
+                        do {
+                            bytesRead = is.read(mybytearray, current, (mybytearray.length - current));
+                            if (bytesRead >= 0) current += bytesRead;
+                        } while (bytesRead > -1);
 
-                    bos.write(mybytearray, 0, current);
-                    bos.flush();
-                    System.out.println("d: file " + musicLocation
+                        bos.write(mybytearray, 0, current);
+                        bos.flush();
+                    }
+                    System.out.println("d: file " + musicDestination
                             + " downloaded (" + current + " bytes read)");
                 } catch (UnknownHostException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (SQLException e) {
                     e.printStackTrace();
                 } finally {
                     if (fos != null) fos.close();

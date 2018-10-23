@@ -15,7 +15,7 @@ public interface InterfaceServer extends Remote {
     public boolean grantAdminToUser(String username) throws RemoteException;
     public boolean changeData(String tableName, String columnType, Integer tableID, String newName) throws RemoteException;
     //public int register(String username,String password) throws RemoteException;
-    public String getTCPAddress() throws RemoteException;
+    //public String getTCPAddress() throws RemoteException;
     public boolean addMusic(String name, String description, Integer duration, Integer albumID, Integer artistID) throws RemoteException;
     public boolean addAlbum(String name, String genre, String date, Integer artistID) throws RemoteException;
     public boolean addArtist(String name, String description) throws RemoteException;

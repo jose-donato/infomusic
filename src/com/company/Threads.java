@@ -101,7 +101,7 @@ public class Threads extends Thread {
                     e.printStackTrace();
                 }
                 break;
-            case "upload":
+            /*case "upload":
                 String musicLocation = "C:\\Users\\JoséMariaCamposDonat\\Desktop\\macmiller.mp3";
                 try {
                     ConnectionFunctions.uploadMusicTCP(musicLocation);
@@ -118,7 +118,7 @@ public class Threads extends Thread {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                break;
+                break;*/
         }
     }
 

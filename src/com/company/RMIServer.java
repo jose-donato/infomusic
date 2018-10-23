@@ -13,7 +13,8 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
     private static final long serialVersionUID = 1L;
     static InterfaceClient client;
 
-    public static  String TCPAddress = null;
+    public static  String MulticastTCPAddress = null;
+    public static String RMIClientTCPAddress = null;
     protected RMIServer() throws RemoteException {
         super();
     }
@@ -110,10 +111,6 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
         return false;
     }
 
-    @Override
-    public String getTCPAddress() throws RemoteException {
-        return RMIServer.TCPAddress;
-    }
 
     @Override
     public boolean addMusic(String name, String description, Integer duration, Integer albumID, Integer artistID) throws RemoteException {

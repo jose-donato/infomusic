@@ -11,13 +11,13 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Scanner;
 
 /**
  *
  */
 public class RMIClient {
-
     protected RMIClient() throws RemoteException {
         super();
     }
@@ -101,7 +101,7 @@ public class RMIClient {
         }
     }
 
-    public static boolean menu(InterfaceServer i, String username) throws RemoteException, SQLException {
+    public static boolean menu(InterfaceServer i, String username) throws IOException, SQLException {
         Connection c = SQL.enterDatabase("infomusic");
         System.out.println("welcome username! what you want to do?");
 
@@ -179,6 +179,41 @@ public class RMIClient {
                     }
                     break;
                 case 4:
+                    System.out.println("which operation you want to do?");
+                    System.out.println("1. upload");
+                    System.out.println("2. download");
+                    keyboard = new Scanner(System.in);
+                    int choice5 = keyboard.nextInt();
+                    switch(choice5){
+                        case 1:
+                            SQL.printAllTable(c,"musics");
+
+
+
+                            ConnectionFunctions.uploadMusicTCP("C:\\Users\\zmcdo\\Documents\\music.mp3", false, 1, "rita");
+
+
+                            System.out.println("select the music's ID u want to upload");
+                            keyboard = new Scanner(System.in);
+                            int musicID = keyboard.nextInt();
+                            System.out.println("type the music location: ");
+                            keyboard = new Scanner(System.in);
+                            String location = keyboard.nextLine();
+                            break;
+                        case 2:
+                            SQL.printAllTable(c,"albums");
+                            System.out.println("select the ID you want to change the name");
+                            keyboard = new Scanner(System.in);
+                            int albumID = keyboard.nextInt();
+                            System.out.println("type the new name: ");
+                            keyboard = new Scanner(System.in);
+                            String albumNewName = keyboard.nextLine();
+
+                            break;
+                        default:
+                            System.out.println("please enter valid option");
+
+                    }
                     /*HashMap<String, String> map = new HashMap<>();
                     map.put("type", "upload");
                     String s;
@@ -207,8 +242,8 @@ public class RMIClient {
                                 System.out.println("2. album");
                                 System.out.println("3. artist");
                                 keyboard = new Scanner(System.in);
-                                int choice5 = keyboard.nextInt();
-                                switch(choice5) {
+                                int choice6 = keyboard.nextInt();
+                                switch(choice6) {
                                     case 1:
                                         System.out.println("music's name: ");
                                         keyboard = new Scanner(System.in);
