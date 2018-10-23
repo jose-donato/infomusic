@@ -39,10 +39,13 @@ public class RMIServerBackup extends UnicastRemoteObject implements InterfaceSer
 
         int attempt = 0;
         while(attempt<5) {
+            System.out.println("Trying to connect...");
             try {
                 InterfaceServer i = (InterfaceServer) Naming.lookup("infoMusicRegistry");
+                System.out.println("Connect!");
                 TimeUnit.SECONDS.sleep(5);
                 attempt=0;
+
             } catch (RemoteException e) {
                 attempt += 1;
             }
