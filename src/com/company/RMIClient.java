@@ -190,7 +190,7 @@ public class RMIClient {
 
 
 
-                            ConnectionFunctions.uploadMusicTCP("C:\\Users\\zmcdo\\Documents\\music.mp3", false, 1, "rita");
+                            //ConnectionFunctions.uploadMusicTCP("C:\\Users\\zmcdo\\Documents\\music.mp3", false, 1, "rita");
 
 
                             System.out.println("select the music's ID u want to upload");

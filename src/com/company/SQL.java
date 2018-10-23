@@ -74,7 +74,7 @@ public final class SQL {
 
 
             arr = new HashMap<>();
-            arr.put("cloudMusicsID", "SERIAL PRIMARY KEY NOT NULL");
+            arr.put("cloudMusicID", "SERIAL PRIMARY KEY NOT NULL");
             arr.put("username", "VARCHAR(20) NOT NULL");
             arr.put("musicID", "SERIAL NOT NULL");
             arr.put("musicFile", "BYTEA NOT NULL");
@@ -459,6 +459,19 @@ public final class SQL {
         //result += "description of the artist: " + description + "\n";
         result += "\n";
         return result;
+    }
+
+    public static void shareMusicWithUser(Connection c, int cloudMusicID, String userToShare) throws SQLException {
+        Statement s = c.createStatement();
+        ResultSet rs = s.executeQuery("SELECT * FROM cloudmusics WHERE cloudMusicID='"+cloudMusicID+"'");
+        int musicID = 0;
+        byte[] array = null;
+        while (rs.next()) {
+            musicID = rs.getInt("musicID");
+            array = rs.getBytes("musicFile");
+        }
+        SQL.enterArrayInTable(c, "cloudmusics", array, musicID, userToShare);
+
     }
 
     private static Double average(ArrayList<Double> array) {

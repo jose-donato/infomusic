@@ -1,5 +1,7 @@
 package com.company;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.*;
 import java.net.*;
 import java.sql.SQLException;
@@ -60,118 +62,71 @@ public final class ConnectionFunctions {
         return message;
     }
 
-    public static boolean uploadMusicTCP(String musicLocation, boolean fromSQL, int musicID, String username) throws IOException {
-        int serverPort = 13267;
-        FileInputStream fis = null;
-        BufferedInputStream bis = null;
-        OutputStream os = null;
-        ServerSocket servsock = null;
-        Socket sock = null;
-        boolean musicUploaded = false;
-        try {
-            servsock = new ServerSocket(serverPort);
-            while (!musicUploaded) {
-                System.out.println("d: waiting...");
-                try {
-                    sock = servsock.accept();
-                    System.out.println("d: accepted connection : " + sock);
-                    // send file
-                    if(fromSQL) {
-                        byte[] mybytearray = SQL.getArrayInTable(SQL.enterDatabase("infomusic"), "cloudmusics", musicID, username);
-                    }
-                    else {
-
-                    }
-                    File myFile = new File (musicLocation);
-                    byte [] mybytearray  = new byte [(int)myFile.length()];
-                    fis = new FileInputStream(myFile);
-                    bis = new BufferedInputStream(fis);
-                    bis.read(mybytearray,0,mybytearray.length);
-                    os = sock.getOutputStream();
-                    System.out.println("d: sending " + musicLocation + "(" + mybytearray.length + " bytes)");
-                    os.write(mybytearray,0,mybytearray.length);
-                    os.flush();
-                    System.out.println("d: done.");
-                    musicUploaded = true;
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                } finally {
-                    if (bis != null) bis.close();
-                    if (os != null) os.close();
-                    if (sock!=null) sock.close();
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (servsock != null) servsock.close();
-        }
-
-        return false;
+    public static ServerSocket establishConnectionServer() throws IOException {
+        ServerSocket serverSocket = new ServerSocket(6789);
+        return serverSocket;
     }
-    public static boolean downloadMusicTCP(String musicDestination, int musicID, String username, boolean toSQL) throws IOException, InterruptedException {
-        int serverPort = 13267;
-        int FILE_SIZE = 6000000;
-        boolean musicDownloaded = false;
-        int bytesRead;
-        int current = 0;
-        FileOutputStream fos = null;
-        BufferedOutputStream bos = null;
-        Socket s = null;
-        while(!musicDownloaded) {
-            if (RMIServer.MulticastTCPAddress != null) {
-                try {
-                    //sock = new Socket("127.0.0.1", serverSocket);
-                    s = new Socket(RMIServer.MulticastTCPAddress, serverPort);
-                    System.out.println("d: connecting...");
+    public static Socket establishConnectionClient() throws IOException {
+        Socket clientSocket = new Socket("localhost", 6789);
+        return clientSocket;
+    }
 
-                    // receive file
-                    byte[] mybytearray = new byte[FILE_SIZE];
-                    InputStream is = s.getInputStream();
-                    if(toSQL) {
-                        bytesRead = is.read(mybytearray, 0, mybytearray.length);
-                        current = bytesRead;
-                        do {
-                            bytesRead = is.read(mybytearray, current, (mybytearray.length - current));
-                            if (bytesRead >= 0) current += bytesRead;
-                        } while (bytesRead > -1);
-                        SQL.enterArrayInTable(SQL.enterDatabase("infomusic"), "cloudmusics", mybytearray, musicID, username);
-                    }
-                    else {
-                        fos = new FileOutputStream(musicDestination);
-                        bos = new BufferedOutputStream(fos);
-                        bytesRead = is.read(mybytearray, 0, mybytearray.length);
-                        current = bytesRead;
+    public static void sendMusicFromRMIClient() throws IOException {
+        File file = new File("D:\\Downloads\\mac.mp3");
+        byte[] array = FileUtils.readFileToByteArray(file);
+        sendBytes(array,0, array.length, establishConnectionClient());
+    }
 
-                        do {
-                            bytesRead = is.read(mybytearray, current, (mybytearray.length - current));
-                            if (bytesRead >= 0) current += bytesRead;
-                        } while (bytesRead > -1);
+    public static void receiveMusicMulticastServer() throws IOException, SQLException {
+        ServerSocket serverSocket = establishConnectionServer();
+        Socket socket = serverSocket.accept();
+        byte[] array = readBytes(socket);
+        SQL.enterArrayInTable(SQL.enterDatabase("infomusic"), "cloudmusics", array, 1, "jose");
+    }
 
-                        bos.write(mybytearray, 0, current);
-                        bos.flush();
-                    }
-                    System.out.println("d: file " + musicDestination
-                            + " downloaded (" + current + " bytes read)");
-                } catch (UnknownHostException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                } finally {
-                    if (fos != null) fos.close();
-                    if (bos != null) bos.close();
-                    if (s != null) s.close();
-                    musicDownloaded = true;
-                }
-            }
-            else {
-                System.out.println("d: no rmiserver.tcpaddress yet");
-            }
-            Thread.sleep(1000);
+    public static void sendMusicFromMulticastServer() throws IOException, SQLException {
+        ServerSocket serverSocket = establishConnectionServer();
+        Socket socket = serverSocket.accept();
+        byte[] array = SQL.getArrayInTable(SQL.enterDatabase("infomusic"), "cloudmusics", 1, "jose");
+        sendBytes(array, 0, array.length, socket);
+    }
+
+    public static void receiveMusicRMIClient() throws IOException {
+        byte[] array = readBytes(establishConnectionClient());
+        FileOutputStream fos = new FileOutputStream("D:\\Downloads\\mac2.mp3");
+        fos.write(array);
+        fos.close();
+    }
+
+
+    public static void sendBytes(byte[] myByteArray, int start, int len, Socket socket) throws IOException {
+        if (len < 0)
+            throw new IllegalArgumentException("Negative length not allowed");
+        if (start < 0 || start >= myByteArray.length)
+            throw new IndexOutOfBoundsException("Out of bounds: " + start);
+        // Other checks if needed.
+
+        // May be better to save the streams in the support class;
+        // just like the socket variable.
+        OutputStream out = socket.getOutputStream();
+        DataOutputStream dos = new DataOutputStream(out);
+
+        dos.writeInt(len);
+        if (len > 0) {
+            dos.write(myByteArray, start, len);
         }
-        return false;
+    }
+    public static byte[] readBytes(Socket socket) throws IOException {
+        // Again, probably better to store these objects references in the support class
+        InputStream in = socket.getInputStream();
+        DataInputStream dis = new DataInputStream(in);
+
+        int len = dis.readInt();
+        byte[] data = new byte[len];
+        if (len > 0) {
+            dis.readFully(data);
+        }
+        return data;
     }
 
     /**
