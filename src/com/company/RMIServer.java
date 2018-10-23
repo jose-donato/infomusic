@@ -31,7 +31,7 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
         //client.printOnClient("ola do servidor");
         System.out.println("Server ready...");
 
-        /*for(Users u : onlineRmiClients) {
+        /*for(Users u : onlineRmiClients) {z
             u.client.printOnClient("laodlawodlwaodla");
         }*/
     }
