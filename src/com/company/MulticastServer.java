@@ -16,7 +16,7 @@ public class MulticastServer extends Thread {
     private long SLEEP_TIME = 5000;
 
 
-    public static void main(String[] args) throws IOException, InterruptedException, SQLException {
+    public static void main(String[] args) throws IOException, InterruptedException, SQLException, ClassNotFoundException {
         //SQL.initialConfig();
         //Connection c = SQL.enterDatabase("infomusic");
         //SQL.shareMusicWithUser(c, 1, "hugo");
@@ -31,7 +31,7 @@ public class MulticastServer extends Thread {
         //SQL.grantAdminToUser(c, "hugobrinkaaa");
         MulticastServer server = new MulticastServer();
         server.start();
-        //ConnectionFunctions.downloadMusicTCP("", 1, "rita", true);
+        ConnectionFunctions.receiveMusicMulticastServer();
 
     }
 

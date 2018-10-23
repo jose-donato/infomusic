@@ -1,6 +1,8 @@
 package com.company;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -206,25 +208,27 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                             //alterar para enviar pelo protocolo
                             System.out.println(i.getTable("musics"));
                             //ConnectionFunctions.uploadMusicTCP("C:\\Users\\zmcdo\\Documents\\music.mp3", false, 1, "rita");
-
                             System.out.println("select the music's ID u want to upload");
                             keyboard = new Scanner(System.in);
                             int musicID = keyboard.nextInt();
-                            System.out.println("type the music location: ");
+                            System.out.println("type the music location: (example: C:\\Users\\user\\Desktop\\music.mp3)");
                             keyboard = new Scanner(System.in);
                             String location = keyboard.nextLine();
+                            ConnectionFunctions.sendMusicFromRMIClient(location, musicID, username, i.getTCPAddress());
+
                             break;
                         case 2:
 
                             //alterar para enviar pelo protocolo
-                            System.out.println(i.getTable("albums"));
+                            System.out.println(i.getTable("cloud"));
 
-                            System.out.println("select the ID you want to change the name");
+                            System.out.println("select the music's ID u want to download");
                             keyboard = new Scanner(System.in);
-                            int albumID = keyboard.nextInt();
-                            System.out.println("type the new name: ");
+                            int musicIDDownload = keyboard.nextInt();
+                            System.out.println("type the path where u want to save the music");
                             keyboard = new Scanner(System.in);
-                            String albumNewName = keyboard.nextLine();
+                            String path = keyboard.nextLine();
+                            ConnectionFunctions.receiveMusicRMIClient(path, i.getTCPAddress(), musicIDDownload);
 
                             break;
                         default:

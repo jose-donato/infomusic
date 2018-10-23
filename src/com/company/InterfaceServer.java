@@ -15,7 +15,7 @@ public interface InterfaceServer extends Remote {
     public boolean grantAdminToUser(String username) throws RemoteException;
     public boolean changeData(String tableName, String columnType, Integer tableID, String newName) throws RemoteException;
     //public int register(String username,String password) throws RemoteException;
-    //public String getTCPAddress() throws RemoteException;
+    public String getTCPAddress() throws RemoteException;
     public boolean addMusic(String name, String description, Integer duration, Integer albumID, Integer artistID) throws RemoteException;
     public boolean addAlbum(String name, String genre, String date, Integer artistID) throws RemoteException;
     public boolean addArtist(String name, String description) throws RemoteException;
@@ -32,8 +32,6 @@ public interface InterfaceServer extends Remote {
     public void subscribe(InterfaceClient c, String username) throws RemoteException;
 
     public boolean writeAlbumReview(int albumToReviewID, int albumRating, String albumReview) throws RemoteException;
-    public int uploadSong() throws RemoteException;
-    public int downloadSong() throws RemoteException;
 
     //need to be implemented
     public boolean searchByGenre() throws RemoteException;

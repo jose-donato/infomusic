@@ -395,9 +395,9 @@ public final class SQL {
             artistIDs.add(rs.getInt("artistID"));
             artistNames.add(rs.getString("name"));
         }
-        String result = "example:\n <artistID>. <artistName>\n";
+        String result = "example: <artistID>. <artistName>\n";
         for(int i=0; i <  artistIDs.size(); i++) {
-            result += artistIDs.get(i) +": "+ artistNames.get(i);
+            result += artistIDs.get(i) +". "+ artistNames.get(i);
         }
         return result;
     }
@@ -410,9 +410,9 @@ public final class SQL {
             albumIDs.add(rs.getInt("albumID"));
             albumNames.add(rs.getString("name"));
         }
-        String result = "example:\n <albumID>. <albumName>\n";
+        String result = "example: <albumID>. <albumName>\n";
         for(int i=0; i <  albumIDs.size(); i++) {
-            result += albumIDs.get(i) +": "+ albumNames.get(i);
+            result += albumIDs.get(i) +". "+ albumNames.get(i);
         }
         return result;
     }
@@ -426,9 +426,9 @@ public final class SQL {
             musicIDs.add(rs.getInt("musicID"));
             musicNames.add(rs.getString("name"));
         }
-        String result = "example:\n <musicID>. <musicName>\n";
+        String result = "example: <musicID>. <musicName>\n";
         for(int i=0; i <  musicIDs.size(); i++) {
-            result += musicNames.get(i) +": "+ musicNames.get(i)+"\n";
+            result += musicIDs.get(i) +". "+ musicNames.get(i)+"\n";
         }
         return result;
     }

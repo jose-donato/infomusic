@@ -4,7 +4,9 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.net.*;
+import java.nio.file.Path;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -66,22 +68,31 @@ public final class ConnectionFunctions {
         ServerSocket serverSocket = new ServerSocket(6789);
         return serverSocket;
     }
-    public static Socket establishConnectionClient() throws IOException {
-        Socket clientSocket = new Socket("localhost", 6789);
+    public static Socket establishConnectionClient(String TCPAddress) throws IOException {
+        Socket clientSocket = new Socket(TCPAddress, 6789);
         return clientSocket;
     }
 
-    public static void sendMusicFromRMIClient() throws IOException {
-        File file = new File("D:\\Downloads\\mac.mp3");
-        byte[] array = FileUtils.readFileToByteArray(file);
-        sendBytes(array,0, array.length, establishConnectionClient());
+    public static void sendMusicFromRMIClient(String filePath, int musicID, String username, String TCPAddress) throws IOException {
+        File file = new File(filePath);
+        byte[] musicFileByteArray = FileUtils.readFileToByteArray(file);
+        HashMap<String, String> hmap = new HashMap<>();
+        hmap.put("type", "sendMusicFromRMIClient");
+        hmap.put("musicFile", toString(musicFileByteArray));
+        hmap.put("musicID", musicID+"");
+        hmap.put("username", username);
+        byte[] array = hashToByte(hmap);
+        sendBytes(array,0, array.length, establishConnectionClient(TCPAddress));
     }
 
-    public static void receiveMusicMulticastServer() throws IOException, SQLException {
+    public static void receiveMusicMulticastServer() throws IOException, SQLException, ClassNotFoundException {
         ServerSocket serverSocket = establishConnectionServer();
         Socket socket = serverSocket.accept();
         byte[] array = readBytes(socket);
-        SQL.enterArrayInTable(SQL.enterDatabase("infomusic"), "cloudmusics", array, 1, "jose");
+        HashMap<String, String> hmap = byteToHash(array);
+        String username = hmap.get("username");
+        int musicID = Integer.parseInt(hmap.get("musicID"));
+        SQL.enterArrayInTable(SQL.enterDatabase("infomusic"), "cloudmusics", array, musicID, username);
     }
 
     public static void sendMusicFromMulticastServer() throws IOException, SQLException {
@@ -91,9 +102,9 @@ public final class ConnectionFunctions {
         sendBytes(array, 0, array.length, socket);
     }
 
-    public static void receiveMusicRMIClient() throws IOException {
-        byte[] array = readBytes(establishConnectionClient());
-        FileOutputStream fos = new FileOutputStream("D:\\Downloads\\mac2.mp3");
+    public static void receiveMusicRMIClient(String path, String TCPAddress, int musicIDDownload) throws IOException {
+        byte[] array = readBytes(establishConnectionClient(TCPAddress));
+        FileOutputStream fos = new FileOutputStream(path);
         fos.write(array);
         fos.close();
     }
@@ -146,6 +157,44 @@ public final class ConnectionFunctions {
         }
         return map;
     }
+
+    public static byte[] intToByteArray(int value) {
+        return new byte[] {
+                (byte)(value >>> 24),
+                (byte)(value >>> 16),
+                (byte)(value >>> 8),
+                (byte)value};
+    }
+    public static int fromByteArray(byte[] bytes) {
+        return bytes[0] << 24 | (bytes[1] & 0xFF) << 16 | (bytes[2] & 0xFF) << 8 | (bytes[3] & 0xFF);
+    }
+    public static byte[] concatenateByteArrays(byte[] a, byte[] b) {
+        byte[] result = new byte[a.length + b.length];
+        System.arraycopy(a, 0, result, 0, a.length);
+        System.arraycopy(b, 0, result, a.length, b.length);
+        return result;
+    }
+
+    public static String toString(byte[] bytes) {
+        return new String(bytes);
+    }
+
+    public static byte[] hashToByte(HashMap<String, String> map) throws IOException {
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(byteStream));
+        oos.writeObject(map);
+        oos.close();
+        byte[] array = byteStream.toByteArray();
+        return array;
+    }
+    public static HashMap<String, String> byteToHash(byte[] array) throws IOException, ClassNotFoundException {
+        ByteArrayInputStream byteStream = new ByteArrayInputStream(array);
+        ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(byteStream));
+        HashMap<String, String> map = (HashMap<String, String>) ois.readObject();
+        ois.close();
+        return map;
+    }
+
 
     /**
      *

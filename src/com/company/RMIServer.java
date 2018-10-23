@@ -12,11 +12,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
     private static final long serialVersionUID = 1L;
-    static InterfaceClient client;
     public static CopyOnWriteArrayList<User> onlineRmiClients = new CopyOnWriteArrayList<User>();
 
     public static  String MulticastTCPAddress = null;
-    public static String RMIClientTCPAddress = null;
     protected RMIServer() throws RemoteException {
         super();
     }
@@ -31,9 +29,6 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
         //client.printOnClient("ola do servidor");
         System.out.println("Server ready...");
 
-        /*for(Users u : onlineRmiClients) {
-            u.client.printOnClient("laodlawodlwaodla");
-        }*/
     }
 
     /**
@@ -109,6 +104,17 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
         hmap.put("newName", newName);
         ConnectionFunctions.sendUdpPacket(hmap);
         return false;
+    }
+
+    @Override
+    public String getTCPAddress() throws RemoteException {
+        if(MulticastTCPAddress != null) {
+            return MulticastTCPAddress;
+        }
+        else {
+            System.out.println("no multicast available");
+            return null;
+        }
     }
 
 
@@ -256,14 +262,5 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
         return false;
     }
 
-    @Override
-    public int uploadSong() throws RemoteException {
-        return 0;
-    }
-
-    @Override
-    public int downloadSong() throws RemoteException {
-        return 0;
-    }
 }
 
