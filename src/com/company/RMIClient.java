@@ -127,6 +127,10 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
 
             switch (choice) {
                 case 1:
+                    System.out.println("write the title of the song you are looking for");
+                    keyboard = new Scanner(System.in);
+                    String songTitle = keyboard.nextLine();
+                   // i.searchSong(songTitle);
                     // Search for Songs;
                     break;
                 case 2:
@@ -152,8 +156,8 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                             break;
                         case 2:
                             //alterar para enviar pelo protocolo
-                            System.out.println(i.getTable("albums", username));
-                            System.out.println("type the album id u want to know more about");
+                            System.out.println(i.getTable("artists", username));
+                            System.out.println("type the artist id u want to know more about");
                             keyboard = new Scanner(System.in);
                             int artistToSearch = keyboard.nextInt();
                             String artistDetail = i.searchDetailAboutArtist(artistToSearch);
@@ -371,6 +375,7 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                                                 String newDescription = keyboard.nextLine();
                                                 i.changeData("albums","description", albumID, newDescription);
                                                 i.userEditAlbum(username, albumID);
+                                                i.notifyUsersAboutAlbumDescriptionEdit(username, albumID);
                                                 break;
                                             case 3:
                                                 break;
@@ -417,6 +422,7 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                     else{
                         System.out.println("you are not an admin");
                     }
+                    break;
                 case 6:
                     //logout
                     return true;
