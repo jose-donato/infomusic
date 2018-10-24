@@ -406,9 +406,9 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                                 }
                                 break;
                             case 4:
-                                //
+                                //4. add picture to an album
                             case 5:
-
+                                //5. upload song lyrics"
                             case 6:
                                 System.out.println("this is all the users in the system");
                                 System.out.println(i.getTable("users",username));
