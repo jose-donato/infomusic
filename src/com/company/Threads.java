@@ -6,6 +6,7 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Threads extends Thread {
@@ -130,7 +131,20 @@ public class Threads extends Thread {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+                break;
+            case "notifyUsersAboutAlbumDescriptionEdit":
+                try {
+                    treatNotifyUsersAboutAlbumDescriptionEdit(this.map);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
         }
+    }
+
+    private void treatNotifyUsersAboutAlbumDescriptionEdit(HashMap<String, String> map) throws SQLException {
+        int albumID = Integer.parseInt(map.get("albumID"));
+        Connection c = SQL.enterDatabase("infomusic");
+        ArrayList<String> names = SQL.getUsersThatEditAlbum(c, albumID);
     }
 
     private void treatUserEditAlbum(HashMap<String, String> map) throws SQLException {

@@ -43,6 +43,9 @@ public interface InterfaceServer extends Remote {
     public boolean shareMusicInCloud(String username, int musicIDToShare) throws RemoteException;
     public boolean userEditAlbum(String username, int albumID) throws RemoteException;
 
+    public boolean notifyUsersAboutAlbumDescriptionEdit(String username, int albumID) throws RemoteException;
+    public boolean notifyUserAboutAdminGranted(String username) throws RemoteException;
+
 
     //public void subscribe(String name, InterfaceClient client) throws RemoteException;
 

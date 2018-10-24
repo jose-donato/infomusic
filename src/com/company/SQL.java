@@ -367,7 +367,7 @@ public final class SQL {
 
     public static boolean changeName(Connection c, String table, String newName, Integer ID, String column) throws SQLException {
         String name = table.substring(0, table.length()-1);
-        String sql = "UPDATE "+table+" SET name = '"+newName+"' WHERE "+name+"id = "+ID;
+        String sql = "UPDATE "+table+" SET "+column+" = '"+newName+"' WHERE "+name+"id = "+ID;
         PreparedStatement ps = c.prepareStatement(sql);
         ps.executeUpdate();
         ps.close();
@@ -580,6 +580,16 @@ public final class SQL {
         s.executeUpdate(sql);
     }
 
+    public static ArrayList<String> getUsersThatEditAlbum(Connection c, int albumID) throws SQLException {
+        ArrayList<String> array = new ArrayList<>();
+        Statement s = c.createStatement();
+        ResultSet rs = s.executeQuery("SELECT username FROM albumEdits WHERE albumID='"+albumID+"'");
+        while (rs.next()) {
+            array.add(rs.getString("username"));
+        }
+        return array;
+    }
+
     private static Double average(ArrayList<Double> array) {
         double sumRating = array.stream()
                 .mapToDouble(a -> a)
@@ -587,6 +597,8 @@ public final class SQL {
         return sumRating / array.size();
 
     }
+
+    public
 
 }
 

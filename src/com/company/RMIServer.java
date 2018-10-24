@@ -317,8 +317,28 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
         HashMap<String, String> hmap = new HashMap<>();
         hmap.put("type", "setMusicIDToDownload");
         hmap.put("username", username);
-        hmap.put("musicID", musicID +"");
+
         ConnectionFunctions.sendUdpPacket(hmap);
+        return false;
+    }
+
+    @Override
+    public boolean notifyUsersAboutAlbumDescriptionEdit(String username, int albumID) throws RemoteException {
+        HashMap<String, String> hmap = new HashMap<>();
+        hmap.put("type", "notifyUsersAboutAlbumDescriptionEdit");
+        hmap.put("albumID", albumID +"");
+        ConnectionFunctions.sendUdpPacket(hmap);
+
+        return false;
+    }
+
+    @Override
+    public boolean notifyUserAboutAdminGranted(String username) throws RemoteException {
+        for(User u : onlineRmiClients) {
+            if(u.username.equals(username)) {
+                u.client.notifyAdminGranted();
+            }
+        }
         return false;
     }
 

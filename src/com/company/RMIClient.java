@@ -366,7 +366,7 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                                                 break;
                                             case 2:
 
-                                                
+
                                                 i.userEditAlbum(username, albumID);
                                                 break;
                                             case 3:
