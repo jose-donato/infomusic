@@ -394,6 +394,11 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
         ConnectionFunctions.sendUdpPacket(hmap);
         String message = ConnectionFunctions.receiveUdpPacket();
         HashMap<String, String> map = ConnectionFunctions.string2HashMap(message);
+
+        hmap = new HashMap<>();
+        hmap.put("type", "clearNotifications");
+        hmap.put("user", username);
+        ConnectionFunctions.sendUdpPacket(hmap);
         return map.get("result");
     }
 

@@ -628,6 +628,12 @@ public final class SQL {
         return result;
     }
 
+    public static void removeRowFromTable(Connection c, String table, String username) throws SQLException {
+        String SQL = "DELETE FROM "+table+" WHERE username = '"+username+"'";
+        PreparedStatement pstmt = c.prepareStatement(SQL);
+        pstmt.executeUpdate();
+    }
+
     private static Double average(ArrayList<Double> array) {
         double sumRating = array.stream()
                 .mapToDouble(a -> a)

@@ -163,7 +163,20 @@ public class Threads extends Thread {
                     e.printStackTrace();
                 }
                 break;
+            case "clearNotifications":
+                try {
+                    treatClearNotifications(this.map);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                break;
         }
+    }
+
+    private void treatClearNotifications(HashMap<String, String> map) throws SQLException {
+        String username = map.get("user");
+        Connection c = SQL.enterDatabase("infomusic");
+        SQL.removeRowFromTable(c, "notifications", username);
     }
 
 
