@@ -107,25 +107,50 @@ public class Threads extends Thread {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-            /*case "upload":
-                String musicLocation = "C:\\Users\\JoséMariaCamposDonat\\Desktop\\macmiller.mp3";
+                break;
+            case "setMusicIDToDownload":
                 try {
-                    ConnectionFunctions.uploadMusicTCP(musicLocation);
+                    treatGetMusicIDFromCloud(this.map);
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 break;
-            case "download":
-                String musicLocation2 = "C:\\Users\\JoséMariaCamposDonat\\Desktop\\macmiller.mp3";
+            case "shareMusicInCloud":
                 try {
-                    ConnectionFunctions.downloadMusicTCP(musicLocation2);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
+                    treatShareMusicInCloud(this.map);
+                } catch (SQLException e) {
                     e.printStackTrace();
                 }
-                break;*/
+                break;
+            case "userEditAlbum":
+                try {
+                    treatUserEditAlbum(this.map);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
         }
+    }
+
+    private void treatUserEditAlbum(HashMap<String, String> map) throws SQLException {
+        String username = map.get("username");
+        int albumID = Integer.parseInt(map.get("albumID"));
+        Connection c = SQL.enterDatabase("infomusic");
+        SQL.userEditedAlbum(c, username, albumID);
+    }
+
+    private void treatShareMusicInCloud(HashMap<String, String> map) throws SQLException {
+        String username = map.get("username");
+        int musicID = Integer.parseInt(map.get("musicID"));
+        Connection c = SQL.enterDatabase("infomusic");
+        SQL.shareMusicWithUser(c, musicID, username);
+    }
+
+    private void treatGetMusicIDFromCloud(HashMap<String, String> map) throws SQLException, IOException {
+        String username = map.get("username");
+        int musicID = Integer.parseInt(map.get("musicID"));
+        ConnectionFunctions.sendMusicFromMulticastServer(musicID, username);
     }
 
     private void treatGetTable(HashMap<String, String> map) throws SQLException {
@@ -140,6 +165,12 @@ public class Threads extends Thread {
         }
         else if(table.toLowerCase().equals("albums")) {
             result = SQL.getAlbumsTable(c);
+        }
+        else if(table.toLowerCase().equals("musicsCloud")) {
+            result = SQL.getMusicsCloudTable(c, map.get("username"));
+        }
+        else if(table.toLowerCase().equals("users")) {
+            result = SQL.getUsersTable(c);
         }
         HashMap<String, String> hmap = new HashMap<>();
         hmap.put("type", "getTablesResponse");

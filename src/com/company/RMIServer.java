@@ -2,11 +2,9 @@ package com.company;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
-import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -196,10 +194,11 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
     }
 
     @Override
-    public String getTable(String table) throws RemoteException {
+    public String getTable(String table, String username) throws RemoteException {
         HashMap<String, String> hmap = new HashMap<>();
         hmap.put("type", "getTable");
         hmap.put("table", table);
+        hmap.put("username", username);
         ConnectionFunctions.sendUdpPacket(hmap);
         String message = ConnectionFunctions.receiveUdpPacket();
         HashMap<String, String> map = ConnectionFunctions.string2HashMap(message);
@@ -247,6 +246,27 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
     }
 
     @Override
+    public boolean shareMusicInCloud(String username, int musicIDToShare) {
+        HashMap<String, String> hmap = new HashMap<>();
+        hmap.put("type", "shareMusicInCloud");
+        hmap.put("username", username);
+        hmap.put("musicID", musicIDToShare +"");
+        ConnectionFunctions.sendUdpPacket(hmap);
+        //verify if it worked
+        return false;
+    }
+
+    @Override
+    public boolean userEditAlbum(String username, int albumID) throws RemoteException {
+        HashMap<String, String> hmap = new HashMap<>();
+        hmap.put("type", "userEditAlbum");
+        hmap.put("username", username);
+        hmap.put("albumID", albumID+"");
+        ConnectionFunctions.sendUdpPacket(hmap);
+        return false;
+    }
+
+    @Override
     public String searchDetailAboutAlbum(int albumToSearch) throws RemoteException {
         HashMap<String, String> hmap = new HashMap<>();
         hmap.put("type", "albumDetail");
@@ -288,6 +308,16 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
         hmap.put("albumToReviewID", albumToReviewID+"");
         hmap.put("albumRating", albumRating +"");
         hmap.put("albumReview", albumReview);
+        ConnectionFunctions.sendUdpPacket(hmap);
+        return false;
+    }
+
+    @Override
+    public boolean setMusicIDToDownload(String username, int musicID) throws RemoteException {
+        HashMap<String, String> hmap = new HashMap<>();
+        hmap.put("type", "setMusicIDToDownload");
+        hmap.put("username", username);
+        hmap.put("musicID", musicID +"");
         ConnectionFunctions.sendUdpPacket(hmap);
         return false;
     }

@@ -1,8 +1,6 @@
 package com.company;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -11,10 +9,6 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Scanner;
 
 /**
@@ -121,7 +115,7 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
             System.out.println("1. search for songs");
             System.out.println("2. search for some detail information about an artist or a specific album ");
             System.out.println("3. write a review to an album");
-            System.out.println("4. upload/download a song");
+            System.out.println("4. upload/download/share a song");
             System.out.println("5. manage operations (admins only)"); //Só pode aparecer ao admin
             System.out.println("6. logout");
             System.out.println("7. exit");
@@ -146,7 +140,7 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                     switch (choice4) {
                         case 1:
                             //alterar para enviar pelo protocolo
-                            System.out.println(i.getTable("albums"));
+                            System.out.println(i.getTable("albums", username));
 
                             System.out.println("type the album id u want to know more about");
                             keyboard = new Scanner(System.in);
@@ -158,8 +152,7 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                             break;
                         case 2:
                             //alterar para enviar pelo protocolo
-                            System.out.println(i.getTable("albums"));
-
+                            System.out.println(i.getTable("albums", username));
                             System.out.println("type the album id u want to know more about");
                             keyboard = new Scanner(System.in);
                             int artistToSearch = keyboard.nextInt();
@@ -178,7 +171,7 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                     //write a review to an album
 
                     //alterar para enviar pelo protocolo
-                    System.out.println(i.getTable("albums"));
+                    System.out.println(i.getTable("albums", username));
 
                     System.out.println("select the ID of the album you want to review");
                     keyboard = new Scanner(System.in);
@@ -200,12 +193,13 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                     System.out.println("which operation you want to do?");
                     System.out.println("1. upload");
                     System.out.println("2. download");
+                    System.out.println("3. share music with user");
                     keyboard = new Scanner(System.in);
                     int choice5 = keyboard.nextInt();
                     switch(choice5){
                         case 1:
                             //alterar para enviar pelo protocolo
-                            System.out.println(i.getTable("musics"));
+                            System.out.println(i.getTable("musics", username));
                             //ConnectionFunctions.uploadMusicTCP("C:\\Users\\zmcdo\\Documents\\music.mp3", false, 1, "rita");
                             System.out.println("select the music's ID u want to upload");
                             keyboard = new Scanner(System.in);
@@ -219,16 +213,29 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                         case 2:
 
                             //alterar para enviar pelo protocolo
-                            System.out.println(i.getTable("cloud"));
-
+                            //aparecer apenas as do utilizador
+                            System.out.println(i.getTable("cloudMusics", username));
                             System.out.println("select the music's ID u want to download");
                             keyboard = new Scanner(System.in);
                             int musicIDDownload = keyboard.nextInt();
-                            System.out.println("type the path where u want to save the music");
+                            System.out.println("type the path where u want to save the music: (example: C:\\Users\\user\\Desktop\\music.mp3)");
                             keyboard = new Scanner(System.in);
                             String path = keyboard.nextLine();
+                            i.setMusicIDToDownload(username, musicIDDownload);
                             ConnectionFunctions.receiveMusicRMIClient(path, i.getTCPAddress());
-
+                            break;
+                        case 3:
+                            //aparecer apenas as do utilizador
+                            System.out.println(i.getTable("cloudMusics", username));
+                            System.out.println("select the music's ID u want to share");
+                            keyboard = new Scanner(System.in);
+                            int musicIDToShare = keyboard.nextInt();
+                            //print table users with only usernames
+                            i.getTable("users", username);
+                            System.out.println("type the username with who you want to share");
+                            keyboard = new Scanner(System.in);
+                            String usernameToShare = keyboard.nextLine();
+                            i.shareMusicInCloud(usernameToShare, musicIDToShare);
                             break;
                         default:
                             System.out.println("please enter valid option");
@@ -248,7 +255,7 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                     if(i.checkIfUserIsAdmin(username)) {//check if user is admin
                         System.out.println("what operation you want to do? (type one of the options)");
                         System.out.println("1. add music/album/artist");
-                        System.out.println("2. change artist, album or music name");
+                        System.out.println("2. change artist, album or music data");
                         System.out.println("3. grant admin to user");
                         System.out.println("4. add picture to an album");
                         System.out.println("5. upload song lyrics");
@@ -276,11 +283,11 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                                         System.out.println("what is the duration: (in seconds)");
                                         keyboard = new Scanner(System.in);
                                         int duration = keyboard.nextInt();
-                                        System.out.println(i.getTable("albums"));
+                                        System.out.println(i.getTable("albums", username));
                                         System.out.println("type the album's ID: ");
                                         keyboard = new Scanner(System.in);
                                         int albumID = keyboard.nextInt();
-                                        System.out.println(i.getTable("artists"));
+                                        System.out.println(i.getTable("artists", username));
                                         System.out.println("type the artist's ID: ");
                                         keyboard = new Scanner(System.in);
                                         int artistID = keyboard.nextInt();
@@ -297,7 +304,7 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                                         System.out.println("date of the album: (in 'yyyy-mm-dd')");
                                         keyboard = new Scanner(System.in);
                                         String albumDate = keyboard.nextLine();
-                                        System.out.println(i.getTable("albums"));
+                                        System.out.println(i.getTable("artists", username));
                                         System.out.println("type the artist's ID: ");
                                         keyboard = new Scanner(System.in);
                                         int artistID2 = keyboard.nextInt();
@@ -321,15 +328,15 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                                 }
                                 break;
                             case 2:
-                                System.out.println("which you want to change the name?");
-                                System.out.println("1. artist");
-                                System.out.println("2. album");
-                                System.out.println("3. music");
+                                System.out.println("which you want to change data?");
+                                System.out.println("1. artist name");
+                                System.out.println("2. album data");
+                                System.out.println("3. music name");
                                 keyboard = new Scanner(System.in);
                                 int choice3 = keyboard.nextInt();
                                 switch(choice3){
                                     case 1:
-                                        System.out.println(i.getTable("artists"));
+                                        System.out.println(i.getTable("artists", username));
                                         System.out.println("select the ID you want to change the name");
                                         keyboard = new Scanner(System.in);
                                         int artistID = keyboard.nextInt();
@@ -339,17 +346,37 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                                         i.changeData("artists","name", artistID, artistNewName);
                                         break;
                                     case 2:
-                                        System.out.println(i.getTable("albums"));
-                                        System.out.println("select the ID you want to change the name");
+                                        i.getTable("albums", username);
+                                        System.out.println("select the ID you want to change");
                                         keyboard = new Scanner(System.in);
                                         int albumID = keyboard.nextInt();
-                                        System.out.println("type the new name: ");
+
+                                        System.out.println("what operation you want to do to an album?");
+                                        System.out.println("1. change name");
+                                        System.out.println("2. change description");
+                                        System.out.println("3. change musics");
                                         keyboard = new Scanner(System.in);
-                                        String albumNewName = keyboard.nextLine();
-                                        i.changeData("albums","name", albumID, albumNewName);
-                                        break;
+                                        int choice7 = keyboard.nextInt();
+                                        switch(choice7) {
+                                            case 1:
+                                                System.out.println("type the new name: ");
+                                                keyboard = new Scanner(System.in);
+                                                String albumNewName = keyboard.nextLine();
+                                                i.changeData("albums","name", albumID, albumNewName);
+                                                break;
+                                            case 2:
+
+                                                
+                                                i.userEditAlbum(username, albumID);
+                                                break;
+                                            case 3:
+                                                break;
+                                            default:
+                                                System.out.println("please enter valid option");
+                                        }
+
                                     case 3:
-                                        System.out.println(i.getTable("musics"));
+                                        System.out.println(i.getTable("musics", username));
                                         System.out.println("select the ID you want to change the name");
                                         keyboard = new Scanner(System.in);
                                         int musicID = keyboard.nextInt();

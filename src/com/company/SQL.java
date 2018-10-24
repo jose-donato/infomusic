@@ -91,13 +91,13 @@ public final class SQL {
             SQL.createTable(c, "notifications", arr);
             SQL.addForeignKeyToTable(c, "users", "notifications", "username");
 
-
             arr = new HashMap<>();
-            arr.put("notificationID", "SERIAL PRIMARY KEY NOT NULL");
+            arr.put("editionID", "SERIAL PRIMARY KEY NOT NULL");
             arr.put("username", "VARCHAR(20) NOT NULL");
-            arr.put("notification", "VARCHAR(100) NOT NULL");
-            SQL.createTable(c, "notifications", arr);
-            SQL.addForeignKeyToTable(c, "users", "notifications", "username");
+            arr.put("albumID", "SERIAL NOT NULL");
+            SQL.createTable(c, "albumEdits", arr);
+            SQL.addForeignKeyToTable(c, "users", "albumEdits", "username");
+            SQL.addForeignKeyToTable(c, "albums", "albumEdits", "albumID");
 
             /*arr = new HashMap<String, String>();
             arr.put("name", "VARCHAR(20) PRIMARY KEY");
@@ -426,6 +426,41 @@ public final class SQL {
         return result;
     }
 
+    public static String getUsersTable(Connection c) throws SQLException {
+        ArrayList<String> userNames = new ArrayList<>();
+        Statement s = c.createStatement();
+        ResultSet rs = s.executeQuery("SELECT * FROM USERS");
+        while (rs.next()) {
+            userNames.add(rs.getString("username"));
+        }
+        String result = "example: <username>\n";
+        for(int i=0; i <  userNames.size(); i++) {
+            result += userNames.get(i)+"\n";
+        }
+        return result;
+    }
+
+    public static String getMusicsCloudTable(Connection c, String username) throws SQLException {
+        ArrayList<Integer> musicIDs = new ArrayList<>();
+        String musicName = null;
+        Statement s = c.createStatement();
+        ResultSet rs = s.executeQuery("SELECT * FROM USERS WHERE USERNAME='"+username+"'");
+        while (rs.next()) {
+            musicIDs.add(rs.getInt("musicID"));
+        }
+
+
+        String result = "example: <musicID>. <musicName>\n";
+        for(int i=0; i <  musicIDs.size(); i++) {
+            rs = s.executeQuery("SELECT name FROM musics WHERE musicID='"+musicIDs.get(i)+"'");
+            while (rs.next()) {
+                musicName = rs.getString("musicID");
+            }
+            result += musicIDs.get(i)+". "+musicName+"\n";
+        }
+        return result;
+    }
+
     public static String albumData(Connection c, Integer albumID) throws SQLException {
         String result = "";
         ArrayList<Double> ratings = new ArrayList<>();
@@ -539,6 +574,12 @@ public final class SQL {
 
     }
 
+    public static void userEditedAlbum(Connection c, String username, int albumID) throws SQLException {
+        String sql = "INSERT INTO albumEdits(username, albumid) values('"+username+"',"+albumID+")";
+        Statement s = c.createStatement();
+        s.executeUpdate(sql);
+    }
+
     private static Double average(ArrayList<Double> array) {
         double sumRating = array.stream()
                 .mapToDouble(a -> a)
@@ -546,6 +587,7 @@ public final class SQL {
         return sumRating / array.size();
 
     }
+
 }
 
 
