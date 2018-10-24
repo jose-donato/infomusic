@@ -402,5 +402,16 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
         return map.get("result");
     }
 
+    @Override
+    public boolean clearNotifications(String username) throws RemoteException {
+        HashMap<String, String> hmap = new HashMap<>();
+            hmap = new HashMap<>();
+            hmap.put("type", "clearNotifications");
+            hmap.put("user", username);
+            ConnectionFunctions.sendUdpPacket(hmap);
+        return false;
+    }
+
+
 }
 

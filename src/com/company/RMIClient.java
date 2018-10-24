@@ -111,6 +111,7 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
         i.subscribe((InterfaceClient) iClient, username);
         if(i.checkIfUserIsAdmin(username)) {
             System.out.println(i.checkNotifications(username));
+            i.clearNotifications(username);
         }
         while (true) {
             System.out.println("\nmenu: (type one of the options)\n");

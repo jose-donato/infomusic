@@ -47,6 +47,7 @@ public interface InterfaceServer extends Remote {
     public boolean notifyUserAboutAdminGranted(String username) throws RemoteException;
 
     public String checkNotifications(String username) throws RemoteException;
+    public boolean clearNotifications(String username) throws RemoteException;
 
 
     //public void subscribe(String name, InterfaceClient client) throws RemoteException;
