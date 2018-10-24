@@ -355,14 +355,15 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
             }
             hmap = new HashMap<>();
             hmap.put("type", "addUsersToAlbumEditedNotificationTable");
-
-            String arrayNames = "";
-            for (String s : usersToReceiveNotificationOffline) {
-                arrayNames += s + ";";
+            if(usersToReceiveNotificationOffline.size() > 0) {
+                String arrayNames = "";
+                for (String s : usersToReceiveNotificationOffline) {
+                    arrayNames += s + ";";
+                }
+                arrayNames = arrayNames.substring(0, arrayNames.length() - 1);
+                hmap.put("users", arrayNames);
+                ConnectionFunctions.sendUdpPacket(hmap);
             }
-            arrayNames = arrayNames.substring(0, arrayNames.length() - 1);
-            hmap.put("users", arrayNames);
-            ConnectionFunctions.sendUdpPacket(hmap);
         }
         return false;
     }

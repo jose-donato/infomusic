@@ -556,7 +556,7 @@ public final class SQL {
         }
         if(albumsNames.size() > 0) {
             result += "artist albums: \n";
-            int i = 0;
+            int i = 1;
             for(String str : albumsNames) {
                 result += i+". " +str+ "\n";
                 i++;

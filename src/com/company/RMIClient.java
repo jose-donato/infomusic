@@ -387,7 +387,7 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                                             default:
                                                 System.out.println("please enter valid option");
                                         }
-
+                                        break;
                                     case 3:
                                         System.out.println(i.getTable("musics", username));
                                         System.out.println("select the ID you want to change the name");
@@ -422,6 +422,7 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                             case 6:
                                 System.out.println("this is all the users in the system");
                                 System.out.println(i.getTable("users",username));
+                                break;
                         }
                     }
                     else{
