@@ -19,12 +19,12 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
         super();
     }
     @Override
-    public void notifyAdminGranted(String s) throws RemoteException {
+    public void notifyAdminGranted() throws RemoteException {
         System.out.println("you now have admin permissions!");
     }
 
     @Override
-    public void notifyAlbumChanges(String s) throws RemoteException {
+    public void notifyAlbumChanges() throws RemoteException {
         System.out.println("one album you edited was changed!");
     }
 
@@ -105,7 +105,7 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
 
     public static boolean menu(InterfaceServer i, String username, InterfaceClient iClient) throws IOException, SQLException {
         Connection c = SQL.enterDatabase("infomusic");
-        System.out.println("welcome username! what you want to do?");
+        System.out.println("welcome "+username+"! what you want to do?");
 
         //interface
         i.subscribe((InterfaceClient) iClient, username);
@@ -346,7 +346,7 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                                         i.changeData("artists","name", artistID, artistNewName);
                                         break;
                                     case 2:
-                                        i.getTable("albums", username);
+                                        System.out.println(i.getTable("albums", username));
                                         System.out.println("select the ID you want to change");
                                         keyboard = new Scanner(System.in);
                                         int albumID = keyboard.nextInt();
@@ -365,8 +365,10 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                                                 i.changeData("albums","name", albumID, albumNewName);
                                                 break;
                                             case 2:
-
-                                                
+                                                System.out.println("type the new description: ");
+                                                keyboard = new Scanner(System.in);
+                                                String newDescription = keyboard.nextLine();
+                                                i.changeData("albums","description", albumID, newDescription);
                                                 i.userEditAlbum(username, albumID);
                                                 break;
                                             case 3:
@@ -393,9 +395,10 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                             case 3:
                                 System.out.println("type the username you want to make admin: ");
                                 keyboard = new Scanner(System.in);
-                                username = keyboard.nextLine();
-                                if(i.grantAdminToUser(username)) {
-                                    System.out.println(username + " admin granted");
+                                String newAdminUsername = keyboard.nextLine();
+                                if(i.grantAdminToUser(newAdminUsername)) {
+                                    System.out.println(newAdminUsername + " admin granted");
+                                    i.notifyUserAboutAdminGranted(newAdminUsername);
                                 }
                                 else {
                                     System.out.println("already admin / username doesn't exist");
