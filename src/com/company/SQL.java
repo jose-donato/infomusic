@@ -389,7 +389,7 @@ public final class SQL {
         }
         String result = "example: <artistID>. <artistName>\n";
         for(int i=0; i <  artistIDs.size(); i++) {
-            result += artistIDs.get(i) +". "+ artistNames.get(i);
+            result += artistIDs.get(i) +". "+ artistNames.get(i)+"\n";
         }
         return result;
     }
@@ -404,7 +404,7 @@ public final class SQL {
         }
         String result = "example: <albumID>. <albumName>\n";
         for(int i=0; i <  albumIDs.size(); i++) {
-            result += albumIDs.get(i) +". "+ albumNames.get(i);
+            result += albumIDs.get(i) +". "+ albumNames.get(i)+"\n";
         }
         return result;
     }
@@ -553,6 +553,14 @@ public final class SQL {
         }
         else {
             result += "the artist " + name + " has " + albumsNames.size() + " album/s with an average of " + average(albumsRating) + " and " + musicsNames.size() + " musics.\n";
+        }
+        if(albumsNames.size() > 0) {
+            result += "artist albums: \n";
+            int i = 0;
+            for(String str : albumsNames) {
+                result += i+". " +str+ "\n";
+                i++;
+            }
         }
         //exceeds the limit of the string that can goes in udp
         //result += "description of the artist: " + description + "\n";

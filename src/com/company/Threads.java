@@ -284,12 +284,13 @@ public class Threads extends Thread {
         String name = map.get("name");
         String genre = map.get("genre");
         String dateString  = map.get("date");
+        String description = map.get("description");
         SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd");
         java.util.Date parsed = format.parse(dateString);
         java.sql.Date sqlDate = new java.sql.Date(parsed.getTime());
         int artistID = Integer.parseInt(map.get("artistID"));
         Connection c = SQL.enterDatabase("infomusic");
-        String a[] = {"name, genre, releasedate, artistid", "'"+name+"', '"+genre+"','"+sqlDate+"', "+artistID};
+        String a[] = {"name, genre, releasedate, artistid, description", "'"+name+"', '"+genre+"','"+sqlDate+"', "+artistID+",'"+description+"'"};
         SQL.addValuesToTable(c, "albums", a);
     }
 

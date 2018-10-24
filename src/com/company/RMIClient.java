@@ -105,14 +105,14 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
 
     public static boolean menu(InterfaceServer i, String username, InterfaceClient iClient) throws IOException, SQLException {
         Connection c = SQL.enterDatabase("infomusic");
-        System.out.println("\nwelcome "+username+"! what you want to do?\n");
+        System.out.println("\nwelcome "+username+"!\n");
 
         //interface
         i.subscribe((InterfaceClient) iClient, username);
+        if(i.checkIfUserIsAdmin(username)) {
+            System.out.println(i.checkNotifications(username));
+        }
         while (true) {
-            if(i.checkIfUserIsAdmin(username)) {
-                System.out.println(i.checkNotifications(username));
-            }
             System.out.println("\nmenu: (type one of the options)\n");
             System.out.println("1. search for songs");
             System.out.println("2. search for some detail information about an artist or a specific album ");
@@ -308,6 +308,9 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                                         System.out.println("album genre: ");
                                         keyboard = new Scanner(System.in);
                                         String albumGenre = keyboard.nextLine();
+                                        System.out.println("album description: ");
+                                        keyboard = new Scanner(System.in);
+                                        String descriptionAlbum = keyboard.nextLine();
                                         System.out.println("date of the album: (in 'yyyy-mm-dd')");
                                         keyboard = new Scanner(System.in);
                                         String albumDate = keyboard.nextLine();
@@ -315,7 +318,7 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                                         System.out.println("type the artist's ID: ");
                                         keyboard = new Scanner(System.in);
                                         int artistID2 = keyboard.nextInt();
-                                        i.addAlbum(albumName, albumGenre, albumDate, artistID2);
+                                        i.addAlbum(albumName, albumGenre, descriptionAlbum, albumDate, artistID2);
                                         break;
 
                                     case 3:
