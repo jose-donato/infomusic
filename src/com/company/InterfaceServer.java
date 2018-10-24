@@ -46,6 +46,8 @@ public interface InterfaceServer extends Remote {
     public boolean notifyUsersAboutAlbumDescriptionEdit(String username, int albumID) throws RemoteException;
     public boolean notifyUserAboutAdminGranted(String username) throws RemoteException;
 
+    public String checkNotifications(String username) throws RemoteException;
+
 
     //public void subscribe(String name, InterfaceClient client) throws RemoteException;
 

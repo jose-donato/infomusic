@@ -334,35 +334,35 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
         String message = ConnectionFunctions.receiveUdpPacket();
         HashMap<String, String> map = ConnectionFunctions.string2HashMap(message);
         String users = map.get("result");
-        ArrayList<String> usersThatEditedAlbum = new ArrayList<String>(Arrays.asList(users.split(";")));
-        ArrayList<String> usersToReceiveNotificationOffline = new ArrayList<>();
-        ArrayList<String> usersOnline = new ArrayList<>();
-        for(User u : onlineRmiClients) {
-            usersOnline.add(u.username);
-        }
-        for(String u : usersThatEditedAlbum) {
-            if(usersOnline.contains(u)){
-                for(User user : onlineRmiClients) {
-                    if(user.username.equals(u)) {
-                        user.client.notifyAlbumChanges();
+        if(!users.equals("no users")) {
+            ArrayList<String> usersThatEditedAlbum = new ArrayList<String>(Arrays.asList(users.split(";")));
+            ArrayList<String> usersToReceiveNotificationOffline = new ArrayList<>();
+            ArrayList<String> usersOnline = new ArrayList<>();
+            for (User u : onlineRmiClients) {
+                usersOnline.add(u.username);
+            }
+            for (String u : usersThatEditedAlbum) {
+                if (usersOnline.contains(u)) {
+                    for (User user : onlineRmiClients) {
+                        if (user.username.equals(u) && !username.equals(u)) {
+                            user.client.notifyAlbumChanges();
+                        }
                     }
+                } else {
+                    usersToReceiveNotificationOffline.add(u);
                 }
             }
-            else {
-                usersToReceiveNotificationOffline.add(u);
+            hmap = new HashMap<>();
+            hmap.put("type", "addUsersToAlbumEditedNotificationTable");
+
+            String arrayNames = "";
+            for (String s : usersToReceiveNotificationOffline) {
+                arrayNames += s + ";";
             }
+            arrayNames = arrayNames.substring(0, arrayNames.length() - 1);
+            hmap.put("users", arrayNames);
+            ConnectionFunctions.sendUdpPacket(hmap);
         }
-        hmap = new HashMap<>();
-        hmap.put("type", "addUsersToAlbumEditedNotificationTable");
-
-        String arrayNames = "";
-        for(String s : usersToReceiveNotificationOffline) {
-            arrayNames += s + ";";
-        }
-
-        arrayNames = arrayNames.substring(0, arrayNames.length()-1);
-        hmap.put("users", arrayNames);
-        ConnectionFunctions.sendUdpPacket(hmap);
         return false;
     }
 
@@ -382,6 +382,17 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
             ConnectionFunctions.sendUdpPacket(hmap);
         }
         return false;
+    }
+
+    @Override
+    public String checkNotifications(String username) throws RemoteException {
+        HashMap<String, String> hmap = new HashMap<>();
+        hmap.put("type", "checkNotifications");
+        hmap.put("user", username);
+        ConnectionFunctions.sendUdpPacket(hmap);
+        String message = ConnectionFunctions.receiveUdpPacket();
+        HashMap<String, String> map = ConnectionFunctions.string2HashMap(message);
+        return map.get("result");
     }
 
 }

@@ -46,12 +46,14 @@ public class Threads extends Thread {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+                break;
             case "changeData":
                 try {
                     treatChangeData(this.map);
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+                break;
             case "reviewAlbum":
                 try {
                     treatWriteReview(this.map);
@@ -154,7 +156,24 @@ public class Threads extends Thread {
                     e.printStackTrace();
                 }
                 break;
+            case "checkNotifications":
+                try {
+                    treatCheckNotifications(this.map);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                break;
         }
+    }
+
+    private void treatCheckNotifications(HashMap<String, String> map) throws SQLException {
+        String username = map.get("user");
+        Connection c = SQL.enterDatabase("infomusic");
+        String result = SQL.getUserNotifications(c, username);
+        HashMap<String, String> hmap = new HashMap<>();
+        hmap.put("type", "treatCheckNotificationsResponse");
+        hmap.put("result", result);
+        ConnectionFunctions.sendUdpPacket(hmap);
     }
 
     private void treatNotifyUserAboutAdminGranted(HashMap<String, String> map) throws SQLException {
@@ -179,15 +198,19 @@ public class Threads extends Thread {
         Connection c = SQL.enterDatabase("infomusic");
         ArrayList<String> names = SQL.getUsersThatEditAlbum(c, albumID);
         String arrayNames = "";
-        for(String s : names) {
-            arrayNames += s + ";";
-        }
-        arrayNames = arrayNames.substring(0, arrayNames.length()-1);
         HashMap<String, String> hmap = new HashMap<>();
+        if(names.size() > 1) {
+            for (String s : names) {
+                arrayNames += s + ";";
+            }
+            arrayNames = arrayNames.substring(0, arrayNames.length() - 1);
+        }
+        else {
+            arrayNames = "no users";
+        }
         hmap.put("type", "treatNotifyUsersAboutAlbumDescriptionEditResponse");
         hmap.put("result", arrayNames);
         ConnectionFunctions.sendUdpPacket(hmap);
-
     }
 
     private void treatUserEditAlbum(HashMap<String, String> map) throws SQLException {

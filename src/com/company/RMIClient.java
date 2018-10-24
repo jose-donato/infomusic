@@ -51,7 +51,7 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
 
     public static String enterTheProgram(InterfaceServer i) throws RemoteException, MalformedURLException, NotBoundException {
         while (true) {
-            System.out.println("menu: (type one of the options)");
+            System.out.println("menu: (type one of the options)\n");
             System.out.println("1. login");
             System.out.println("2. register");
             System.out.println("3. exit");
@@ -105,13 +105,15 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
 
     public static boolean menu(InterfaceServer i, String username, InterfaceClient iClient) throws IOException, SQLException {
         Connection c = SQL.enterDatabase("infomusic");
-        System.out.println("welcome "+username+"! what you want to do?");
+        System.out.println("\nwelcome "+username+"! what you want to do?\n");
 
         //interface
         i.subscribe((InterfaceClient) iClient, username);
-
         while (true) {
-            System.out.println("menu: (type one of the options)");
+            if(i.checkIfUserIsAdmin(username)) {
+                System.out.println(i.checkNotifications(username));
+            }
+            System.out.println("\nmenu: (type one of the options)\n");
             System.out.println("1. search for songs");
             System.out.println("2. search for some detail information about an artist or a specific album ");
             System.out.println("3. write a review to an album");

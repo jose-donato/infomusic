@@ -599,6 +599,27 @@ public final class SQL {
         return array;
     }
 
+    public static String getUserNotifications(Connection c, String username) throws SQLException {
+        ArrayList<String> arr = new ArrayList<>();
+        Statement s = c.createStatement();
+        String sql = "SELECT notificationtype FROM notifications WHERE username='"+username+"'";
+        ResultSet rs = s.executeQuery(sql);
+        while (rs.next()) {
+            arr.add(rs.getString("notificationtype"));
+        }
+        String result = "";
+        if(arr.size() > 0) {
+            result = "NOTIFICATIONS WHEN YOU WERE OFFLINE: \n";
+            for (String a : arr) {
+                result += a + "\n";
+            }
+        }
+        else {
+            result = "\nno notifications when you were offline\n";
+        }
+        return result;
+    }
+
     private static Double average(ArrayList<Double> array) {
         double sumRating = array.stream()
                 .mapToDouble(a -> a)
