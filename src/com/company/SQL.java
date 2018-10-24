@@ -120,7 +120,7 @@ public final class SQL {
             e.printStackTrace();
             return null;
         }
-    }
+    }/*
     /**
      * enter in postgressql database or create if it doesn't exist
      * @param name of the database

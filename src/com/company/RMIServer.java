@@ -374,9 +374,11 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
             if(u.username.equals(username)) {
                 u.client.notifyAdminGranted();
                 isOnline = true;
+                System.out.println("jasdasjdn "+u );
             }
         }
         if(!isOnline) {
+            System.out.println("asjdpiashdouasdpashd");
             HashMap<String, String> hmap = new HashMap<>();
             hmap.put("type", "addUsersToAdminGrantedNotificationTable");
             hmap.put("user", username);
