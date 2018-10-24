@@ -166,6 +166,7 @@ public class Threads extends Thread {
         }
     }
 
+
     private void treatCheckNotifications(HashMap<String, String> map) throws SQLException {
         String username = map.get("user");
         Connection c = SQL.enterDatabase("infomusic");

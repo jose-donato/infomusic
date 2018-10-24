@@ -32,16 +32,16 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
         LocateRegistry.createRegistry(1099).rebind("infoMusicRegistry", i);
         //client.printOnClient("ola do servidor");
         System.out.println("Server ready...");*/
-        boolean ServerBackup = true;
+        boolean serverBackup = true;
         try {
             InterfaceServer i = (InterfaceServer) Naming.lookup("infoMusicRegistry");
-            ServerBackup = true;
+            serverBackup = true;
 
         } catch (RemoteException e) {
-            ServerBackup = false;
+            serverBackup = false;
         }
 
-        if(ServerBackup) {
+        if(serverBackup) {
             int attempt = 0;
             while (attempt < 5) {
                 System.out.println("Trying to connect...");
@@ -378,7 +378,7 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
         }
         if(!isOnline) {
             HashMap<String, String> hmap = new HashMap<>();
-            hmap.put("type", "addUsersToAdminGrantedNotificationTable");
+            hmap.put("type", "notifyUserAboutAdminGranted");
             hmap.put("user", username);
             ConnectionFunctions.sendUdpPacket(hmap);
         }
