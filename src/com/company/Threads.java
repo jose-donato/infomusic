@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Threads extends Thread {
@@ -138,6 +139,38 @@ public class Threads extends Thread {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+                break;
+            case "addUsersToAlbumEditedNotificationTable":
+                try {
+                    treatAddUsersToAlbumEditedNotificationTable(this.map);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case "notifyUserAboutAdminGranted":
+                try {
+                    treatNotifyUserAboutAdminGranted(this.map);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                break;
+        }
+    }
+
+    private void treatNotifyUserAboutAdminGranted(HashMap<String, String> map) throws SQLException {
+        String user = map.get("user");
+        Connection c = SQL.enterDatabase("infomusic");
+        String[] a = {"username, notificationType", "'"+user+"', 'you now have admin permissions!'"};
+        SQL.addValuesToTable(c, "notifications", a);
+    }
+
+    private void treatAddUsersToAlbumEditedNotificationTable(HashMap<String, String> map) throws SQLException {
+        String users = map.get("users");
+        ArrayList<String> usersThatEditedAlbum = new ArrayList<String>(Arrays.asList(users.split(";")));
+        Connection c = SQL.enterDatabase("infomusic");
+        for(String u : usersThatEditedAlbum) {
+            String[] a = {"username, notificationType", "'"+u+"', 'one album you edited was changed!'"};
+            SQL.addValuesToTable(c, "notifications", a);
         }
     }
 
@@ -145,6 +178,16 @@ public class Threads extends Thread {
         int albumID = Integer.parseInt(map.get("albumID"));
         Connection c = SQL.enterDatabase("infomusic");
         ArrayList<String> names = SQL.getUsersThatEditAlbum(c, albumID);
+        String arrayNames = "";
+        for(String s : names) {
+            arrayNames += s + ";";
+        }
+        arrayNames = arrayNames.substring(0, arrayNames.length()-1);
+        HashMap<String, String> hmap = new HashMap<>();
+        hmap.put("type", "treatNotifyUsersAboutAlbumDescriptionEditResponse");
+        hmap.put("result", arrayNames);
+        ConnectionFunctions.sendUdpPacket(hmap);
+
     }
 
     private void treatUserEditAlbum(HashMap<String, String> map) throws SQLException {

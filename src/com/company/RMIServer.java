@@ -1,10 +1,13 @@
 package com.company;
+import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -328,16 +331,55 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
         hmap.put("type", "notifyUsersAboutAlbumDescriptionEdit");
         hmap.put("albumID", albumID +"");
         ConnectionFunctions.sendUdpPacket(hmap);
+        String message = ConnectionFunctions.receiveUdpPacket();
+        HashMap<String, String> map = ConnectionFunctions.string2HashMap(message);
+        String users = map.get("result");
+        ArrayList<String> usersThatEditedAlbum = new ArrayList<String>(Arrays.asList(users.split(";")));
+        ArrayList<String> usersToReceiveNotificationOffline = new ArrayList<>();
+        ArrayList<String> usersOnline = new ArrayList<>();
+        for(User u : onlineRmiClients) {
+            usersOnline.add(u.username);
+        }
+        for(String u : usersThatEditedAlbum) {
+            if(usersOnline.contains(u)){
+                for(User user : onlineRmiClients) {
+                    if(user.username.equals(u)) {
+                        user.client.notifyAlbumChanges();
+                    }
+                }
+            }
+            else {
+                usersToReceiveNotificationOffline.add(u);
+            }
+        }
+        hmap = new HashMap<>();
+        hmap.put("type", "addUsersToAlbumEditedNotificationTable");
 
+        String arrayNames = "";
+        for(String s : usersToReceiveNotificationOffline) {
+            arrayNames += s + ";";
+        }
+
+        arrayNames = arrayNames.substring(0, arrayNames.length()-1);
+        hmap.put("users", arrayNames);
+        ConnectionFunctions.sendUdpPacket(hmap);
         return false;
     }
 
     @Override
     public boolean notifyUserAboutAdminGranted(String username) throws RemoteException {
+        boolean isOnline = false;
         for(User u : onlineRmiClients) {
             if(u.username.equals(username)) {
                 u.client.notifyAdminGranted();
+                isOnline = true;
             }
+        }
+        if(!isOnline) {
+            HashMap<String, String> hmap = new HashMap<>();
+            hmap.put("type", "addUsersToAdminGrantedNotificationTable");
+            hmap.put("user", username);
+            ConnectionFunctions.sendUdpPacket(hmap);
         }
         return false;
     }

@@ -115,7 +115,6 @@ public final class SQL {
             SQL.addValuesToTable(c, "albums", b);
             String[] d = {"name, description, duration, albumid, artistid","'Around The World', 'blabla', 300, 1, 1"};
             SQL.addValuesToTable(c, "musics", d);
-
             return c;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -575,9 +574,19 @@ public final class SQL {
     }
 
     public static void userEditedAlbum(Connection c, String username, int albumID) throws SQLException {
-        String sql = "INSERT INTO albumEdits(username, albumid) values('"+username+"',"+albumID+")";
         Statement s = c.createStatement();
-        s.executeUpdate(sql);
+        ResultSet rs = s.executeQuery("SELECT username FROM albumEdits WHERE albumID='"+albumID+"'");
+        boolean alreadyInTable = false;
+        while(rs.next()) {
+            if(username.equals(rs.getString("username"))) {
+                alreadyInTable = true;
+            }
+        }
+        if(!alreadyInTable) {
+            String sql = "INSERT INTO albumEdits(username, albumid) values('" + username + "'," + albumID + ")";
+            s = c.createStatement();
+            s.executeUpdate(sql);
+        }
     }
 
     public static ArrayList<String> getUsersThatEditAlbum(Connection c, int albumID) throws SQLException {
