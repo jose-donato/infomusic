@@ -87,17 +87,10 @@ public final class SQL {
             arr = new HashMap<>();
             arr.put("notificationID", "SERIAL PRIMARY KEY NOT NULL");
             arr.put("username", "VARCHAR(20) NOT NULL");
-            arr.put("notification", "VARCHAR(100) NOT NULL");
+            arr.put("notificationType", "VARCHAR(100) NOT NULL");
             SQL.createTable(c, "notifications", arr);
             SQL.addForeignKeyToTable(c, "users", "notifications", "username");
 
-
-            arr = new HashMap<>();
-            arr.put("notificationID", "SERIAL PRIMARY KEY NOT NULL");
-            arr.put("username", "VARCHAR(20) NOT NULL");
-            arr.put("notification", "VARCHAR(100) NOT NULL");
-            SQL.createTable(c, "notifications", arr);
-            SQL.addForeignKeyToTable(c, "users", "notifications", "username");
 
             arr = new HashMap<>();
             arr.put("notificationID", "SERIAL PRIMARY KEY NOT NULL");

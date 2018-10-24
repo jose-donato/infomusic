@@ -95,14 +95,14 @@ public final class ConnectionFunctions {
         SQL.enterArrayInTable(SQL.enterDatabase("infomusic"), "cloudmusics", array, musicID, username);
     }
 
-    public static void sendMusicFromMulticastServer() throws IOException, SQLException {
+    public static void sendMusicFromMulticastServer(int musicID, String username) throws IOException, SQLException {
         ServerSocket serverSocket = establishConnectionServer();
         Socket socket = serverSocket.accept();
-        byte[] array = SQL.getArrayInTable(SQL.enterDatabase("infomusic"), "cloudmusics", 1, "jose");
+        byte[] array = SQL.getArrayInTable(SQL.enterDatabase("infomusic"), "cloudmusics", musicID, username);
         sendBytes(array, 0, array.length, socket);
     }
 
-    public static void receiveMusicRMIClient(String path, String TCPAddress, int musicIDDownload) throws IOException {
+    public static void receiveMusicRMIClient(String path, String TCPAddress) throws IOException {
         byte[] array = readBytes(establishConnectionClient(TCPAddress));
         FileOutputStream fos = new FileOutputStream(path);
         fos.write(array);

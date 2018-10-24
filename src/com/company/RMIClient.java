@@ -204,7 +204,6 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                     int choice5 = keyboard.nextInt();
                     switch(choice5){
                         case 1:
-
                             //alterar para enviar pelo protocolo
                             System.out.println(i.getTable("musics"));
                             //ConnectionFunctions.uploadMusicTCP("C:\\Users\\zmcdo\\Documents\\music.mp3", false, 1, "rita");
@@ -228,7 +227,7 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                             System.out.println("type the path where u want to save the music");
                             keyboard = new Scanner(System.in);
                             String path = keyboard.nextLine();
-                            ConnectionFunctions.receiveMusicRMIClient(path, i.getTCPAddress(), musicIDDownload);
+                            ConnectionFunctions.receiveMusicRMIClient(path, i.getTCPAddress());
 
                             break;
                         default:
