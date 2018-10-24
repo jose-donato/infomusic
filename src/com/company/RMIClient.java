@@ -257,8 +257,9 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                         System.out.println("1. add music/album/artist");
                         System.out.println("2. change artist, album or music data");
                         System.out.println("3. grant admin to user");
-                        System.out.println("4. add picture to an album");
-                        System.out.println("5. upload song lyrics");
+                        System.out.println("4. add picture to an album"); // falta fazer
+                        System.out.println("5. upload song lyrics"); // falta fazer
+                        System.out.println("6. see all of the users in the system");
                         keyboard = new Scanner(System.in);
                         int choice2 = keyboard.nextInt();
                         switch(choice2) {
@@ -404,6 +405,13 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                                     System.out.println("already admin / username doesn't exist");
                                 }
                                 break;
+                            case 4:
+                                //
+                            case 5:
+
+                            case 6:
+                                System.out.println("this is all the users in the system");
+                                System.out.println(i.getTable("users",username));
                         }
                     }
                     else{
