@@ -221,7 +221,7 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
 
                             //alterar para enviar pelo protocolo
                             //aparecer apenas as do utilizador
-                            System.out.println(i.getTable("cloudMusics", username));
+                            System.out.println(i.getTable("cloudmusics", username));
                             System.out.println("select the music's ID u want to download");
                             keyboard = new Scanner(System.in);
                             int musicIDDownload = keyboard.nextInt();
@@ -233,7 +233,7 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                             break;
                         case 3:
                             //aparecer apenas as do utilizador
-                            System.out.println(i.getTable("cloudMusics", username));
+                            System.out.println(i.getTable("cloudmusics", username));
                             System.out.println("select the music's ID u want to share");
                             keyboard = new Scanner(System.in);
                             int musicIDToShare = keyboard.nextInt();
@@ -432,20 +432,12 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                     break;
                 case 6:
                     //logout
+                    i.logout(username);
                     return true;
                 case 7:
                     //exit
+                    i.logout(username);
                     return false;
-                /*case 7:
-                    map = new HashMap<>();
-                    map.put("type", "CreateDataBaseforsong");
-                    new Threads(map);
-                    break;
-                case 8:
-                    map = new HashMap<>();
-                    map.put("type","uploadbrink");
-                    new Threads(map);
-                    break;*/
                 default:
                     System.out.println("please enter valid option");
             }

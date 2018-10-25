@@ -260,7 +260,7 @@ public class Threads extends Thread {
         else if(table.toLowerCase().equals("albums")) {
             result = SQL.getAlbumsTable(c);
         }
-        else if(table.toLowerCase().equals("musicsCloud")) {
+        else if(table.toLowerCase().equals("cloudmusics")) {
             result = SQL.getMusicsCloudTable(c, map.get("username"));
         }
         else if(table.toLowerCase().equals("users")) {

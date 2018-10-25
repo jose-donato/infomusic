@@ -321,7 +321,7 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
         HashMap<String, String> hmap = new HashMap<>();
         hmap.put("type", "setMusicIDToDownload");
         hmap.put("username", username);
-
+        hmap.put("musicID", musicID+"");
         ConnectionFunctions.sendUdpPacket(hmap);
         return false;
     }
@@ -410,6 +410,15 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
             hmap.put("user", username);
             ConnectionFunctions.sendUdpPacket(hmap);
         return false;
+    }
+
+    @Override
+    public void logout(String username) throws RemoteException {
+        for(User u : onlineRmiClients) {
+            if(u.username.equals(username)) {
+                onlineRmiClients.remove(u);
+            }
+        }
     }
 
 

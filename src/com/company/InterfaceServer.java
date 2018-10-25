@@ -49,6 +49,8 @@ public interface InterfaceServer extends Remote {
     public String checkNotifications(String username) throws RemoteException;
     public boolean clearNotifications(String username) throws RemoteException;
 
+    public void logout(String username) throws RemoteException;
+
 
     //public void subscribe(String name, InterfaceClient client) throws RemoteException;
 

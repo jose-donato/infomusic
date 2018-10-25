@@ -443,19 +443,23 @@ public final class SQL {
         ArrayList<Integer> musicIDs = new ArrayList<>();
         String musicName = null;
         Statement s = c.createStatement();
-        ResultSet rs = s.executeQuery("SELECT * FROM USERS WHERE USERNAME='"+username+"'");
+        ResultSet rs = s.executeQuery("SELECT musicid FROM CLOUDMUSICS WHERE USERNAME='"+username+"'");
         while (rs.next()) {
-            musicIDs.add(rs.getInt("musicID"));
+            musicIDs.add(rs.getInt("musicid"));
         }
-
-
-        String result = "example: <musicID>. <musicName>\n";
-        for(int i=0; i <  musicIDs.size(); i++) {
-            rs = s.executeQuery("SELECT name FROM musics WHERE musicID='"+musicIDs.get(i)+"'");
-            while (rs.next()) {
-                musicName = rs.getString("musicID");
+        String result = "";
+        if(musicIDs.size() > 0) {
+            result = "example: <musicID>. <musicName>\n";
+            for (int i = 0; i < musicIDs.size(); i++) {
+                rs = s.executeQuery("SELECT name FROM musics WHERE musicID='" + musicIDs.get(i) + "'");
+                while (rs.next()) {
+                    musicName = rs.getString("name");
+                }
+                result += musicIDs.get(i) + ". " + musicName + "\n";
             }
-            result += musicIDs.get(i)+". "+musicName+"\n";
+        }
+        else {
+            result = "no results";
         }
         return result;
     }

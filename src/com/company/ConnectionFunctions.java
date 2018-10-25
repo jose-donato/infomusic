@@ -67,11 +67,11 @@ public final class ConnectionFunctions {
     }
 
     public static ServerSocket establishConnectionServer() throws IOException {
-        ServerSocket serverSocket = new ServerSocket(6789);
+        ServerSocket serverSocket = new ServerSocket(9123);
         return serverSocket;
     }
     public static Socket establishConnectionClient(String TCPAddress) throws IOException {
-        Socket clientSocket = new Socket(TCPAddress, 6789);
+        Socket clientSocket = new Socket(TCPAddress, 9123);
         return clientSocket;
     }
 
