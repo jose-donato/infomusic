@@ -99,14 +99,14 @@ public final class SQL {
             SQL.addForeignKeyToTable(c, "users", "albumEdits", "username");
             SQL.addForeignKeyToTable(c, "albums", "albumEdits", "albumID");
 
-            /*arr = new HashMap<String, String>();
+            arr = new HashMap<String, String>();
             arr.put("name", "VARCHAR(20) PRIMARY KEY");
             arr.put("file", "bytea");
             SQL.createTable(c, "musicsFiles", arr);
 
             //String[] a = {"user1,pass1", "'josedonato','123123'"};
             //SQL.addValuesToTable(c, "users", a);
-            */
+
 
             //add values to table
             String[] a = {"name, description", "'Red Hot Chili Peppers', 'Red Hot Chili Peppers é uma banda de rock dos Estados Unidos formada em Los Angeles, Califórnia, em 13 de fevereiro de 1983, considerada uma das maiores bandas da história do rock.'"};
@@ -115,6 +115,7 @@ public final class SQL {
             SQL.addValuesToTable(c, "albums", b);
             String[] d = {"name, description, duration, albumid, artistid","'Around The World', 'blabla', 300, 1, 1"};
             SQL.addValuesToTable(c, "musics", d);
+
             return c;
         } catch (SQLException e) {
             e.printStackTrace();
