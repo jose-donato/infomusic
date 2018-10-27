@@ -108,15 +108,15 @@ public final class SQL {
                 SQL.addForeignKeyToTable("albums", "albumEdits", "albumID");
 
                 //add values to table
-                String[] a1 = {"name, description", "'Red Hot Chili Peppers', 'Red Hot Chili Peppers é uma banda de rock dos Estados Unidos formada em Los Angeles, Califórnia.'"};
-                String[] a2 = {"name, description", "'Coldplay', 'Coldplay é uma banda britânica de rock alternativo fundada em 1996 na Inglaterra'"};
-                String[] a3 = {"name, description", "'U2', 'U2 é uma banda irlandesa de rock formada no ano de 1976.'"};
+                String[] a1 = {"name, description", "'RHC', 'banda de rock dos EUA'"};
+                String[] a2 = {"name, description", "'Coldplay', 'banda britânica fundada em 1996 na Inglaterra'"};
+                String[] a3 = {"name, description", "'U2', 'banda irlandesa de rock formada no ano de 1976.'"};
                 SQL.addValuesToTable("artists", a1);
                 SQL.addValuesToTable("artists", a2);
                 SQL.addValuesToTable("artists", a3);
-                String[] b1 = {"releasedate, name, genre,description, artistid", "now(),'Californication','Alternative Rock', 'Californication is a album made with love from california', 1"};
-                String[] b2 = {"releasedate, name, genre,description, artistid", "now(),'Parachutes','Alternative Rock', 'Parachutes é o álbum de estreia da banda inglesa', 2"};
-                String[] b3 = {"releasedate, name, genre,description, artistid", "now(),'Achtung Baby','Alternative Rock', 'Achtung Baby é o sétimo álbum de estúdio da banda de rock irlandesa', 3"};
+                String[] b1 = {"releasedate, name, genre,description, artistid", "now(),'Californication','Alternative Rock', 'album made with love from california', 1"};
+                String[] b2 = {"releasedate, name, genre,description, artistid", "now(),'Parachutes','Alternative Rock', 'álbum de estreia da banda inglesa', 2"};
+                String[] b3 = {"releasedate, name, genre,description, artistid", "now(),'Achtung Baby','Alternative Rock', 'sétimo álbum de estúdio da banda de rock irlandesa', 3"};
                 SQL.addValuesToTable("albums", b1);
                 SQL.addValuesToTable("albums", b2);
                 SQL.addValuesToTable("albums", b3);
@@ -693,7 +693,6 @@ public final class SQL {
                 i++;
             }
         }
-        result += "\n";
         return result;
     }
 
