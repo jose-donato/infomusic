@@ -116,10 +116,10 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
             //receives server response to see if user is admin or not
             String message = ConnectionFunctions.receiveUdpPacket();
             HashMap<String, String> map = ConnectionFunctions.string2HashMap(message);
-            if(!hmap.get("condition").equals("true")) {
-                return false;
+            if(map.get("condition").equals("true")) {
+                return true;
             }
-            return true;
+            return false;
         }
         //problems when sending the message
         System.out.println("d: problems when sending message to multicast server");
