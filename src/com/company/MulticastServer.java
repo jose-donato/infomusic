@@ -31,6 +31,9 @@ public class MulticastServer extends Thread {
         //SQL.grantAdminToUser(c, "hugobrinkaaa");
         MulticastServer server = new MulticastServer();
         server.start();
+
+        //waiting for tcp connection
+        ConnectionFunctions.receiveMusicMulticastServer();
     }
 
     /**

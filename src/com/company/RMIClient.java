@@ -206,7 +206,6 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                         case 1:
                             //alterar para enviar pelo protocolo
                             System.out.println(i.getTable("musics", username));
-                            //ConnectionFunctions.uploadMusicTCP("C:\\Users\\zmcdo\\Documents\\music.mp3", false, 1, "rita");
                             System.out.println("select the music's ID u want to upload");
                             keyboard = new Scanner(System.in);
                             int musicID = keyboard.nextInt();

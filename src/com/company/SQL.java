@@ -100,11 +100,11 @@ public final class SQL {
             SQL.addForeignKeyToTable("users", "albumEdits", "username");
             SQL.addForeignKeyToTable("albums", "albumEdits", "albumID");
 
-            arr = new HashMap<String, String>();
+            /*arr = new HashMap<String, String>();
             arr.put("name", "VARCHAR(20) PRIMARY KEY");
             arr.put("file", "bytea");
             SQL.createTable(dbname,"musicsFiles", arr);
-
+            */
             //String[] a = {"user1,pass1", "'josedonato','123123'"};
             //SQL.addValuesToTable(c, "users", a);
 
