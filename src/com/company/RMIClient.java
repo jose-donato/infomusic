@@ -104,7 +104,6 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
     }
 
     public static boolean menu(InterfaceServer i, String username, InterfaceClient iClient) throws IOException, SQLException {
-        Connection c = SQL.enterDatabase("infomusic");
         System.out.println("\nwelcome "+username+"!\n");
 
         //interface

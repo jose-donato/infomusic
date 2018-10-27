@@ -96,13 +96,13 @@ public final class ConnectionFunctions {
         HashMap<String, String> hmap = byteToHash(array);
         String username = hmap.get("username");
         int musicID = Integer.parseInt(hmap.get("musicID"));
-        SQL.enterArrayInTable(SQL.enterDatabase("infomusic"), "cloudmusics", array, musicID, username);
+        SQL.enterArrayInTable("cloudmusics", array, musicID, username);
     }
 
     public static void sendMusicFromMulticastServer(int musicID, String username) throws IOException, SQLException {
         ServerSocket serverSocket = establishConnectionServer();
         Socket socket = serverSocket.accept();
-        byte[] array = SQL.getArrayInTable(SQL.enterDatabase("infomusic"), "cloudmusics", musicID, username);
+        byte[] array = SQL.getArrayInTable("cloudmusics", musicID, username);
         sendBytes(array, 0, array.length, socket);
     }
 

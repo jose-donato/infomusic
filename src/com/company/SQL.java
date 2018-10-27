@@ -18,27 +18,28 @@ import java.util.List;
  */
 public final class SQL {
     private static String serverUrl = "jdbc:postgresql://localhost:5432/";
+    private static String dbname;
 
     /**
      * test to create initial values for user
      * @return
      */
-    public static Connection initialConfig() {
+    public static Connection initialConfig(long serverNumber) {
         try {
-            Connection c = enterDatabase("infomusic");
 
+            dbname = "infomusic"+serverNumber;
+            Connection c = enterDatabase(dbname);
             HashMap<String, String> arr = new HashMap<String, String>();
             arr.put("username", "VARCHAR(20) PRIMARY KEY NOT NULL");
             arr.put("password", "VARCHAR(20) NOT NULL");
             arr.put("isAdmin", "Boolean NOT NULL");
-
-            SQL.createTable(c, "users", arr);
+            SQL.createTable(dbname,"users", arr);
 
             arr = new HashMap<>();
             arr.put("artistID", "SERIAL PRIMARY KEY NOT NULL");
             arr.put("name", "VARCHAR(30) NOT NULL");
             arr.put("description", "VARCHAR(200) NOT NULL");
-            SQL.createTable(c, "artists", arr);
+            SQL.createTable(dbname, "artists", arr);
 
             arr = new HashMap<>();
             arr.put("albumID", "SERIAL PRIMARY KEY NOT NULL");
@@ -48,8 +49,8 @@ public final class SQL {
             arr.put("description", "VARCHAR(200) NOT NULL");
             arr.put("releaseDate", "DATE NOT NULL");
             arr.put("picture", "bytea");
-            SQL.createTable(c, "albums", arr);
-            SQL.addForeignKeyToTable(c, "artists", "albums", "artistID");
+            SQL.createTable(dbname,"albums", arr);
+            SQL.addForeignKeyToTable("artists", "albums", "artistID");
 
             arr = new HashMap<>();
             arr.put("musicID", "SERIAL PRIMARY KEY NOT NULL");
@@ -59,9 +60,9 @@ public final class SQL {
             arr.put("description", "VARCHAR(200)");
             arr.put("duration", "INTEGER NOT NULL");
             arr.put("lyrics", "bytea");
-            SQL.createTable(c, "musics", arr);
-            SQL.addForeignKeyToTable(c, "albums", "musics", "albumID");
-            SQL.addForeignKeyToTable(c, "artists", "musics", "artistID");
+            SQL.createTable(dbname,"musics", arr);
+            SQL.addForeignKeyToTable("albums", "musics", "albumID");
+            SQL.addForeignKeyToTable("artists", "musics", "artistID");
 
 
 
@@ -70,8 +71,8 @@ public final class SQL {
             arr.put("albumID", "SERIAL NOT NULL");
             arr.put("rating", "INTEGER NOT NULL");
             arr.put("review", "VARCHAR(300) NOT NULL");
-            SQL.createTable(c, "reviews", arr);
-            SQL.addForeignKeyToTable(c, "albums", "reviews", "albumID");
+            SQL.createTable(dbname,"reviews", arr);
+            SQL.addForeignKeyToTable("albums", "reviews", "albumID");
 
 
             arr = new HashMap<>();
@@ -79,42 +80,62 @@ public final class SQL {
             arr.put("username", "VARCHAR(20) NOT NULL");
             arr.put("musicID", "SERIAL NOT NULL");
             arr.put("musicFile", "BYTEA NOT NULL");
-            SQL.createTable(c, "cloudMusics", arr);
-            SQL.addForeignKeyToTable(c, "musics", "cloudmusics", "musicID");
-            SQL.addForeignKeyToTable(c, "users", "cloudmusics", "username");
+            SQL.createTable(dbname,"cloudMusics", arr);
+            SQL.addForeignKeyToTable("musics", "cloudmusics", "musicID");
+            SQL.addForeignKeyToTable("users", "cloudmusics", "username");
 
 
             arr = new HashMap<>();
             arr.put("notificationID", "SERIAL PRIMARY KEY NOT NULL");
             arr.put("username", "VARCHAR(20) NOT NULL");
             arr.put("notificationType", "VARCHAR(100) NOT NULL");
-            SQL.createTable(c, "notifications", arr);
-            SQL.addForeignKeyToTable(c, "users", "notifications", "username");
+            SQL.createTable(dbname,"notifications", arr);
+            SQL.addForeignKeyToTable("users", "notifications", "username");
 
             arr = new HashMap<>();
             arr.put("editionID", "SERIAL PRIMARY KEY NOT NULL");
             arr.put("username", "VARCHAR(20) NOT NULL");
             arr.put("albumID", "SERIAL NOT NULL");
-            SQL.createTable(c, "albumEdits", arr);
-            SQL.addForeignKeyToTable(c, "users", "albumEdits", "username");
-            SQL.addForeignKeyToTable(c, "albums", "albumEdits", "albumID");
+            SQL.createTable(dbname,"albumEdits", arr);
+            SQL.addForeignKeyToTable("users", "albumEdits", "username");
+            SQL.addForeignKeyToTable("albums", "albumEdits", "albumID");
 
             arr = new HashMap<String, String>();
             arr.put("name", "VARCHAR(20) PRIMARY KEY");
             arr.put("file", "bytea");
-            SQL.createTable(c, "musicsFiles", arr);
+            SQL.createTable(dbname,"musicsFiles", arr);
 
             //String[] a = {"user1,pass1", "'josedonato','123123'"};
             //SQL.addValuesToTable(c, "users", a);
 
 
             //add values to table
-            String[] a = {"name, description", "'Red Hot Chili Peppers', 'Red Hot Chili Peppers é uma banda de rock dos Estados Unidos formada em Los Angeles, Califórnia, em 13 de fevereiro de 1983, considerada uma das maiores bandas da história do rock.'"};
-            SQL.addValuesToTable(c, "artists", a);
-            String[] b = {"releasedate, name, genre,description, artistid", "now(),'Californication','Alternative Rock', 'Californication is a album made with love from california', 1"};
-            SQL.addValuesToTable(c, "albums", b);
-            String[] d = {"name, description, duration, albumid, artistid","'Around The World', 'blabla', 300, 1, 1"};
-            SQL.addValuesToTable(c, "musics", d);
+            String[] a1 = {"name, description", "'Red Hot Chili Peppers', 'Red Hot Chili Peppers é uma banda de rock dos Estados Unidos formada em Los Angeles, Califórnia.'"};
+            String[] a2 = {"name, description", "'Coldplay', 'Coldplay é uma banda britânica de rock alternativo fundada em 1996 na Inglaterra'"};
+            String[] a3 = {"name, description", "'U2', 'U2 é uma banda irlandesa de rock formada no ano de 1976.'"};
+            SQL.addValuesToTable("artists", a1);
+            SQL.addValuesToTable("artists", a2);
+            SQL.addValuesToTable("artists", a3);
+            String[] b1 = {"releasedate, name, genre,description, artistid", "now(),'Californication','Alternative Rock', 'Californication is a album made with love from california', 1"};
+            String[] b2 = {"releasedate, name, genre,description, artistid", "now(),'Parachutes','Alternative Rock', 'Parachutes é o álbum de estreia da banda inglesa', 2"};
+            String[] b3 = {"releasedate, name, genre,description, artistid", "now(),'Achtung Baby','Alternative Rock', 'Achtung Baby é o sétimo álbum de estúdio da banda de rock irlandesa', 3"};
+            SQL.addValuesToTable("albums", b1);
+            SQL.addValuesToTable("albums", b2);
+            SQL.addValuesToTable("albums", b3);
+
+            String[] d1 = {"name, description, duration, albumid, artistid","'Around The World', 'blabla', 300, 1, 1"};
+            String[] d2 = {"name, description, duration, albumid, artistid","'Shiver', 'blabla', 300, 2, 2"};
+            String[] d3 = {"name, description, duration, albumid, artistid","'Zoo Station', 'blabla', 300, 3, 3"};
+            SQL.addValuesToTable("musics", d1);
+            SQL.addValuesToTable("musics", d2);
+            SQL.addValuesToTable("musics", d3);
+
+            String[] e1 = {"username, password, isAdmin","'jose', '123', true"};
+            String[] e2 = {"username, password, isAdmin","'hugo', '1234', false"};
+            String[] e3 = {"username, password, isAdmin","'helder', '12345', false"};
+            SQL.addValuesToTable("users", e1);
+            SQL.addValuesToTable("users", e2);
+            SQL.addValuesToTable("users", e3);
 
             return c;
         } catch (SQLException e) {
@@ -130,8 +151,8 @@ public final class SQL {
      */
     public static Connection enterDatabase(String name) throws SQLException {
         Connection c = null;
+        String url = serverUrl + name;
         try {
-            String url = serverUrl + name;
             c = DriverManager.getConnection(url, "postgres", "postgres");
             System.out.println("d: connected to database " + name);
         } catch (SQLException e) {
@@ -146,9 +167,10 @@ public final class SQL {
                 e1.printStackTrace();
             }
             try {
-                String sql = "CREATE DATABASE " + name;
+                String sql = "CREATE DATABASE " + name+";";
                 statement.executeUpdate(sql);
-                System.out.println("d: database " + name + "created");
+                c = DriverManager.getConnection(url, "postgres", "postgres");
+                System.out.println("d: database " + name + " created");
             } catch (SQLException e2) {
                 System.out.println("d: error creating database "+name);
                 e2.printStackTrace();
@@ -159,23 +181,22 @@ public final class SQL {
 
     /**
      * Create table in one database
-     * @param c connection to the database
      * @param name of the table
      * @param values /atributes of the table (ex: 'USER TEXT PRIMARY KEY')
      */
-    public static void createTable(Connection c, String name, HashMap<String, String> values) {
+    public static void createTable(String dbname, String name, HashMap<String, String> values) throws SQLException {
+        Connection c = enterDatabase(dbname);
         Statement statement = null;
         try {
             statement = c.createStatement();
-            //optimize values iterations may be needed hashmap to set primary keys and if its text or number
-            String sql = "CREATE TABLE "+ name.toUpperCase() + " (";
+            String sql = "DROP TABLE IF EXISTS "+name+"; CREATE TABLE "+name + " (";
             Iterator it = values.entrySet().iterator();
             while(it.hasNext()) {
                 HashMap.Entry pair = (HashMap.Entry) it.next();
-                sql += pair.getKey().toString().toUpperCase() + " " + pair.getValue().toString().toUpperCase() +" , ";
+                sql += pair.getKey().toString() + " " + pair.getValue().toString() +" , ";
             }
             sql = sql.substring(0, sql.length() - 2);
-            sql += ")";
+            sql += ");";
             try {
                 statement.executeUpdate(sql);
             }
@@ -187,7 +208,8 @@ public final class SQL {
         }
     }
 
-    public static void addForeignKeyToTable(Connection c, String parentTable, String childTable, String column) throws SQLException {
+    public static void addForeignKeyToTable(String parentTable, String childTable, String column) throws SQLException {
+        Connection c = enterDatabase(dbname);
         String sql = "ALTER TABLE "+childTable+"\n" +
                 "ADD FOREIGN KEY ("+column+") REFERENCES "+parentTable+"("+column+"); ";
         Statement s = c.createStatement();
@@ -196,11 +218,11 @@ public final class SQL {
 
     /**
      * add one value to one table
-     * @param c connection to the table
      * @param table name of the table
      * @param keysValues
      */
-    public static void addValuesToTable(Connection c, String table, String[] keysValues) {
+    public static void addValuesToTable(String table, String[] keysValues) throws SQLException {
+        Connection c = enterDatabase(dbname);
         Statement statement = null;
         try {
             statement = c.createStatement();
@@ -216,13 +238,13 @@ public final class SQL {
 
     /**
      * select one user from the table
-     * @param c
      * @param table
      * @param username
      * @return
      * @throws SQLException
      */
-    public static String selectUser(Connection c, String table, String username) throws SQLException {
+    public static String selectUser(String table, String username) throws SQLException {
+        Connection c = enterDatabase(dbname);
         Statement s = c.createStatement();
         ResultSet rs = s.executeQuery("SELECT * FROM USERS WHERE username='"+username+"'");
         String name = null;
@@ -236,12 +258,12 @@ public final class SQL {
     //think better about this function and how relates to selectUser()
     /**
      * get user and password from table
-     * @param c database connection
      * @param username username desired
      * @return array with username and password
      * @throws SQLException
      */
-    public static String[] selectUserAndGetPassword(Connection c, String username) throws SQLException {
+    public static String[] selectUserAndGetPassword(String username) throws SQLException {
+        Connection c = enterDatabase(dbname);
         Statement s = c.createStatement();
         ResultSet rs = s.executeQuery("SELECT * FROM USERS WHERE username='"+username+"'");
         String name = null;
@@ -256,7 +278,8 @@ public final class SQL {
         return array;
     }
 
-    public static boolean checkIftableIsEmpty(Connection c, String table) throws  SQLException {
+    public static boolean checkIftableIsEmpty(String table) throws  SQLException {
+        Connection c = enterDatabase(dbname);
         String sql = "select true from "+table+" limit 1;";
         Statement s = c.createStatement();
         ResultSet rs = s.executeQuery(sql);
@@ -266,7 +289,8 @@ public final class SQL {
         return true;
     }
 
-    public static boolean checkIfUserIsAdmin(Connection c, String username) throws SQLException {
+    public static boolean checkIfUserIsAdmin(String username) throws SQLException {
+        Connection c = enterDatabase(dbname);
         Statement s = c.createStatement();
         ResultSet rs = s.executeQuery("SELECT * FROM USERS WHERE username='"+username+"'");
         Boolean isAdmin = false;
@@ -276,13 +300,14 @@ public final class SQL {
         return isAdmin;
     }
 
-    public static boolean grantAdminToUser(Connection c, String username) throws SQLException {
+    public static boolean grantAdminToUser(String username) throws SQLException {
+        Connection c = enterDatabase(dbname);
         String sql = "UPDATE USERS\n" +
                 "SET isAdmin = true\n" +
                 "WHERE username like '"+username+"';";
         Statement s = c.createStatement();
         s.executeUpdate(sql);
-        if(checkIfUserIsAdmin(c, username)) {
+        if(checkIfUserIsAdmin(username)) {
             return true;
         }
         else {
@@ -291,13 +316,15 @@ public final class SQL {
         //notificar o utilizador
     }
 
-    public static void reviewToAlbum(Connection c, String review, int rating, int albumID) throws SQLException {
+    public static void reviewToAlbum(String review, int rating, int albumID) throws SQLException {
+        Connection c = enterDatabase(dbname);
         String sql = "INSERT INTO REVIEWS(albumid, rating, review) values("+albumID+", "+rating+", '"+review+"')";
         Statement s = c.createStatement();
         s.executeUpdate(sql);
     }
 
-    public static boolean enterFileInTable(Connection c, String table, String column, String fileLocation, int id) {
+    public static boolean enterFileInTable(String table, String column, String fileLocation, int id) throws SQLException {
+        Connection c = enterDatabase(dbname);
         File file = new File(fileLocation);
         try {
             String tableID = table.substring(0, table.length()-1)+id;
@@ -326,14 +353,16 @@ public final class SQL {
         return false;
     }
 
-    public static void enterArrayInTable(Connection c, String table, byte[] array, int id, String username) throws SQLException {
+    public static void enterArrayInTable(String table, byte[] array, int id, String username) throws SQLException {
+        Connection c = enterDatabase(dbname);
         String query = "INSERT INTO "+table+" (musicID, username, musicFile) VALUES ("+id+",'"+username+"',?)";
         PreparedStatement pstmt = c.prepareStatement(query);
         pstmt.setBytes(1, array);
         pstmt.execute();
     }
 
-    public static byte[] getArrayInTable(Connection c, String table, int id, String username) throws SQLException {
+    public static byte[] getArrayInTable(String table, int id, String username) throws SQLException {
+        Connection c = enterDatabase(dbname);
         PreparedStatement ps = c.prepareStatement("SELECT musicFile FROM "+table+" WHERE musicID = "+id+" and username='"+username+"'");
         ResultSet rs = ps.executeQuery();
         byte[] array = null;
@@ -348,7 +377,8 @@ public final class SQL {
         return array;
     }
 
-    public static boolean getFileFromTable(Connection c) throws SQLException, IOException {
+    public static boolean getFileFromTable() throws SQLException, IOException {
+        Connection c = enterDatabase(dbname);
         PreparedStatement ps = c.prepareStatement("SELECT picture FROM albums WHERE albumid = 1");
         //ps.setString(1, "myimage.gif");
         ResultSet rs = ps.executeQuery();
@@ -365,7 +395,8 @@ public final class SQL {
         return false;
     }
 
-    public static boolean changeName(Connection c, String table, String newName, Integer ID, String column) throws SQLException {
+    public static boolean changeName(String table, String newName, Integer ID, String column) throws SQLException {
+        Connection c = enterDatabase(dbname);
         String name = table.substring(0, table.length()-1);
         String sql = "UPDATE "+table+" SET "+column+" = '"+newName+"' WHERE "+name+"id = "+ID;
         PreparedStatement ps = c.prepareStatement(sql);
@@ -379,7 +410,8 @@ public final class SQL {
     }*/
 
 
-    public static String getArtistsTable(Connection c) throws SQLException {
+    public static String getArtistsTable() throws SQLException {
+        Connection c = enterDatabase(dbname);
         ArrayList<Integer> artistIDs = new ArrayList<>();
         ArrayList<String> artistNames = new ArrayList<>();
         Statement s = c.createStatement();
@@ -394,7 +426,8 @@ public final class SQL {
         }
         return result;
     }
-    public static String getAlbumsTable(Connection c) throws SQLException {
+    public static String getAlbumsTable() throws SQLException {
+        Connection c = enterDatabase(dbname);
         ArrayList<Integer> albumIDs = new ArrayList<>();
         ArrayList<String> albumNames = new ArrayList<>();
         Statement s = c.createStatement();
@@ -410,7 +443,8 @@ public final class SQL {
         return result;
     }
 
-    public static String getMusicsTable(Connection c) throws SQLException {
+    public static String getMusicsTable() throws SQLException {
+        Connection c = enterDatabase(dbname);
         ArrayList<Integer> musicIDs = new ArrayList<>();
         ArrayList<String> musicNames = new ArrayList<>();
         Statement s = c.createStatement();
@@ -426,7 +460,8 @@ public final class SQL {
         return result;
     }
 
-    public static String getUsersTable(Connection c) throws SQLException {
+    public static String getUsersTable() throws SQLException {
+        Connection c = enterDatabase(dbname);
         ArrayList<String> userNames = new ArrayList<>();
         Statement s = c.createStatement();
         ResultSet rs = s.executeQuery("SELECT * FROM USERS");
@@ -440,7 +475,8 @@ public final class SQL {
         return result;
     }
 
-    public static String getMusicsCloudTable(Connection c, String username) throws SQLException {
+    public static String getMusicsCloudTable(String username) throws SQLException {
+        Connection c = enterDatabase(dbname);
         ArrayList<Integer> musicIDs = new ArrayList<>();
         String musicName = null;
         Statement s = c.createStatement();
@@ -465,7 +501,8 @@ public final class SQL {
         return result;
     }
 
-    public static String albumData(Connection c, Integer albumID) throws SQLException {
+    public static String albumData(Integer albumID) throws SQLException {
+        Connection c = enterDatabase(dbname);
         String result = "";
         ArrayList<Double> ratings = new ArrayList<>();
         ArrayList<String> reviews = new ArrayList<>();
@@ -518,7 +555,8 @@ public final class SQL {
         return result;
     }
 
-    public static String artistData(Connection c, int artistID) throws SQLException {
+    public static String artistData(int artistID) throws SQLException {
+        Connection c = enterDatabase(dbname);
         String result = "";
         Statement s = c.createStatement();
         ResultSet rs = s.executeQuery("SELECT * FROM ARTISTS WHERE artistID='"+artistID+"'");
@@ -573,7 +611,8 @@ public final class SQL {
         return result;
     }
 
-    public static void shareMusicWithUser(Connection c, int cloudMusicID, String userToShare) throws SQLException {
+    public static void shareMusicWithUser(int cloudMusicID, String userToShare) throws SQLException {
+        Connection c = enterDatabase(dbname);
         Statement s = c.createStatement();
         ResultSet rs = s.executeQuery("SELECT * FROM cloudmusics WHERE cloudMusicID='"+cloudMusicID+"'");
         int musicID = 0;
@@ -582,11 +621,12 @@ public final class SQL {
             musicID = rs.getInt("musicID");
             array = rs.getBytes("musicFile");
         }
-        SQL.enterArrayInTable(c, "cloudmusics", array, musicID, userToShare);
+        SQL.enterArrayInTable("cloudmusics", array, musicID, userToShare);
 
     }
 
-    public static void userEditedAlbum(Connection c, String username, int albumID) throws SQLException {
+    public static void userEditedAlbum(String username, int albumID) throws SQLException {
+        Connection c = enterDatabase(dbname);
         Statement s = c.createStatement();
         ResultSet rs = s.executeQuery("SELECT username FROM albumEdits WHERE albumID='"+albumID+"'");
         boolean alreadyInTable = false;
@@ -602,7 +642,8 @@ public final class SQL {
         }
     }
 
-    public static ArrayList<String> getUsersThatEditAlbum(Connection c, int albumID) throws SQLException {
+    public static ArrayList<String> getUsersThatEditAlbum(int albumID) throws SQLException {
+        Connection c = enterDatabase(dbname);
         ArrayList<String> array = new ArrayList<>();
         Statement s = c.createStatement();
         ResultSet rs = s.executeQuery("SELECT username FROM albumEdits WHERE albumID='"+albumID+"'");
@@ -612,7 +653,8 @@ public final class SQL {
         return array;
     }
 
-    public static String getUserNotifications(Connection c, String username) throws SQLException {
+    public static String getUserNotifications(String username) throws SQLException {
+        Connection c = enterDatabase(dbname);
         ArrayList<String> arr = new ArrayList<>();
         Statement s = c.createStatement();
         String sql = "SELECT notificationtype FROM notifications WHERE username='"+username+"'";
@@ -633,7 +675,8 @@ public final class SQL {
         return result;
     }
 
-    public static void removeRowFromTable(Connection c, String table, String username) throws SQLException {
+    public static void removeRowFromTable(String table, String username) throws SQLException {
+        Connection c = enterDatabase(dbname);
         String SQL = "DELETE FROM "+table+" WHERE username = '"+username+"'";
         PreparedStatement pstmt = c.prepareStatement(SQL);
         pstmt.executeUpdate();

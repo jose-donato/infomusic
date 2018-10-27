@@ -175,15 +175,13 @@ public class Threads extends Thread {
 
     private void treatClearNotifications(HashMap<String, String> map) throws SQLException {
         String username = map.get("user");
-        Connection c = SQL.enterDatabase("infomusic");
-        SQL.removeRowFromTable(c, "notifications", username);
+        SQL.removeRowFromTable("notifications", username);
     }
 
 
     private void treatCheckNotifications(HashMap<String, String> map) throws SQLException {
         String username = map.get("user");
-        Connection c = SQL.enterDatabase("infomusic");
-        String result = SQL.getUserNotifications(c, username);
+        String result = SQL.getUserNotifications(username);
         HashMap<String, String> hmap = new HashMap<>();
         hmap.put("type", "treatCheckNotificationsResponse");
         hmap.put("result", result);
@@ -192,25 +190,22 @@ public class Threads extends Thread {
 
     private void treatNotifyUserAboutAdminGranted(HashMap<String, String> map) throws SQLException {
         String user = map.get("user");
-        Connection c = SQL.enterDatabase("infomusic");
         String[] a = {"username, notificationType", "'"+user+"', 'you now have admin permissions!'"};
-        SQL.addValuesToTable(c, "notifications", a);
+        SQL.addValuesToTable("notifications", a);
     }
 
     private void treatAddUsersToAlbumEditedNotificationTable(HashMap<String, String> map) throws SQLException {
         String users = map.get("users");
         ArrayList<String> usersThatEditedAlbum = new ArrayList<String>(Arrays.asList(users.split(";")));
-        Connection c = SQL.enterDatabase("infomusic");
         for(String u : usersThatEditedAlbum) {
             String[] a = {"username, notificationType", "'"+u+"', 'one album you edited was changed!'"};
-            SQL.addValuesToTable(c, "notifications", a);
+            SQL.addValuesToTable("notifications", a);
         }
     }
 
     private void treatNotifyUsersAboutAlbumDescriptionEdit(HashMap<String, String> map) throws SQLException {
         int albumID = Integer.parseInt(map.get("albumID"));
-        Connection c = SQL.enterDatabase("infomusic");
-        ArrayList<String> names = SQL.getUsersThatEditAlbum(c, albumID);
+        ArrayList<String> names = SQL.getUsersThatEditAlbum(albumID);
         String arrayNames = "";
         HashMap<String, String> hmap = new HashMap<>();
         if(names.size() > 1) {
@@ -230,15 +225,13 @@ public class Threads extends Thread {
     private void treatUserEditAlbum(HashMap<String, String> map) throws SQLException {
         String username = map.get("username");
         int albumID = Integer.parseInt(map.get("albumID"));
-        Connection c = SQL.enterDatabase("infomusic");
-        SQL.userEditedAlbum(c, username, albumID);
+        SQL.userEditedAlbum(username, albumID);
     }
 
     private void treatShareMusicInCloud(HashMap<String, String> map) throws SQLException {
         String username = map.get("username");
         int musicID = Integer.parseInt(map.get("musicID"));
-        Connection c = SQL.enterDatabase("infomusic");
-        SQL.shareMusicWithUser(c, musicID, username);
+        SQL.shareMusicWithUser(musicID, username);
     }
 
     private void treatGetMusicIDFromCloud(HashMap<String, String> map) throws SQLException, IOException {
@@ -248,23 +241,22 @@ public class Threads extends Thread {
     }
 
     private void treatGetTable(HashMap<String, String> map) throws SQLException {
-        Connection c = SQL.enterDatabase("infomusic");
         String table = map.get("table");
         String result = "";
         if(table.toLowerCase().equals("artists")) {
-            result = SQL.getArtistsTable(c);
+            result = SQL.getArtistsTable();
         }
         else if(table.toLowerCase().equals("musics")) {
-            result = SQL.getMusicsTable(c);
+            result = SQL.getMusicsTable();
         }
         else if(table.toLowerCase().equals("albums")) {
-            result = SQL.getAlbumsTable(c);
+            result = SQL.getAlbumsTable();
         }
         else if(table.toLowerCase().equals("cloudmusics")) {
-            result = SQL.getMusicsCloudTable(c, map.get("username"));
+            result = SQL.getMusicsCloudTable(map.get("username"));
         }
         else if(table.toLowerCase().equals("users")) {
-            result = SQL.getUsersTable(c);
+            result = SQL.getUsersTable();
         }
         HashMap<String, String> hmap = new HashMap<>();
         hmap.put("type", "getTablesResponse");
@@ -279,8 +271,7 @@ public class Threads extends Thread {
         String column = map.get("column");
         String fileLocation = map.get("fileLocation");
         int id = Integer.parseInt(map.get("id"));
-        Connection c = SQL.enterDatabase("infomusic");
-        SQL.enterFileInTable(c, table, column, fileLocation, id);
+        SQL.enterFileInTable(table, column, fileLocation, id);
     }
 
     private void treatAddArtist(HashMap<String, String> map) throws SQLException {
@@ -289,9 +280,8 @@ public class Threads extends Thread {
         if(description == "no description") {
             description = null;
         }
-        Connection c = SQL.enterDatabase("infomusic");
         String a[] = {"name, description", "'"+name+"', '"+description+"'"};
-        SQL.addValuesToTable(c, "artists", a);
+        SQL.addValuesToTable("artists", a);
     }
 
     private void treatAddAlbum(HashMap<String, String> map) throws SQLException, ParseException {
@@ -303,9 +293,8 @@ public class Threads extends Thread {
         java.util.Date parsed = format.parse(dateString);
         java.sql.Date sqlDate = new java.sql.Date(parsed.getTime());
         int artistID = Integer.parseInt(map.get("artistID"));
-        Connection c = SQL.enterDatabase("infomusic");
         String a[] = {"name, genre, releasedate, artistid, description", "'"+name+"', '"+genre+"','"+sqlDate+"', "+artistID+",'"+description+"'"};
-        SQL.addValuesToTable(c, "albums", a);
+        SQL.addValuesToTable("albums", a);
     }
 
     private void treatAddMusic(HashMap<String, String> map) throws SQLException {
@@ -317,15 +306,13 @@ public class Threads extends Thread {
         int duration = Integer.parseInt(map.get("duration"));
         int albumID = Integer.parseInt(map.get("albumID"));
         int artistID = Integer.parseInt(map.get("artistID"));
-        Connection c = SQL.enterDatabase("infomusic");
         String a[] = {"name, description, duration, albumid, artistid", "'"+name+"', '"+description+"', "+duration+", "+albumID+", "+artistID};
-        SQL.addValuesToTable(c, "musics", a);
+        SQL.addValuesToTable("musics", a);
     }
 
     private void treatArtistDetail(HashMap<String, String> map) throws SQLException {
         int artistToSearch = Integer.parseInt(map.get("artistToSearch"));
-        Connection c = SQL.enterDatabase("infomusic");
-        String result = SQL.artistData(c, artistToSearch);
+        String result = SQL.artistData(artistToSearch);
         HashMap<String, String> mapResult = new HashMap<>();
         mapResult.put("type", "artistDetailResponse");
         mapResult.put("resultString", result);
@@ -334,8 +321,7 @@ public class Threads extends Thread {
 
     private void treatAlbumDetail(HashMap<String, String> map) throws SQLException {
         int albumToSearch = Integer.parseInt(map.get("albumToSearch"));
-        Connection c = SQL.enterDatabase("infomusic");
-        String result = SQL.albumData(c, albumToSearch);
+        String result = SQL.albumData(albumToSearch);
         HashMap<String, String> mapResult = new HashMap<>();
         mapResult.put("type", "albumDetailResponse");
         mapResult.put("resultString", result);
@@ -348,8 +334,7 @@ public class Threads extends Thread {
         System.out.println(albumRating);
         System.out.println(albumToReviewID);
         String albumReview = map.get("albumReview");
-        Connection c = SQL.enterDatabase("infomusic");
-        SQL.reviewToAlbum(c, albumReview, albumRating, albumToReviewID);
+        SQL.reviewToAlbum(albumReview, albumRating, albumToReviewID);
     }
 
     private void treatChangeData(HashMap<String, String> map) throws SQLException {
@@ -358,14 +343,12 @@ public class Threads extends Thread {
         String newName = map.get("newName");
         Integer tableID = Integer.parseInt(map.get("tableID"));
 
-        Connection c = SQL.enterDatabase("infomusic");
-        SQL.changeName(c, tableName, newName, tableID, columnType);
+        SQL.changeName(tableName, newName, tableID, columnType);
     }
 
     private void treatGrantAdmin(HashMap<String, String> map) throws SQLException {
         String username = map.get("username");
-        Connection c = SQL.enterDatabase("infomusic");
-        if(SQL.grantAdminToUser(c, username)) {
+        if(SQL.grantAdminToUser(username)) {
             ConnectionFunctions.sendUdpPacket(auxGrantAdmin(username, "true"));
         }
         else {
@@ -376,8 +359,7 @@ public class Threads extends Thread {
     private void treatLogin(HashMap<String, String> map) throws SQLException {
         String username = map.get("username");
         String password = map.get("password");
-        Connection c = SQL.enterDatabase("infomusic");
-        String [] user = SQL.selectUserAndGetPassword(c, username);
+        String [] user = SQL.selectUserAndGetPassword(username);
         String return_username = user[0];
         String return_pass = user[1];
         if(return_username != null && return_pass.equals(password)) {
@@ -390,20 +372,19 @@ public class Threads extends Thread {
 
     private void treatRegister(HashMap<String, String> map) throws SQLException {
         String username = map.get("username");
-        Connection c = SQL.enterDatabase("infomusic");
-        String user = SQL.selectUser(c, "USERS", username);
+        String user = SQL.selectUser("USERS", username);
         System.out.println("\n\n\n"+user+"\n\n\n");
         if(user == null) {
             ConnectionFunctions.sendUdpPacket(aux(username, "true"));
             String[] arr;
-            if(SQL.checkIftableIsEmpty(c, "users")) {
+            if(SQL.checkIftableIsEmpty("users")) {
                 arr = new String[]{"username,password,isAdmin", "'" + username + "','" + map.get("password") + "',true"};
             }
             else {
                 arr = new String[]{"username,password,isAdmin", "'" + username + "','" + map.get("password") + "',false"};
             }
 
-            SQL.addValuesToTable(c, "USERS", arr);
+            SQL.addValuesToTable("USERS", arr);
         }
         else {
             //corrigir
@@ -413,8 +394,7 @@ public class Threads extends Thread {
 
     private void treatVerifyAdmin(HashMap<String, String> map) throws SQLException {
         String username = map.get("username");
-        Connection c = SQL.enterDatabase("infomusic");
-        if(SQL.checkIfUserIsAdmin(c, username)) {
+        if(SQL.checkIfUserIsAdmin(username)) {
             ConnectionFunctions.sendUdpPacket(auxIsAdmin(username, "true"));
         }
         else{
