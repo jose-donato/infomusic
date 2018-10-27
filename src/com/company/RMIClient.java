@@ -421,8 +421,23 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                                 case 5:
                                     //5. upload song lyrics"
                                 case 6:
-                                    System.out.println("this is all the users in the system");
-                                    System.out.println(i.getTable("users", username));
+                                    System.out.println("do u want to see online users or all users?");
+                                    System.out.println("1. online users");
+                                    System.out.println("2. all users");
+                                    keyboard = new Scanner(System.in);
+                                    int choice8 = keyboard.nextInt();
+                                    switch (choice8) {
+                                        case 1:
+                                            System.out.println("online users: \n");
+                                            System.out.println(i.printOnlineUsers());
+                                            break;
+                                        case 2:
+                                            System.out.println("all users: \n");
+                                            System.out.println(i.getTable("users", username));
+                                            break;
+                                        default:
+                                            System.out.println("please enter valid option");
+                                    }
                                     break;
                             }
                         } else {
