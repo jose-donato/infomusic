@@ -1,14 +1,12 @@
 package com.company;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
 
 import java.rmi.server.UnicastRemoteObject;
-import java.sql.SQLException;
 import java.util.Scanner;
 
 /**
@@ -42,7 +40,7 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
 
 
 
-    public static void main(String[] args) throws IOException, NotBoundException, SQLException, InterruptedException {
+    public static void main(String[] args) throws IOException, NotBoundException, InterruptedException {
         boolean bounding = false;
         InterfaceServer i = null;
 
