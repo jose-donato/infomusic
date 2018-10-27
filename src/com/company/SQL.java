@@ -19,6 +19,7 @@ import java.util.List;
 public final class SQL {
     private static String serverUrl = "jdbc:postgresql://localhost:5432/";
     private static String dbname;
+    private static boolean dbExists;
 
     /**
      * test to create initial values for user
@@ -29,114 +30,114 @@ public final class SQL {
 
             dbname = "infomusic"+serverNumber;
             Connection c = enterDatabase(dbname);
-            HashMap<String, String> arr = new HashMap<String, String>();
-            arr.put("username", "VARCHAR(20) PRIMARY KEY NOT NULL");
-            arr.put("password", "VARCHAR(20) NOT NULL");
-            arr.put("isAdmin", "Boolean NOT NULL");
-            SQL.createTable(dbname,"users", arr);
+            if(!dbExists) {
+                HashMap<String, String> arr = new HashMap<String, String>();
+                arr.put("username", "VARCHAR(20) PRIMARY KEY NOT NULL");
+                arr.put("password", "VARCHAR(20) NOT NULL");
+                arr.put("isAdmin", "Boolean NOT NULL");
+                SQL.createTable(dbname, "users", arr);
 
-            arr = new HashMap<>();
-            arr.put("artistID", "SERIAL PRIMARY KEY NOT NULL");
-            arr.put("name", "VARCHAR(30) NOT NULL");
-            arr.put("description", "VARCHAR(200) NOT NULL");
-            SQL.createTable(dbname, "artists", arr);
+                arr = new HashMap<>();
+                arr.put("artistID", "SERIAL PRIMARY KEY NOT NULL");
+                arr.put("name", "VARCHAR(30) NOT NULL");
+                arr.put("description", "VARCHAR(200) NOT NULL");
+                SQL.createTable(dbname, "artists", arr);
 
-            arr = new HashMap<>();
-            arr.put("albumID", "SERIAL PRIMARY KEY NOT NULL");
-            arr.put("artistID", "SERIAL NOT NULL");
-            arr.put("genre", "VARCHAR(30) NOT NULL");
-            arr.put("name", "VARCHAR(30) NOT NULL");
-            arr.put("description", "VARCHAR(200) NOT NULL");
-            arr.put("releaseDate", "DATE NOT NULL");
-            arr.put("picture", "bytea");
-            SQL.createTable(dbname,"albums", arr);
-            SQL.addForeignKeyToTable("artists", "albums", "artistID");
+                arr = new HashMap<>();
+                arr.put("albumID", "SERIAL PRIMARY KEY NOT NULL");
+                arr.put("artistID", "SERIAL NOT NULL");
+                arr.put("genre", "VARCHAR(30) NOT NULL");
+                arr.put("name", "VARCHAR(30) NOT NULL");
+                arr.put("description", "VARCHAR(200) NOT NULL");
+                arr.put("releaseDate", "DATE NOT NULL");
+                arr.put("picture", "bytea");
+                SQL.createTable(dbname, "albums", arr);
+                SQL.addForeignKeyToTable("artists", "albums", "artistID");
 
-            arr = new HashMap<>();
-            arr.put("musicID", "SERIAL PRIMARY KEY NOT NULL");
-            arr.put("albumID", "SERIAL NOT NULL");
-            arr.put("artistID", "SERIAL NOT NULL");
-            arr.put("name", "VARCHAR(30) NOT NULL");
-            arr.put("description", "VARCHAR(200)");
-            arr.put("duration", "INTEGER NOT NULL");
-            arr.put("lyrics", "bytea");
-            SQL.createTable(dbname,"musics", arr);
-            SQL.addForeignKeyToTable("albums", "musics", "albumID");
-            SQL.addForeignKeyToTable("artists", "musics", "artistID");
-
-
-
-            arr = new HashMap<>();
-            arr.put("reviewID", "SERIAL PRIMARY KEY NOT NULL");
-            arr.put("albumID", "SERIAL NOT NULL");
-            arr.put("rating", "INTEGER NOT NULL");
-            arr.put("review", "VARCHAR(300) NOT NULL");
-            SQL.createTable(dbname,"reviews", arr);
-            SQL.addForeignKeyToTable("albums", "reviews", "albumID");
+                arr = new HashMap<>();
+                arr.put("musicID", "SERIAL PRIMARY KEY NOT NULL");
+                arr.put("albumID", "SERIAL NOT NULL");
+                arr.put("artistID", "SERIAL NOT NULL");
+                arr.put("name", "VARCHAR(30) NOT NULL");
+                arr.put("description", "VARCHAR(200)");
+                arr.put("duration", "INTEGER NOT NULL");
+                arr.put("lyrics", "bytea");
+                SQL.createTable(dbname, "musics", arr);
+                SQL.addForeignKeyToTable("albums", "musics", "albumID");
+                SQL.addForeignKeyToTable("artists", "musics", "artistID");
 
 
-            arr = new HashMap<>();
-            arr.put("cloudMusicID", "SERIAL PRIMARY KEY NOT NULL");
-            arr.put("username", "VARCHAR(20) NOT NULL");
-            arr.put("musicID", "SERIAL NOT NULL");
-            arr.put("musicFile", "BYTEA NOT NULL");
-            SQL.createTable(dbname,"cloudMusics", arr);
-            SQL.addForeignKeyToTable("musics", "cloudmusics", "musicID");
-            SQL.addForeignKeyToTable("users", "cloudmusics", "username");
+                arr = new HashMap<>();
+                arr.put("reviewID", "SERIAL PRIMARY KEY NOT NULL");
+                arr.put("albumID", "SERIAL NOT NULL");
+                arr.put("rating", "INTEGER NOT NULL");
+                arr.put("review", "VARCHAR(300) NOT NULL");
+                SQL.createTable(dbname, "reviews", arr);
+                SQL.addForeignKeyToTable("albums", "reviews", "albumID");
 
 
-            arr = new HashMap<>();
-            arr.put("notificationID", "SERIAL PRIMARY KEY NOT NULL");
-            arr.put("username", "VARCHAR(20) NOT NULL");
-            arr.put("notificationType", "VARCHAR(100) NOT NULL");
-            SQL.createTable(dbname,"notifications", arr);
-            SQL.addForeignKeyToTable("users", "notifications", "username");
+                arr = new HashMap<>();
+                arr.put("cloudMusicID", "SERIAL PRIMARY KEY NOT NULL");
+                arr.put("username", "VARCHAR(20) NOT NULL");
+                arr.put("musicID", "SERIAL NOT NULL");
+                arr.put("musicFile", "BYTEA NOT NULL");
+                SQL.createTable(dbname, "cloudMusics", arr);
+                SQL.addForeignKeyToTable("musics", "cloudmusics", "musicID");
+                SQL.addForeignKeyToTable("users", "cloudmusics", "username");
 
-            arr = new HashMap<>();
-            arr.put("editionID", "SERIAL PRIMARY KEY NOT NULL");
-            arr.put("username", "VARCHAR(20) NOT NULL");
-            arr.put("albumID", "SERIAL NOT NULL");
-            SQL.createTable(dbname,"albumEdits", arr);
-            SQL.addForeignKeyToTable("users", "albumEdits", "username");
-            SQL.addForeignKeyToTable("albums", "albumEdits", "albumID");
+
+                arr = new HashMap<>();
+                arr.put("notificationID", "SERIAL PRIMARY KEY NOT NULL");
+                arr.put("username", "VARCHAR(20) NOT NULL");
+                arr.put("notificationType", "VARCHAR(100) NOT NULL");
+                SQL.createTable(dbname, "notifications", arr);
+                SQL.addForeignKeyToTable("users", "notifications", "username");
+
+                arr = new HashMap<>();
+                arr.put("editionID", "SERIAL PRIMARY KEY NOT NULL");
+                arr.put("username", "VARCHAR(20) NOT NULL");
+                arr.put("albumID", "SERIAL NOT NULL");
+                SQL.createTable(dbname, "albumEdits", arr);
+                SQL.addForeignKeyToTable("users", "albumEdits", "username");
+                SQL.addForeignKeyToTable("albums", "albumEdits", "albumID");
 
             /*arr = new HashMap<String, String>();
             arr.put("name", "VARCHAR(20) PRIMARY KEY");
             arr.put("file", "bytea");
             SQL.createTable(dbname,"musicsFiles", arr);
             */
-            //String[] a = {"user1,pass1", "'josedonato','123123'"};
-            //SQL.addValuesToTable(c, "users", a);
+                //String[] a = {"user1,pass1", "'josedonato','123123'"};
+                //SQL.addValuesToTable(c, "users", a);
 
 
-            //add values to table
-            String[] a1 = {"name, description", "'Red Hot Chili Peppers', 'Red Hot Chili Peppers é uma banda de rock dos Estados Unidos formada em Los Angeles, Califórnia.'"};
-            String[] a2 = {"name, description", "'Coldplay', 'Coldplay é uma banda britânica de rock alternativo fundada em 1996 na Inglaterra'"};
-            String[] a3 = {"name, description", "'U2', 'U2 é uma banda irlandesa de rock formada no ano de 1976.'"};
-            SQL.addValuesToTable("artists", a1);
-            SQL.addValuesToTable("artists", a2);
-            SQL.addValuesToTable("artists", a3);
-            String[] b1 = {"releasedate, name, genre,description, artistid", "now(),'Californication','Alternative Rock', 'Californication is a album made with love from california', 1"};
-            String[] b2 = {"releasedate, name, genre,description, artistid", "now(),'Parachutes','Alternative Rock', 'Parachutes é o álbum de estreia da banda inglesa', 2"};
-            String[] b3 = {"releasedate, name, genre,description, artistid", "now(),'Achtung Baby','Alternative Rock', 'Achtung Baby é o sétimo álbum de estúdio da banda de rock irlandesa', 3"};
-            SQL.addValuesToTable("albums", b1);
-            SQL.addValuesToTable("albums", b2);
-            SQL.addValuesToTable("albums", b3);
+                //add values to table
+                String[] a1 = {"name, description", "'Red Hot Chili Peppers', 'Red Hot Chili Peppers é uma banda de rock dos Estados Unidos formada em Los Angeles, Califórnia.'"};
+                String[] a2 = {"name, description", "'Coldplay', 'Coldplay é uma banda britânica de rock alternativo fundada em 1996 na Inglaterra'"};
+                String[] a3 = {"name, description", "'U2', 'U2 é uma banda irlandesa de rock formada no ano de 1976.'"};
+                SQL.addValuesToTable("artists", a1);
+                SQL.addValuesToTable("artists", a2);
+                SQL.addValuesToTable("artists", a3);
+                String[] b1 = {"releasedate, name, genre,description, artistid", "now(),'Californication','Alternative Rock', 'Californication is a album made with love from california', 1"};
+                String[] b2 = {"releasedate, name, genre,description, artistid", "now(),'Parachutes','Alternative Rock', 'Parachutes é o álbum de estreia da banda inglesa', 2"};
+                String[] b3 = {"releasedate, name, genre,description, artistid", "now(),'Achtung Baby','Alternative Rock', 'Achtung Baby é o sétimo álbum de estúdio da banda de rock irlandesa', 3"};
+                SQL.addValuesToTable("albums", b1);
+                SQL.addValuesToTable("albums", b2);
+                SQL.addValuesToTable("albums", b3);
 
-            String[] d1 = {"name, description, duration, albumid, artistid","'Around The World', 'blabla', 300, 1, 1"};
-            String[] d2 = {"name, description, duration, albumid, artistid","'Shiver', 'blabla', 300, 2, 2"};
-            String[] d3 = {"name, description, duration, albumid, artistid","'Zoo Station', 'blabla', 300, 3, 3"};
-            SQL.addValuesToTable("musics", d1);
-            SQL.addValuesToTable("musics", d2);
-            SQL.addValuesToTable("musics", d3);
+                String[] d1 = {"name, description, duration, albumid, artistid", "'Around The World', 'blabla', 300, 1, 1"};
+                String[] d2 = {"name, description, duration, albumid, artistid", "'Shiver', 'blabla', 300, 2, 2"};
+                String[] d3 = {"name, description, duration, albumid, artistid", "'Zoo Station', 'blabla', 300, 3, 3"};
+                SQL.addValuesToTable("musics", d1);
+                SQL.addValuesToTable("musics", d2);
+                SQL.addValuesToTable("musics", d3);
 
-            String[] e1 = {"username, password, isAdmin","'jose', '123', true"};
-            String[] e2 = {"username, password, isAdmin","'hugo', '1234', false"};
-            String[] e3 = {"username, password, isAdmin","'helder', '12345', false"};
-            SQL.addValuesToTable("users", e1);
-            SQL.addValuesToTable("users", e2);
-            SQL.addValuesToTable("users", e3);
-
+                String[] e1 = {"username, password, isAdmin", "'jose', '123', true"};
+                String[] e2 = {"username, password, isAdmin", "'hugo', '1234', false"};
+                String[] e3 = {"username, password, isAdmin", "'helder', '12345', false"};
+                SQL.addValuesToTable("users", e1);
+                SQL.addValuesToTable("users", e2);
+                SQL.addValuesToTable("users", e3);
+            }
             return c;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -155,10 +156,12 @@ public final class SQL {
         try {
             c = DriverManager.getConnection(url, "postgres", "postgres");
             System.out.println("d: connected to database " + name);
+            dbExists = true;
         } catch (SQLException e) {
             //e.printStackTrace();
             System.out.println("d: database doesn't exist.. creating");
             c = DriverManager.getConnection(serverUrl, "postgres", "postgres");
+            dbExists = false;
             //c.setAutoCommit(false);
             Statement statement = null;
             try {
