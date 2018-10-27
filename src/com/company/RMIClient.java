@@ -1,6 +1,8 @@
 package com.company;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -81,7 +83,7 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
      * @return the username string when the user makes the login successful
      * @throws RemoteException
      */
-    public static String enterTheProgram(InterfaceServer i) throws RemoteException {
+    public static String enterTheProgram(InterfaceServer i) throws RemoteException, InterruptedException {
         while (true) {
             System.out.println("menu: (type one of the options)\n");
             System.out.println("1. login");
@@ -100,14 +102,37 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                     keyboard = new Scanner(System.in);
                     String password = keyboard.nextLine();
 
-                    //if login succeeds
-                    if (i.loginOrRegister(username, password, false)) {
-                        //tbc
-                        System.out.println("login successful");
-                        return username;
-                    } else {
-                        //tbc
-                        System.out.println("wrong credentials, make sure to register first!");
+                    try {
+                        //if login succeeds
+                        if (i.loginOrRegister(username, password, false)) {
+                            //tbc
+                            System.out.println("login successful");
+                            return username;
+                        } else {
+                            //tbc
+                            System.out.println("wrong credentials, make sure to register first!");
+                        }
+                    } catch(java.rmi.ConnectException e) {
+                        //to connect to backup rmi server if primary goes down
+                        System.out.println("Wait...");
+                        Thread.sleep(5000);
+                        boolean tryBounding = false;
+                        while (!tryBounding) {
+                            try {
+                                i = (InterfaceServer) Naming.lookup("//"+ InetAddress.getLocalHost().getHostAddress()+":1099/infoMusicRegistry");
+                                //i = (InterfaceServer) Naming.lookup("//192.168.1.188:1099/infoMusicRegistry");
+                                //i = (InterfaceServer) Naming.lookup("//192.168.1.185:1099/infoMusicRegistry");
+                                tryBounding = true;
+                            } catch (RemoteException y) {
+                                System.out.println("trying...");
+                            } catch (NotBoundException e1) {
+                                e1.printStackTrace();
+                            } catch (MalformedURLException e1) {
+                                e1.printStackTrace();
+                            } catch (UnknownHostException e1) {
+                                e1.printStackTrace();
+                            }
+                        }
                     }
                     break;
                 case 2:
