@@ -420,6 +420,13 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
             }
         }
     }
+    public String printOnlineUsers() throws RemoteException {
+        String result = "";
+        for(User u : onlineRmiClients) {
+            result += u + " \n ";
+        }
+        return result;
+    }
 
 
 }

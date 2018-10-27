@@ -66,14 +66,14 @@ public final class ConnectionFunctions {
         return message;
     }
 
-    public static ServerSocket establishConnectionServer() throws IOException {
+    public static ServerSocket establishConnectionServer(int port) throws IOException {
         ServerSocket serverSocket = new ServerSocket();
         serverSocket.setReuseAddress(true);
-        serverSocket.bind(new InetSocketAddress(53257));
+        serverSocket.bind(new InetSocketAddress(port));
         return serverSocket;
     }
-    public static Socket establishConnectionClient(String TCPAddress) throws IOException {
-        Socket clientSocket = new Socket(TCPAddress, 53257);
+    public static Socket establishConnectionClient(String TCPAddress, int port) throws IOException {
+        Socket clientSocket = new Socket(TCPAddress, port);
         return clientSocket;
     }
 
@@ -86,28 +86,28 @@ public final class ConnectionFunctions {
         hmap.put("musicID", musicID+"");
         hmap.put("username", username);
         byte[] array = hashToByte(hmap);
-        sendBytes(array,0, array.length, establishConnectionClient(TCPAddress));
+        sendBytes(array,0, array.length, establishConnectionClient(TCPAddress, 53287));
     }
 
     public static void receiveMusicMulticastServer() throws IOException, SQLException, ClassNotFoundException {
-        ServerSocket serverSocket = establishConnectionServer();
+        ServerSocket serverSocket = establishConnectionServer(53287);
         Socket socket = serverSocket.accept();
         byte[] array = readBytes(socket);
         HashMap<String, String> hmap = byteToHash(array);
         String username = hmap.get("username");
         int musicID = Integer.parseInt(hmap.get("musicID"));
-        SQL.enterArrayInTable(SQL.enterDatabase("infomusic"), "cloudmusics", array, musicID, username);
+        SQL.enterArrayInTable("cloudmusics", array, musicID, username);
     }
 
     public static void sendMusicFromMulticastServer(int musicID, String username) throws IOException, SQLException {
-        ServerSocket serverSocket = establishConnectionServer();
+        ServerSocket serverSocket = establishConnectionServer(53288);
         Socket socket = serverSocket.accept();
-        byte[] array = SQL.getArrayInTable(SQL.enterDatabase("infomusic"), "cloudmusics", musicID, username);
+        byte[] array = SQL.getArrayInTable("cloudmusics", musicID, username);
         sendBytes(array, 0, array.length, socket);
     }
 
     public static void receiveMusicRMIClient(String path, String TCPAddress) throws IOException {
-        byte[] array = readBytes(establishConnectionClient(TCPAddress));
+        byte[] array = readBytes(establishConnectionClient(TCPAddress, 53288));
         FileOutputStream fos = new FileOutputStream(path);
         fos.write(array);
         fos.close();

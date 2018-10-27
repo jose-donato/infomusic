@@ -14,10 +14,10 @@ public class MulticastServer extends Thread {
     private String MULTICAST_ADDRESS = "224.0.224.0";
     private int PORT = 4321;
     private long SLEEP_TIME = 5000;
-
+    private static long number = (long) (Math.random() * 100);;
 
     public static void main(String[] args) throws IOException, InterruptedException, SQLException, ClassNotFoundException {
-        //SQL.initialConfig();
+        SQL.initialConfig(number);
         //Connection c = SQL.enterDatabase("infomusic");
         //SQL.shareMusicWithUser(c, 1, "hugo");
         //System.out.println(SQL.albumData(c, 1));
@@ -31,15 +31,17 @@ public class MulticastServer extends Thread {
         //SQL.grantAdminToUser(c, "hugobrinkaaa");
         MulticastServer server = new MulticastServer();
         server.start();
-        ConnectionFunctions.receiveMusicMulticastServer();
 
+        //waiting for tcp connection
+        ConnectionFunctions.receiveMusicMulticastServer();
     }
 
     /**
      *
      */
     public MulticastServer() {
-        super("Server " + (long) (Math.random() * 1000));
+        super("server ready");
+        System.out.println("server "+number+" ready.");
     }
 
     /**
