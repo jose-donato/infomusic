@@ -235,7 +235,7 @@ public class Threads extends Thread {
         ArrayList<String> names = SQL.getUsersThatEditAlbum(albumID);
         String arrayNames = "";
         HashMap<String, String> hmap = new HashMap<>();
-        if(names.size() > 1) {
+        if(names.size() > 0) {
             for (String s : names) {
                 arrayNames += s + ";";
             }
