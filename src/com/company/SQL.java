@@ -14,16 +14,22 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- *
+ * SQL Class
+ * has all functions to communicate with database
  */
 public final class SQL {
+    //url for database
     private static String serverUrl = "jdbc:postgresql://localhost:5432/";
+    //name of the database created
     private static String dbname;
+    //boolean to see if database already exists or dont
     private static boolean dbExists;
 
+
     /**
-     * test to create initial values for user
-     * @return
+     * creates database and adds all the tables neccessaries for the program to run
+     * @param serverNumber identifier of the multicast server
+     * @return the connection to database in case of success, false otherwise
      */
     public static Connection initialConfig(long serverNumber) {
         try {
@@ -101,15 +107,6 @@ public final class SQL {
                 SQL.addForeignKeyToTable("users", "albumEdits", "username");
                 SQL.addForeignKeyToTable("albums", "albumEdits", "albumID");
 
-            /*arr = new HashMap<String, String>();
-            arr.put("name", "VARCHAR(20) PRIMARY KEY");
-            arr.put("file", "bytea");
-            SQL.createTable(dbname,"musicsFiles", arr);
-            */
-                //String[] a = {"user1,pass1", "'josedonato','123123'"};
-                //SQL.addValuesToTable(c, "users", a);
-
-
                 //add values to table
                 String[] a1 = {"name, description", "'Red Hot Chili Peppers', 'Red Hot Chili Peppers é uma banda de rock dos Estados Unidos formada em Los Angeles, Califórnia.'"};
                 String[] a2 = {"name, description", "'Coldplay', 'Coldplay é uma banda britânica de rock alternativo fundada em 1996 na Inglaterra'"};
@@ -144,6 +141,7 @@ public final class SQL {
             return null;
         }
     }
+
     /**
      * enter in postgressql database or create if it doesn't exist
      * @param name of the database
@@ -211,6 +209,13 @@ public final class SQL {
         }
     }
 
+    /**
+     * add foreign key to one table
+     * @param parentTable table that has the key
+     * @param childTable child table to add foreign key
+     * @param column name of the column u want to set as foreign key
+     * @throws SQLException
+     */
     public static void addForeignKeyToTable(String parentTable, String childTable, String column) throws SQLException {
         Connection c = enterDatabase(dbname);
         String sql = "ALTER TABLE "+childTable+"\n" +
@@ -220,9 +225,9 @@ public final class SQL {
     }
 
     /**
-     * add one value to one table
-     * @param table name of the table
-     * @param keysValues
+     * add one row to one table
+     * @param table name of the table, can be any table of the database
+     * @param keysValues has the names and values of the table to insert
      */
     public static void addValuesToTable(String table, String[] keysValues) throws SQLException {
         Connection c = enterDatabase(dbname);
@@ -240,10 +245,9 @@ public final class SQL {
     }
 
     /**
-     * select one user from the table
-     * @param table
-     * @param username
-     * @return
+     * select one user from the table users
+     * @param username of the user to select
+     * @return the name of the user
      * @throws SQLException
      */
     public static String selectUser(String table, String username) throws SQLException {
@@ -257,11 +261,9 @@ public final class SQL {
         return name;
     }
 
-
-    //think better about this function and how relates to selectUser()
     /**
      * get user and password from table
-     * @param username username desired
+     * @param username name of the user
      * @return array with username and password
      * @throws SQLException
      */
@@ -281,6 +283,12 @@ public final class SQL {
         return array;
     }
 
+    /**
+     * check if one table in database is empty
+     * @param table name you want to check
+     * @return true in case it's empty, false otherwise
+     * @throws SQLException
+     */
     public static boolean checkIftableIsEmpty(String table) throws  SQLException {
         Connection c = enterDatabase(dbname);
         String sql = "select true from "+table+" limit 1;";
@@ -292,6 +300,12 @@ public final class SQL {
         return true;
     }
 
+    /**
+     * check if one user is admin or dont
+     * @param username of the user you want to check
+     * @return true in case it's admin, false otherwise
+     * @throws SQLException
+     */
     public static boolean checkIfUserIsAdmin(String username) throws SQLException {
         Connection c = enterDatabase(dbname);
         Statement s = c.createStatement();
@@ -303,6 +317,12 @@ public final class SQL {
         return isAdmin;
     }
 
+    /**
+     * grant admin to an user
+     * @param username of the user you want to grant admin
+     * @return true in case of success, false otherwise
+     * @throws SQLException
+     */
     public static boolean grantAdminToUser(String username) throws SQLException {
         Connection c = enterDatabase(dbname);
         String sql = "UPDATE USERS\n" +
@@ -316,9 +336,15 @@ public final class SQL {
         else {
             return false;
         }
-        //notificar o utilizador
     }
 
+    /**
+     * add one review about an album to database with rating and justification
+     * @param review text has 300 char limit
+     * @param rating 0 to 10
+     * @param albumID of the album you want to review
+     * @throws SQLException
+     */
     public static void reviewToAlbum(String review, int rating, int albumID) throws SQLException {
         Connection c = enterDatabase(dbname);
         String sql = "INSERT INTO REVIEWS(albumid, rating, review) values("+albumID+", "+rating+", '"+review+"')";
@@ -326,6 +352,15 @@ public final class SQL {
         s.executeUpdate(sql);
     }
 
+    /**
+     * add one file to one table (can be albums for picture, cloudmusics for music file, musics for lyrics)
+     * @param table can be cloudmusics, albums, musics
+     * @param column can be musicfile, picture, lyrics
+     * @param fileLocation where the file is located
+     * @param id albumID, musicID
+     * @return true in success, false otherwise
+     * @throws SQLException
+     */
     public static boolean enterFileInTable(String table, String column, String fileLocation, int id) throws SQLException {
         Connection c = enterDatabase(dbname);
         File file = new File(fileLocation);
@@ -356,6 +391,14 @@ public final class SQL {
         return false;
     }
 
+    /**
+     * add array of bytes, for upload music to database and other files
+     * @param table of the table to store the array, cloudmusics, for example in case of musics
+     * @param array the array of bytes that has the data
+     * @param id musicID in case of cloudmusics
+     * @param username to associate the file ot username
+     * @throws SQLException
+     */
     public static void enterArrayInTable(String table, byte[] array, int id, String username) throws SQLException {
         Connection c = enterDatabase(dbname);
         String query = "INSERT INTO "+table+" (musicID, username, musicFile) VALUES ("+id+",'"+username+"',?)";
@@ -364,6 +407,14 @@ public final class SQL {
         pstmt.execute();
     }
 
+    /**
+     * get array data from table to download file from database (multicast server)
+     * @param table where the array with data is cloudmusics
+     * @param id musicID associated with the file
+     * @param username of the user that has the file
+     * @return the array of bytes with file's data
+     * @throws SQLException
+     */
     public static byte[] getArrayInTable(String table, int id, String username) throws SQLException {
         Connection c = enterDatabase(dbname);
         PreparedStatement ps = c.prepareStatement("SELECT musicFile FROM "+table+" WHERE musicID = "+id+" and username='"+username+"'");
@@ -380,24 +431,16 @@ public final class SQL {
         return array;
     }
 
-    public static boolean getFileFromTable() throws SQLException, IOException {
-        Connection c = enterDatabase(dbname);
-        PreparedStatement ps = c.prepareStatement("SELECT picture FROM albums WHERE albumid = 1");
-        //ps.setString(1, "myimage.gif");
-        ResultSet rs = ps.executeQuery();
-        byte[] imgBytes = null;
-        if (rs != null) {
-            while (rs.next()) {
-                imgBytes = rs.getBytes(1);
-                // use the data in some way here
-            }
-            rs.close();
-        }
-        ps.close();
-        FileUtils.writeByteArrayToFile(new File("C:\\Users\\zmcdo\\Desktop\\rhc.png"), imgBytes);
-        return false;
-    }
 
+    /**
+     * change name ( or description in case of albums table) of one table column
+     * @param table can be albums, musics, artists
+     * @param newName the new name for the column
+     * @param ID of the data you want to change the name, artistID, albumID, musicID
+     * @param column name (or description in case of album)
+     * @return false, no verification yet
+     * @throws SQLException
+     */
     public static boolean changeName(String table, String newName, Integer ID, String column) throws SQLException {
         Connection c = enterDatabase(dbname);
         String name = table.substring(0, table.length()-1);
@@ -407,12 +450,13 @@ public final class SQL {
         ps.close();
         return false;
     }
-    /*public static void printAllTable(Connection c, String table) throws SQLException {
-        DBTablePrinter.printTable(c, table);
-        //return allRows;
-    }*/
 
 
+    /**
+     * gets artist table for user to see, with artistID and artistName
+     * @return string with artist table
+     * @throws SQLException
+     */
     public static String getArtistsTable() throws SQLException {
         Connection c = enterDatabase(dbname);
         ArrayList<Integer> artistIDs = new ArrayList<>();
@@ -429,6 +473,12 @@ public final class SQL {
         }
         return result;
     }
+
+    /**
+     * gets album table for user to see, with albumID and albumName
+     * @return string with album table
+     * @throws SQLException
+     */
     public static String getAlbumsTable() throws SQLException {
         Connection c = enterDatabase(dbname);
         ArrayList<Integer> albumIDs = new ArrayList<>();
@@ -446,6 +496,11 @@ public final class SQL {
         return result;
     }
 
+    /**
+     * gets music table for user to see, with musicID and musicName
+     * @return string with music table
+     * @throws SQLException
+     */
     public static String getMusicsTable() throws SQLException {
         Connection c = enterDatabase(dbname);
         ArrayList<Integer> musicIDs = new ArrayList<>();
@@ -463,6 +518,11 @@ public final class SQL {
         return result;
     }
 
+    /**
+     * gets users table for user to see, with username
+     * @return string with usernames table
+     * @throws SQLException
+     */
     public static String getUsersTable() throws SQLException {
         Connection c = enterDatabase(dbname);
         ArrayList<String> userNames = new ArrayList<>();
@@ -478,6 +538,12 @@ public final class SQL {
         return result;
     }
 
+    /**
+     * gets the musics that one user has in the cloud (server)
+     * @param username of the user that wants to check which musics has in the cloud
+     * @return cloud musics table for that user
+     * @throws SQLException
+     */
     public static String getMusicsCloudTable(String username) throws SQLException {
         Connection c = enterDatabase(dbname);
         ArrayList<Integer> musicIDs = new ArrayList<>();
@@ -504,6 +570,12 @@ public final class SQL {
         return result;
     }
 
+    /**
+     * gets album data from one specific album
+     * @param albumID id of the album that user wants the data
+     * @return string with album data
+     * @throws SQLException
+     */
     public static String albumData(Integer albumID) throws SQLException {
         Connection c = enterDatabase(dbname);
         String result = "";
@@ -564,6 +636,12 @@ public final class SQL {
         return result;
     }
 
+    /**
+     * gets artist data from one specific artist
+     * @param artistID id of the artist that user wants the data
+     * @return string with artist data
+     * @throws SQLException
+     */
     public static String artistData(int artistID) throws SQLException {
         Connection c = enterDatabase(dbname);
         String result = "";
@@ -615,12 +693,16 @@ public final class SQL {
                 i++;
             }
         }
-        //exceeds the limit of the string that can goes in udp
-        //result += "description of the artist: " + description + "\n";
         result += "\n";
         return result;
     }
 
+    /**
+     * share one music with one user (adds one row to database with user, musicid and cloudmusicid)
+     * @param cloudMusicID id of the music in the cloud
+     * @param userToShare user that will have access to one music
+     * @throws SQLException
+     */
     public static void shareMusicWithUser(int cloudMusicID, String userToShare) throws SQLException {
         Connection c = enterDatabase(dbname);
         Statement s = c.createStatement();
@@ -635,6 +717,12 @@ public final class SQL {
 
     }
 
+    /**
+     * adds info to database albumedits about the edits that one user has done to one album
+     * @param username of the user that edited the album
+     * @param albumID id of the album edited
+     * @throws SQLException
+     */
     public static void userEditedAlbum(String username, int albumID) throws SQLException {
         Connection c = enterDatabase(dbname);
         Statement s = c.createStatement();
@@ -652,6 +740,12 @@ public final class SQL {
         }
     }
 
+    /**
+     * get array of users that have edited one certain album
+     * @param albumID of the album edited
+     * @return array of strings containing the users
+     * @throws SQLException
+     */
     public static ArrayList<String> getUsersThatEditAlbum(int albumID) throws SQLException {
         Connection c = enterDatabase(dbname);
         ArrayList<String> array = new ArrayList<>();
@@ -663,6 +757,12 @@ public final class SQL {
         return array;
     }
 
+    /**
+     * get notifications in the database notifications of one user (while he was offline)
+     * @param username of the user you want to search the notifications he has
+     * @return string containing the notifications or "no notifications while you were offline" if user hasn't notifications
+     * @throws SQLException
+     */
     public static String getUserNotifications(String username) throws SQLException {
         Connection c = enterDatabase(dbname);
         ArrayList<String> arr = new ArrayList<>();
@@ -685,6 +785,13 @@ public final class SQL {
         return result;
     }
 
+
+    /**
+     * remove one row from table in database (in this case notifications), remove the notifications already shown to user
+     * @param table name which you want to remove the row
+     * @param username of the user that already had notification shown
+     * @throws SQLException
+     */
     public static void removeRowFromTable(String table, String username) throws SQLException {
         Connection c = enterDatabase(dbname);
         String SQL = "DELETE FROM "+table+" WHERE username = '"+username+"'";
@@ -692,6 +799,11 @@ public final class SQL {
         pstmt.executeUpdate();
     }
 
+    /**
+     * calculates the average in one array to calculate the average rating in one album
+     * @param array to calculate the average in
+     * @return double with array average
+     */
     private static Double average(ArrayList<Double> array) {
         double sumRating = array.stream()
                 .mapToDouble(a -> a)

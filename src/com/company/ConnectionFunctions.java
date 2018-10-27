@@ -4,15 +4,12 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.net.*;
-import java.nio.file.Path;
-import java.sql.Array;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 /**
- *
+ * connectionfunctions class
+ * has static functions that can will be called by multicast or rmi servers to communicate between or functions convert data to be possible to be sent to each other
  */
 public final class ConnectionFunctions {
     private static String MULTICAST_ADDRESS = "224.0.224.0";
@@ -97,7 +94,7 @@ public final class ConnectionFunctions {
      * @param filePath file location in local computer
      * @param musicID id from the database to associate a file to one music
      * @param username of the user that sends the music to the server
-     * @param TCPAddress
+     * @param TCPAddress used to connect to the server (the multicast address)
      * @throws IOException
      */
     public static void sendMusicFromRMIClient(String filePath, int musicID, String username, String TCPAddress) throws IOException {
@@ -112,6 +109,12 @@ public final class ConnectionFunctions {
         sendBytes(array,0, array.length, establishConnectionClient(TCPAddress, 53287));
     }
 
+    /**
+     * receive file by multicast server, writes it to the database with its musicID and username (upload from rmi client)
+     * @throws IOException
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
     public static void receiveMusicMulticastServer() throws IOException, SQLException, ClassNotFoundException {
         ServerSocket serverSocket = establishConnectionServer(53287);
         Socket socket = serverSocket.accept();
@@ -122,6 +125,13 @@ public final class ConnectionFunctions {
         SQL.enterArrayInTable("cloudmusics", array, musicID, username);
     }
 
+    /**
+     * send file from multicast server (to rmi client, rmi client downloads a file for example)
+     * @param musicID that rmiclient wants to download, to grab from the database
+     * @param username of the rmiclient, to grab from the database
+     * @throws IOException
+     * @throws SQLException
+     */
     public static void sendMusicFromMulticastServer(int musicID, String username) throws IOException, SQLException {
         ServerSocket serverSocket = establishConnectionServer(53288);
         Socket socket = serverSocket.accept();
@@ -129,6 +139,12 @@ public final class ConnectionFunctions {
         sendBytes(array, 0, array.length, socket);
     }
 
+    /**
+     * receive file by rmi client (download file from server, for example)
+     * @param path output file location, where the user wants to save the file
+     * @param TCPAddress server address to setup the connection
+     * @throws IOException
+     */
     public static void receiveMusicRMIClient(String path, String TCPAddress) throws IOException {
         byte[] array = readBytes(establishConnectionClient(TCPAddress, 53288));
         FileOutputStream fos = new FileOutputStream(path);
@@ -137,15 +153,20 @@ public final class ConnectionFunctions {
     }
 
 
+    /**
+     * send bytes (file converted to bytes to be send by tcp connection) to one socket
+     * @param myByteArray file converted in bytes
+     * @param start the beggining of the array, normally 0
+     * @param len the length of the array, normally myByteArray.length
+     * @param socket where you want to send the file
+     * @throws IOException
+     */
     public static void sendBytes(byte[] myByteArray, int start, int len, Socket socket) throws IOException {
         if (len < 0)
-            throw new IllegalArgumentException("Negative length not allowed");
+            throw new IllegalArgumentException("negative length not allowed");
         if (start < 0 || start >= myByteArray.length)
-            throw new IndexOutOfBoundsException("Out of bounds: " + start);
-        // Other checks if needed.
+            throw new IndexOutOfBoundsException("out of bounds: " + start);
 
-        // May be better to save the streams in the support class;
-        // just like the socket variable.
         OutputStream out = socket.getOutputStream();
         DataOutputStream dos = new DataOutputStream(out);
 
@@ -154,8 +175,14 @@ public final class ConnectionFunctions {
             dos.write(myByteArray, start, len);
         }
     }
+
+    /**
+     * receive bytes from sendBytes function
+     * @param socket receives the socket of the connection
+     * @return the data received from the socket in bytes array
+     * @throws IOException
+     */
     public static byte[] readBytes(Socket socket) throws IOException {
-        // Again, probably better to store these objects references in the support class
         InputStream in = socket.getInputStream();
         DataInputStream dis = new DataInputStream(in);
 
@@ -185,27 +212,23 @@ public final class ConnectionFunctions {
         return map;
     }
 
-    public static byte[] intToByteArray(int value) {
-        return new byte[] {
-                (byte)(value >>> 24),
-                (byte)(value >>> 16),
-                (byte)(value >>> 8),
-                (byte)value};
-    }
-    public static int fromByteArray(byte[] bytes) {
-        return bytes[0] << 24 | (bytes[1] & 0xFF) << 16 | (bytes[2] & 0xFF) << 8 | (bytes[3] & 0xFF);
-    }
-    public static byte[] concatenateByteArrays(byte[] a, byte[] b) {
-        byte[] result = new byte[a.length + b.length];
-        System.arraycopy(a, 0, result, 0, a.length);
-        System.arraycopy(b, 0, result, a.length, b.length);
-        return result;
-    }
 
+    /**
+     * convert array of bytes in string
+     * @param bytes array to convert
+     * @return string converted
+     */
     public static String toString(byte[] bytes) {
         return new String(bytes);
     }
 
+
+    /**
+     * convert hashmap in array of bytes
+     * @param map hashmap to convert
+     * @return array of bytes converted
+     * @throws IOException
+     */
     public static byte[] hashToByte(HashMap<String, String> map) throws IOException {
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(byteStream));
@@ -214,6 +237,14 @@ public final class ConnectionFunctions {
         byte[] array = byteStream.toByteArray();
         return array;
     }
+
+    /**
+     * convert array of bytes in hashmap
+     * @param array bytes array to convert
+     * @return hashmap converted
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     public static HashMap<String, String> byteToHash(byte[] array) throws IOException, ClassNotFoundException {
         ByteArrayInputStream byteStream = new ByteArrayInputStream(array);
         ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(byteStream));
@@ -221,24 +252,5 @@ public final class ConnectionFunctions {
         ois.close();
         return map;
     }
-
-
-    /**
-     *
-     * @param username
-     * @param password
-     * @param exists
-     * @return
-     */
-    //aux para converter em hashmap com o Username e a Password
-    public HashMap<String, String> AuxForArray(String username,String password, String exists) {
-        HashMap<String, String> hmap = new HashMap<String, String>();
-        hmap.put("type", "checkIfExists");
-        hmap.put("username", username);
-        hmap.put("password", password);
-        hmap.put("condition", exists);
-        return hmap;
-    }
-
 }
 

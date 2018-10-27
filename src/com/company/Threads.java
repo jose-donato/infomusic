@@ -1,8 +1,6 @@
 package com.company;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.Date;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,6 +8,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+/**
+ * Threads class
+ * treats all requests to multicast server
+ */
 public class Threads extends Thread {
     private HashMap<String, String> map;
     public Threads(HashMap<String, String> map) {
@@ -173,12 +175,22 @@ public class Threads extends Thread {
         }
     }
 
+    /**
+     * treat request to clear table notifications from one user
+     * @param map
+     * @throws SQLException
+     */
     private void treatClearNotifications(HashMap<String, String> map) throws SQLException {
         String username = map.get("user");
         SQL.removeRowFromTable("notifications", username);
     }
 
 
+    /**
+     * treat request to get notifications from one user that had been offline
+     * @param map
+     * @throws SQLException
+     */
     private void treatCheckNotifications(HashMap<String, String> map) throws SQLException {
         String username = map.get("user");
         String result = SQL.getUserNotifications(username);
@@ -188,12 +200,22 @@ public class Threads extends Thread {
         ConnectionFunctions.sendUdpPacket(hmap);
     }
 
+    /**
+     * treat request to add to notifications table that one user was granted with admin
+     * @param map
+     * @throws SQLException
+     */
     private void treatNotifyUserAboutAdminGranted(HashMap<String, String> map) throws SQLException {
         String user = map.get("user");
         String[] a = {"username, notificationType", "'"+user+"', 'you now have admin permissions!'"};
         SQL.addValuesToTable("notifications", a);
     }
 
+    /**
+     * treat request to add to notifications table that one user had changed one album description
+     * @param map
+     * @throws SQLException
+     */
     private void treatAddUsersToAlbumEditedNotificationTable(HashMap<String, String> map) throws SQLException {
         String users = map.get("users");
         ArrayList<String> usersThatEditedAlbum = new ArrayList<String>(Arrays.asList(users.split(";")));
@@ -203,6 +225,11 @@ public class Threads extends Thread {
         }
     }
 
+    /**
+     * treat request to get all users that changed one certain album
+     * @param map
+     * @throws SQLException
+     */
     private void treatNotifyUsersAboutAlbumDescriptionEdit(HashMap<String, String> map) throws SQLException {
         int albumID = Integer.parseInt(map.get("albumID"));
         ArrayList<String> names = SQL.getUsersThatEditAlbum(albumID);
@@ -222,24 +249,45 @@ public class Threads extends Thread {
         ConnectionFunctions.sendUdpPacket(hmap);
     }
 
+    /**
+     * treat request to add to database albumedits that one user changed one specific album
+     * @param map
+     * @throws SQLException
+     */
     private void treatUserEditAlbum(HashMap<String, String> map) throws SQLException {
         String username = map.get("username");
         int albumID = Integer.parseInt(map.get("albumID"));
         SQL.userEditedAlbum(username, albumID);
     }
 
+    /**
+     * treat request to share one music with one user
+     * @param map
+     * @throws SQLException
+     */
     private void treatShareMusicInCloud(HashMap<String, String> map) throws SQLException {
         String username = map.get("username");
         int musicID = Integer.parseInt(map.get("musicID"));
         SQL.shareMusicWithUser(musicID, username);
     }
 
+    /**
+     * treat request to get one music id from cloud
+     * @param map
+     * @throws SQLException
+     * @throws IOException
+     */
     private void treatGetMusicIDFromCloud(HashMap<String, String> map) throws SQLException, IOException {
         String username = map.get("username");
         int musicID = Integer.parseInt(map.get("musicID"));
         ConnectionFunctions.sendMusicFromMulticastServer(musicID, username);
     }
 
+    /**
+     * treat request to get one table from database, can be artists, musics, albums, cloudmusics or users
+     * @param map
+     * @throws SQLException
+     */
     private void treatGetTable(HashMap<String, String> map) throws SQLException {
         String table = map.get("table");
         String result = "";
@@ -266,6 +314,11 @@ public class Threads extends Thread {
     }
 
 
+    /**
+     * treat request to upload one file to database
+     * @param map
+     * @throws SQLException
+     */
     private void treatUploadFile(HashMap<String, String> map) throws SQLException {
         String table = map.get("table");
         String column = map.get("column");
@@ -274,6 +327,11 @@ public class Threads extends Thread {
         SQL.enterFileInTable(table, column, fileLocation, id);
     }
 
+    /**
+     * treat request to add one artist to database
+     * @param map
+     * @throws SQLException
+     */
     private void treatAddArtist(HashMap<String, String> map) throws SQLException {
         String name = map.get("name");
         String description = map.get("description");
@@ -284,6 +342,11 @@ public class Threads extends Thread {
         SQL.addValuesToTable("artists", a);
     }
 
+    /**
+     * treat request to add one album to database
+     * @param map
+     * @throws SQLException
+     */
     private void treatAddAlbum(HashMap<String, String> map) throws SQLException, ParseException {
         String name = map.get("name");
         String genre = map.get("genre");
@@ -297,6 +360,11 @@ public class Threads extends Thread {
         SQL.addValuesToTable("albums", a);
     }
 
+    /**
+     * treat request to add one music to database
+     * @param map
+     * @throws SQLException
+     */
     private void treatAddMusic(HashMap<String, String> map) throws SQLException {
         String name = map.get("name");
         String description = map.get("description");
@@ -310,6 +378,11 @@ public class Threads extends Thread {
         SQL.addValuesToTable("musics", a);
     }
 
+    /**
+     * treat request to get data about one certain artist
+     * @param map
+     * @throws SQLException
+     */
     private void treatArtistDetail(HashMap<String, String> map) throws SQLException {
         int artistToSearch = Integer.parseInt(map.get("artistToSearch"));
         String result = SQL.artistData(artistToSearch);
@@ -319,6 +392,11 @@ public class Threads extends Thread {
         ConnectionFunctions.sendUdpPacket(mapResult);
     }
 
+    /**
+     * treat request to get data about one certain album
+     * @param map
+     * @throws SQLException
+     */
     private void treatAlbumDetail(HashMap<String, String> map) throws SQLException {
         int albumToSearch = Integer.parseInt(map.get("albumToSearch"));
         String result = SQL.albumData(albumToSearch);
@@ -328,6 +406,11 @@ public class Threads extends Thread {
         ConnectionFunctions.sendUdpPacket(mapResult);
     }
 
+    /**
+     * treat request to add one review (with rating) to database
+     * @param map
+     * @throws SQLException
+     */
     private void treatWriteReview(HashMap<String, String> map) throws SQLException {
         int albumToReviewID = Integer.parseInt(map.get("albumToReviewID"));
         int albumRating = Integer.parseInt(map.get("albumRating"));
@@ -337,45 +420,79 @@ public class Threads extends Thread {
         SQL.reviewToAlbum(albumReview, albumRating, albumToReviewID);
     }
 
+    /**
+     * treat request to change data of one table in the database
+     * @param map
+     * @throws SQLException
+     */
     private void treatChangeData(HashMap<String, String> map) throws SQLException {
         String tableName = map.get("tableName");
         String columnType = map.get("columnType");
         String newName = map.get("newName");
         Integer tableID = Integer.parseInt(map.get("tableID"));
-
         SQL.changeName(tableName, newName, tableID, columnType);
     }
 
+    /**
+     * treat request to grant one user admin permissions
+     * @param map
+     * @throws SQLException
+     */
     private void treatGrantAdmin(HashMap<String, String> map) throws SQLException {
         String username = map.get("username");
+        HashMap<String, String> hmap = new HashMap<String, String>();
+        hmap.put("type", "checkGrantAdmin");
+        hmap.put("username", username);
         if(SQL.grantAdminToUser(username)) {
-            ConnectionFunctions.sendUdpPacket(auxGrantAdmin(username, "true"));
+            hmap.put("condition", "true");
+            ConnectionFunctions.sendUdpPacket(hmap);
         }
         else {
-            ConnectionFunctions.sendUdpPacket(auxGrantAdmin(username, "false"));
+            hmap.put("condition", "false");
+            ConnectionFunctions.sendUdpPacket(hmap);
         }
     }
 
+    /**
+     * treat request to verify the login for one user
+     * @param map
+     * @throws SQLException
+     */
     private void treatLogin(HashMap<String, String> map) throws SQLException {
         String username = map.get("username");
         String password = map.get("password");
         String [] user = SQL.selectUserAndGetPassword(username);
         String return_username = user[0];
         String return_pass = user[1];
+        HashMap<String, String> hmap = new HashMap<String, String>();
+        hmap.put("type", "checkIfExists");
+        hmap.put("username", return_username);
+        hmap.put("password", return_pass);
+
         if(return_username != null && return_pass.equals(password)) {
-            ConnectionFunctions.sendUdpPacket(auxForArray(return_username, return_pass, "true"));
+            hmap.put("condition", "true");
+            ConnectionFunctions.sendUdpPacket(hmap);
         }
         else {
-            ConnectionFunctions.sendUdpPacket(auxForArray(return_username,return_pass, "false"));
+            hmap.put("condition", "false");
+            ConnectionFunctions.sendUdpPacket(hmap);
         }
     }
 
+    /**
+     * treat request to make the regist of one user
+     * @param map
+     * @throws SQLException
+     */
     private void treatRegister(HashMap<String, String> map) throws SQLException {
         String username = map.get("username");
         String user = SQL.selectUser("USERS", username);
-        System.out.println("\n\n\n"+user+"\n\n\n");
+        HashMap<String, String> hmap = new HashMap<String, String>();
+        hmap.put("type", "checkIfExists");
+        hmap.put("username", username);
         if(user == null) {
-            ConnectionFunctions.sendUdpPacket(aux(username, "true"));
+            hmap.put("condition", "true");
+            ConnectionFunctions.sendUdpPacket(hmap);
             String[] arr;
             if(SQL.checkIftableIsEmpty("users")) {
                 arr = new String[]{"username,password,isAdmin", "'" + username + "','" + map.get("password") + "',true"};
@@ -387,56 +504,29 @@ public class Threads extends Thread {
             SQL.addValuesToTable("USERS", arr);
         }
         else {
-            //corrigir
-            ConnectionFunctions.sendUdpPacket(aux(username, "false"));
+            hmap.put("condition", "false");
+            ConnectionFunctions.sendUdpPacket(hmap);
         }
     }
 
+    /**
+     * treat request to check if one user is admin or not
+     * @param map
+     * @throws SQLException
+     */
     private void treatVerifyAdmin(HashMap<String, String> map) throws SQLException {
         String username = map.get("username");
-        if(SQL.checkIfUserIsAdmin(username)) {
-            ConnectionFunctions.sendUdpPacket(auxIsAdmin(username, "true"));
-        }
-        else{
-            ConnectionFunctions.sendUdpPacket(auxIsAdmin(username, "false"));
-        }
-    }
-    /**
-     * create the hashmap the response by multicast if the user exists or dont
-     * @param username
-     * @param exists
-     * @return
-     */
-    //aux para converter em hashmap a resposta do multicast se existe o utilziador ou nao
-    private HashMap<String, String> aux(String username, String exists) {
-        HashMap<String, String> hmap = new HashMap<String, String>();
-        hmap.put("type", "checkIfExists");
-        hmap.put("username", username);
-        hmap.put("condition", exists);
-        return hmap;
-    }
-
-    //aux para converter em hashmap a resposta do multicast se existe o utilziador ou nao
-    private HashMap<String, String> auxForArray(String username, String password, String exists) {
-        HashMap<String, String> hmap = new HashMap<String, String>();
-        hmap.put("type", "checkIfExists");
-        hmap.put("username", username);
-        hmap.put("password", password);
-        hmap.put("condition", exists);
-        return hmap;
-    }
-    private HashMap<String, String> auxIsAdmin(String username, String exists) {
         HashMap<String, String> hmap = new HashMap<String, String>();
         hmap.put("type", "checkIfAdminExists");
         hmap.put("username", username);
-        hmap.put("condition", exists);
-        return hmap;
+        if(SQL.checkIfUserIsAdmin(username)) {
+            hmap.put("condition", "true");
+            ConnectionFunctions.sendUdpPacket(hmap);
+        }
+        else{
+            hmap.put("condition", "false");
+            ConnectionFunctions.sendUdpPacket(hmap);
+        }
     }
-    private HashMap<String, String> auxGrantAdmin(String username, String exists) {
-        HashMap<String, String> hmap = new HashMap<String, String>();
-        hmap.put("type", "checkGrantAdmin");
-        hmap.put("username", username);
-        hmap.put("condition", exists);
-        return hmap;
-    }
+
 }
