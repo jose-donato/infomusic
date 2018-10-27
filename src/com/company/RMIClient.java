@@ -48,7 +48,7 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
             //try to connect to server rmi
             //if cant connect keeps trying until hsuccess
             try {
-                i = (InterfaceServer) Naming.lookup("//"+ InetAddress.getLocalHost().getHostAddress()+"/infoMusicRegistry");
+                i = (InterfaceServer) Naming.lookup("//"+ InetAddress.getLocalHost().getHostAddress()+":1099/infoMusicRegistry");
                 //i = (InterfaceServer) Naming.lookup("//192.168.1.188:1099/infoMusicRegistry");
                 //i = (InterfaceServer) Naming.lookup("//192.168.1.185:1099/infoMusicRegistry");
                 bounding = true;
@@ -501,7 +501,7 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
                 boolean tryBounding = false;
                 while (!tryBounding) {
                     try {
-                        i = (InterfaceServer) Naming.lookup("//"+ InetAddress.getLocalHost().getHostAddress()+"/infoMusicRegistry");
+                        i = (InterfaceServer) Naming.lookup("//"+ InetAddress.getLocalHost().getHostAddress()+":1099/infoMusicRegistry");
                         //i = (InterfaceServer) Naming.lookup("//192.168.1.188:1099/infoMusicRegistry");
                         //i = (InterfaceServer) Naming.lookup("//192.168.1.185:1099/infoMusicRegistry");
                         tryBounding = true;
