@@ -1,5 +1,6 @@
 package com.company;
 import java.lang.reflect.Array;
+import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;

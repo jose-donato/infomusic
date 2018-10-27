@@ -1,5 +1,6 @@
 package com.company;
 
+import java.net.ConnectException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
