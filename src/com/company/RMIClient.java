@@ -36,7 +36,7 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
         InterfaceServer i = null;
         while (!bounding) {
             try {
-                i = (InterfaceServer) Naming.lookup("infoMusicRegistry");
+                i = (InterfaceServer) Naming.lookup("//192.168.1.188:1099/infoMusicRegistry");
                 bounding = true;
             } catch (RemoteException e) {
                 System.out.println("trying...");
@@ -127,7 +127,7 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
             try {
             while (true) {
                 System.out.println("\nmenu: (type one of the options)\n");
-                System.out.println("1. search for songs");
+                System.out.println("1. list musics");
                 System.out.println("2. search for some detail information about an artist or a specific album ");
                 System.out.println("3. write a review to an album");
                 System.out.println("4. upload/download/share a song");
@@ -142,9 +142,7 @@ public class RMIClient extends UnicastRemoteObject implements InterfaceClient {
 
                 switch (choice) {
                     case 1:
-                        System.out.println("write the title of the song you are looking for");
-                        keyboard = new Scanner(System.in);
-                        String songTitle = keyboard.nextLine();
+                        System.out.println(i.getTable("musics", username));
                         // i.searchSong(songTitle);
                         // Search for Songs;
                         break;

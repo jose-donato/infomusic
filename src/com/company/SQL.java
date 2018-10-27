@@ -523,7 +523,13 @@ public final class SQL {
             date = rs.getDate("releasedate");
         }
 
-
+        String sql = "SELECT NAME FROM ARTISTS WHERE ARTISTID = (SELECT ARTISTID FROM ALBUMS WHERE ALBUMID = "+albumID+")";
+        System.out.println(sql);
+        rs = s.executeQuery(sql);
+        String artistName = "";
+        while(rs.next()) {
+            artistName = rs.getString("name");
+        }
         //show all music data
         rs = s.executeQuery("SELECT * FROM MUSICS WHERE albumID='"+albumID+"'");
         String musicName = null;
@@ -537,7 +543,7 @@ public final class SQL {
 
         double averageRating = average(ratings);
 
-        result += name + " was released in " + date+ ". this album has the songs: \n";
+        result += name + " was made by "+artistName+" and was released in " + date + ". this album has the songs: \n";
         int i = 1;
         for(String str : musics) {
             result += i +". "+str+"\n";
@@ -546,7 +552,7 @@ public final class SQL {
 
         if(ratings.size() != 0) {
             result += "the average rating is " + averageRating + " with " + ratings.size() + " review/s\n";
-            result += "album reviews: ";
+            result += "album reviews: \n";
             i = 1;
             for(String str : reviews) {
                 result += i +". "+str+"\n";
@@ -600,6 +606,7 @@ public final class SQL {
         else {
             result += "the artist " + name + " has " + albumsNames.size() + " album/s with an average of " + average(albumsRating) + " and " + musicsNames.size() + " musics.\n";
         }
+        result += "artist description: " + description +"\n";
         if(albumsNames.size() > 0) {
             result += "artist albums: \n";
             int i = 1;

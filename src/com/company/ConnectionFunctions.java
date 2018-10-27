@@ -66,17 +66,40 @@ public final class ConnectionFunctions {
         return message;
     }
 
+    /**
+     * create socket for server to establish tcp connection
+     * @param port to bind the socket (multicast server: 53287 for receiving files, 53288 for sending files)
+     * @return server socket already created and connected to port supplied
+     * @throws IOException
+     */
     public static ServerSocket establishConnectionServer(int port) throws IOException {
         ServerSocket serverSocket = new ServerSocket();
         serverSocket.setReuseAddress(true);
         serverSocket.bind(new InetSocketAddress(port));
         return serverSocket;
     }
+
+    /**
+     * create a socket for client to establish tcp connection
+     * @param TCPAddress address to connect to (multicast address)
+     * @param port to bind the socket
+     * @return client socket already created with port and tcp address
+     * @throws IOException
+     */
     public static Socket establishConnectionClient(String TCPAddress, int port) throws IOException {
         Socket clientSocket = new Socket(TCPAddress, port);
         return clientSocket;
     }
 
+
+    /**
+     * send file from rmi client (upload music to multicast server for example)
+     * @param filePath file location in local computer
+     * @param musicID id from the database to associate a file to one music
+     * @param username of the user that sends the music to the server
+     * @param TCPAddress
+     * @throws IOException
+     */
     public static void sendMusicFromRMIClient(String filePath, int musicID, String username, String TCPAddress) throws IOException {
         File file = new File(filePath);
         byte[] musicFileByteArray = FileUtils.readFileToByteArray(file);

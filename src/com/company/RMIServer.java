@@ -1,6 +1,8 @@
 package com.company;
 import java.lang.reflect.Array;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -27,7 +29,7 @@ public class RMIServer extends UnicastRemoteObject implements InterfaceServer {
      * @param args
      * @throws RemoteException
      */
-    public static void main(String[] args) throws RemoteException, InterruptedException, MalformedURLException, NotBoundException {
+    public static void main(String[] args) throws RemoteException, InterruptedException, MalformedURLException, NotBoundException, UnknownHostException {
           /* InterfaceServer i = new RMIServer();
         LocateRegistry.createRegistry(1099).rebind("infoMusicRegistry", i);
         //client.printOnClient("ola do servidor");
